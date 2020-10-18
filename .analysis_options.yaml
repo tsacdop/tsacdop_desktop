@@ -1,0 +1,10 @@
+include: package:effective_dart/analysis_options.1.2.0.yaml
+linter:
+  rules:
+    public_member_api_docs: false
+    lines_longer_than_80_chars: false
+    type_annotate_public_apis: false
+    avoid_catches_without_on_clauses: false
+    avoid_setters_without_getters: false
+    avoid_equals_and_hash_code_on_mutable_classes: false
+    avoid_returning_null: false
