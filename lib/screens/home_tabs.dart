@@ -1,18 +1,63 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:tsacdop_desktop/models/episodebrief.dart';
-import 'package:tsacdop_desktop/providers/downloader.dart';
-import 'package:tsacdop_desktop/storage/key_value_storage.dart';
-import 'package:tsacdop_desktop/storage/sqflite_db.dart';
-import 'package:tsacdop_desktop/widgets/custom_paint.dart';
-import 'package:tsacdop_desktop/widgets/episodes_grid.dart';
-import 'package:tsacdop_desktop/widgets/podcast_menu.dart';
+
+import '../models/episodebrief.dart';
+import '../providers/downloader.dart';
+import '../storage/key_value_storage.dart';
+import '../storage/sqflite_db.dart';
+import '../widgets/custom_paint.dart';
+import '../widgets/episodes_grid.dart';
+import '../widgets/podcast_menu.dart';
 
 import '../utils/extension_helper.dart';
 
-class HomeTabs extends StatelessWidget {
+final refreshNotification = StateProvider<String>((ref) => null);
+
+class HomeTabs extends StatefulWidget {
   const HomeTabs({Key key}) : super(key: key);
+
+  @override
+  _HomeTabsState createState() => _HomeTabsState();
+}
+
+class _HomeTabsState extends State<HomeTabs> {
+  bool _refresh;
+  @override
+  void initState() {
+    super.initState();
+    _refresh = false;
+  }
+
+  Future<String> _getRefreshDate(BuildContext context) async {
+    int refreshDate;
+    var refreshstorage = KeyValueStorage('refreshdate');
+    var i = await refreshstorage.getInt();
+    if (i == 0) {
+      var refreshstorage = KeyValueStorage('refreshdate');
+      await refreshstorage.saveInt(DateTime.now().millisecondsSinceEpoch);
+      refreshDate = DateTime.now().millisecondsSinceEpoch;
+    } else {
+      refreshDate = i;
+    }
+    return refreshDate.toDate(context);
+  }
+
+  Future<void> _refreshAll() async {
+    var _dbHelper = DBHelper();
+    var refreshstorage = KeyValueStorage('refreshdate');
+    await refreshstorage.saveInt(DateTime.now().millisecondsSinceEpoch);
+    var podcastList = await _dbHelper.getPodcastLocalAll(updateOnly: true);
+    for (var podcastLocal in podcastList) {
+      final notifier = context.s.notificationUpdate(podcastLocal.title);
+      context.read(refreshNotification).state = notifier;
+      var updateCount = await _dbHelper.updatePodcastRss(podcastLocal);
+      developer.log('Refresh ${podcastLocal.title}$updateCount');
+    }
+    context.read(refreshNotification).state = null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +65,46 @@ class HomeTabs extends StatelessWidget {
     return DefaultTabController(
       length: 3,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Text('My subscription', style: context.textTheme.headline6),
+                Spacer(),
+                ProviderListener<StateController<String>>(
+                  provider: refreshNotification,
+                  onChange: (context, refresh) {
+                    if (refresh.state != null) setState(() {});
+                  },
+                  child: FutureBuilder<String>(
+                      future: _getRefreshDate(context),
+                      builder: (_, snapshot) {
+                        if (snapshot.hasData) {
+                          return Text(
+                            snapshot.data,
+                          );
+                        } else {
+                          return Center();
+                        }
+                      }),
+                ),
+                SizedBox(width: 20),
+                IconButton(
+                    splashRadius: 20,
+                    icon: Icon(LineIcons.redo_alt_solid, size: 20),
+                    onPressed: _refreshAll)
+              ],
+            ),
+          ),
+          Container(
             height: 50,
+            color: context.scaffoldBackgroundColor,
             child: TabBar(
+              isScrollable: true,
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorPadding: EdgeInsets.symmetric(horizontal: 20),
               tabs: [
                 Tab(text: s.homeTabMenuRecent),
                 Tab(text: s.homeTabMenuFavotite),
@@ -31,6 +112,7 @@ class HomeTabs extends StatelessWidget {
               ],
             ),
           ),
+          Divider(height: 1),
           Expanded(
             child: TabBarView(
               children: [
@@ -197,8 +279,7 @@ class _RecentTabState extends State<RecentTab> {
                             if (!_multiSelect)
                               Container(
                                   height: 40,
-                                  color: context.scaffoldBackgroundColor
-                                      .withOpacity(0.6),
+                                  color: context.scaffoldBackgroundColor,
                                   child: Material(
                                     color: Colors.transparent,
                                     child: Row(

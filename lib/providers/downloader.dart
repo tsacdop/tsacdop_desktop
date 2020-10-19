@@ -55,7 +55,7 @@ class DownloadTask extends Equatable {
 final downloadProvider = StateNotifierProvider((ref) => Downloader());
 
 class Downloader extends StateNotifier<List<DownloadTask>> {
-  Downloader([List<DownloadTask> initialTodos]) : super([]);
+  Downloader() : super([]);
 
   final _dio = Dio(BaseOptions(
     connectTimeout: 30000,
@@ -69,6 +69,13 @@ class Downloader extends StateNotifier<List<DownloadTask>> {
       if (task.episode == episode) return state.indexOf(task);
     }
     return -1;
+  }
+
+  void _updateTask(DownloadTask downloadTask) {
+    state = [
+      for (var task in state)
+        if (task.taskId == downloadTask.taskId) downloadTask else task
+    ];
   }
 
   Future<void> download(EpisodeBrief episode) async {
@@ -102,25 +109,23 @@ class Downloader extends StateNotifier<List<DownloadTask>> {
         timeCreated: now.millisecondsSinceEpoch,
         status: DownloadTaskStatus.enqueued);
 
-    state.add(downloadTask);
-    var index = state.indexOf(downloadTask);
-
+    state = [...state, downloadTask];
     var response = await _dio.download(episode.enclosureUrl, filePath,
         cancelToken: _cancelToken, onReceiveProgress: (count, total) {
       if (total > 0 && count > 0) {
         var progress = (count * 100) ~/ total;
-        state[index] = downloadTask.copyWith(
-            progress: progress, status: DownloadTaskStatus.running);
+        _updateTask(downloadTask.copyWith(
+            progress: progress, status: DownloadTaskStatus.running));
       }
     }, deleteOnError: true);
     if (response.statusCode == 200) {
-      state[index] = downloadTask.copyWith(
-          progress: 100, status: DownloadTaskStatus.complete);
+      _updateTask(downloadTask.copyWith(
+          progress: 100, status: DownloadTaskStatus.complete));
       var fileStat = await File(filePath).stat();
       _dbHelper.saveMediaId(
           episode.enclosureUrl, filePath, downloadTask.taskId, fileStat.size);
     } else {
-      state[index] = downloadTask.copyWith(status: DownloadTaskStatus.failed);
+      _updateTask(downloadTask.copyWith(status: DownloadTaskStatus.failed));
     }
   }
 
@@ -131,6 +136,6 @@ class Downloader extends StateNotifier<List<DownloadTask>> {
       await file.delete();
     }
     await _dbHelper.delDownloaded(episode.enclosureUrl);
-    state.removeWhere((task) => task.episode == episode);
+    state = state.where((task) => task.episode != episode).toList();
   }
 }

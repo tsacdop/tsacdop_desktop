@@ -13,6 +13,7 @@ const String podcastLayoutKey = 'podcastLayoutKey';
 const String hideListenedKey = 'hideListenedKey';
 const String recentLayoutKey = 'recentLayoutKey';
 const String favLayoutKey = 'favLayoutKey';
+const String refreshDateKey = 'refreshDateKey';
 
 class KeyValueStorage {
   final String key;

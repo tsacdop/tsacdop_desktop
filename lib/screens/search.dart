@@ -84,7 +84,7 @@ class _SearchPageState extends State<SearchPage> {
         Container(
           height: 100,
           width: double.infinity,
-          color: context.accentColor.withAlpha(70),
+          color: Colors.grey[700],
           alignment: Alignment.centerLeft,
           child: SizedBox(
             width: 500,
@@ -95,23 +95,43 @@ class _SearchPageState extends State<SearchPage> {
                   children: [
                     SizedBox(width: 20),
                     Expanded(
-                      child: SizedBox(
-                        height: 50,
-                        child: TextField(
-                          focusNode: _focusNode,
-                          onSubmitted: _submitSearch,
-                          controller: _controller,
-                          decoration: InputDecoration(
-                              focusColor: context.primaryColor,
-                              hoverColor: context.primaryColor,
-                              hintText: context.s.searchEpisode,
-                              fillColor: context.primaryColor,
-                              filled: true,
-                              border: _inputBorder(context.primaryColorDark),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.zero)),
+                      child: Stack(children: [
+                        SizedBox(
+                          height: 50,
+                          child: TextField(
+                              focusNode: _focusNode,
+                              onSubmitted: _submitSearch,
+                              controller: _controller,
+                              decoration: InputDecoration(
+                                  focusColor: context.primaryColor,
+                                  hoverColor: context.primaryColor,
+                                  hintText: context.s.searchEpisode,
+                                  fillColor: context.primaryColor,
+                                  filled: true,
+                                  border:
+                                      _inputBorder(context.primaryColorDark),
+                                  focusedBorder:
+                                      _inputBorder(context.accentColor))),
                         ),
-                      ),
+                        Positioned(
+                          right: 0,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _controller.text = '';
+                                });
+                              },
+                              child: Container(
+                                height: 50,
+                                width: 50,
+                                child: Icon(Icons.clear),
+                              ),
+                            ),
+                          ),
+                        )
+                      ]),
                     ),
                     SizedBox(width: 20),
                     ElevatedButton.icon(
@@ -120,6 +140,7 @@ class _SearchPageState extends State<SearchPage> {
                       style: OutlinedButton.styleFrom(
                         elevation: 0,
                         backgroundColor: context.accentColor,
+                        shape: RoundedRectangleBorder(),
                         padding: EdgeInsets.zero,
                         minimumSize: Size(100, 58),
                       ),

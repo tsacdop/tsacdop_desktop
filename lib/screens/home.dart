@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:tsacdop_desktop/screens/player.dart';
 
+import 'about.dart';
+import 'home_tabs.dart';
 import 'podcasts_page.dart';
 import 'search.dart';
 import '../providers/group_state.dart';
@@ -19,7 +22,7 @@ class _HomeState extends State<Home> {
   Widget _body;
   @override
   void initState() {
-    _body = SearchPage();
+    _body = PodcastsPage();
     super.initState();
   }
 
@@ -46,7 +49,7 @@ class _HomeState extends State<Home> {
                       ),
                       IconButton(
                         splashRadius: 20,
-                        icon: Icon(Icons.home),
+                        icon: Icon(LineIcons.home_solid),
                         onPressed: () {
                           setState(() {
                             _body = PodcastsPage();
@@ -55,7 +58,7 @@ class _HomeState extends State<Home> {
                       ),
                       IconButton(
                         splashRadius: 20,
-                        icon: Icon(Icons.search),
+                        icon: Icon(LineIcons.search_solid),
                         onPressed: () {
                           setState(() {
                             _body = SearchPage();
@@ -69,13 +72,22 @@ class _HomeState extends State<Home> {
                       ),
                       IconButton(
                         splashRadius: 20,
-                        icon: Icon(Icons.settings),
-                        onPressed: () {},
+                        icon: Icon(LineIcons.info_circle_solid),
+                        onPressed: () {
+                          setState(() {
+                            _body = About();
+                          });
+                        },
                       ),
                       Spacer(),
                       IconButton(
                         splashRadius: 20,
-                        icon: Icon(Icons.lightbulb),
+                        icon: Icon(LineIcons.cog_solid),
+                        onPressed: () {},
+                      ),
+                      IconButton(
+                        splashRadius: 20,
+                        icon: Icon(LineIcons.lightbulb),
                         onPressed: () {
                           if (context.read(settings).themeMode !=
                               ThemeMode.dark)
@@ -85,11 +97,6 @@ class _HomeState extends State<Home> {
                           }
                         },
                       ),
-                      IconButton(
-                        splashRadius: 20,
-                        icon: Icon(Icons.info),
-                        onPressed: () {},
-                      )
                     ],
                   ),
                 ),
@@ -101,9 +108,7 @@ class _HomeState extends State<Home> {
                       child: _body,
                       duration: Duration(milliseconds: 300),
                     ),
-                    Align(
-                        alignment: Alignment.bottomLeft,
-                        child: _NotificationBar()),
+                    Positioned(left: 0, bottom: 0, child: _NotificationBar()),
                   ],
                 ),
               ),
@@ -118,32 +123,36 @@ class _HomeState extends State<Home> {
 
 class _NotificationBar extends ConsumerWidget {
   const _NotificationBar({Key key}) : super(key: key);
-  Widget importColumn(String text, BuildContext context) {
+  Widget _notifierText(String text, BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
-      height: 20.0,
+      height: 30,
+      color: Colors.grey[600],
+      padding: EdgeInsets.symmetric(horizontal: 10),
       alignment: Alignment.centerLeft,
-      child:
-          Text(text, style: TextStyle(backgroundColor: context.primaryColor)),
+      child: Text(text, maxLines: 1, style: TextStyle(color: Colors.white)),
     );
   }
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
     final s = context.s;
+    var refreshNotifier = watch(refreshNotification).state;
     var item = watch(groupState).currentSubscribeItem;
+    if (refreshNotifier != null) {
+      return _notifierText(refreshNotifier, context);
+    }
     switch (item.subscribeState) {
       case SubscribeState.start:
-        return importColumn(s.notificationSubscribe(item.title), context);
+        return _notifierText(s.notificationSubscribe(item.title), context);
       case SubscribeState.subscribe:
-        return importColumn(s.notificaitonFatch(item.title), context);
+        return _notifierText(s.notificaitonFatch(item.title), context);
       case SubscribeState.fetch:
-        return importColumn(s.notificationSuccess(item.title), context);
+        return _notifierText(s.notificationSuccess(item.title), context);
       case SubscribeState.exist:
-        return importColumn(
+        return _notifierText(
             s.notificationSubscribeExisted(item.title), context);
       case SubscribeState.error:
-        return importColumn(s.notificationNetworkError(item.title), context);
+        return _notifierText(s.notificationNetworkError(item.title), context);
       default:
         return Center();
     }

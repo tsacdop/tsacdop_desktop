@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:dio/dio.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path_provider/path_provider.dart';
@@ -90,6 +91,39 @@ class DBHelper {
             upateCount: list.first['update_count'],
             episodeCount: list.first['episode_count']));
       }
+    }
+    return podcastLocal;
+  }
+
+  Future<List<PodcastLocal>> getPodcastLocalAll(
+      {bool updateOnly = false}) async {
+    var dbClient = await database;
+
+    List<Map> list;
+    if (updateOnly) {
+      list = await dbClient.rawQuery(
+          """SELECT id, title, imageUrl, rssUrl, primaryColor, author, imagePath,
+         provider, link FROM PodcastLocal WHERE never_update = 0 ORDER BY 
+         add_date DESC""");
+    } else {
+      list = await dbClient.rawQuery(
+          """SELECT id, title, imageUrl, rssUrl, primaryColor, author, imagePath,
+         provider, link FROM PodcastLocal ORDER BY add_date DESC""");
+    }
+
+    var podcastLocal = <PodcastLocal>[];
+
+    for (var i in list) {
+      podcastLocal.add(PodcastLocal(
+          i['title'],
+          i['imageUrl'],
+          i['rssUrl'],
+          i['primaryColor'],
+          i['author'],
+          i['id'],
+          i['imagePath'],
+          list.first['provider'],
+          list.first['link']));
     }
     return podcastLocal;
   }
@@ -297,6 +331,87 @@ class DBHelper {
         """UPDATE PodcastLocal SET episode_count = ? WHERE id = ?""",
         [countUpdate, id]);
     return result;
+  }
+
+  Future<int> updatePodcastRss(PodcastLocal podcastLocal,
+      {int removeMark = 0}) async {
+    var options = BaseOptions(
+      connectTimeout: 20000,
+      receiveTimeout: 20000,
+    );
+    try {
+      var response = await Dio(options).get(podcastLocal.rssUrl);
+      if (response.statusCode == 200) {
+        var feed = RssFeed.parse(response.data);
+        String url, description;
+        feed.items.removeWhere((item) => item == null);
+
+        var dbClient = await database;
+
+        var list = await dbClient.rawQuery(
+            'SELECT COUNT(*) as count FROM Episodes WHERE feed_id = ?',
+            [podcastLocal.id]);
+        var count = list.first['count'];
+        if (removeMark == 0) {
+          await dbClient.rawUpdate(
+              "UPDATE Episodes SET is_new = 0 WHERE feed_id = ?",
+              [podcastLocal.id]);
+        }
+        for (var item in feed.items) {
+          developer.log(item.title);
+          description = _getDescription(item.content.value ?? '',
+              item.description ?? '', item.itunes.summary ?? '');
+
+          if (item.enclosure?.url != null) {
+            _isXimalaya(item.enclosure.url)
+                ? url = item.enclosure.url.split('=').last
+                : url = item.enclosure.url;
+          }
+
+          final title = item.itunes.title ?? item.title;
+          final length = item?.enclosure?.length ?? 0;
+          final pubDate = item.pubDate;
+          final date = _parsePubDate(pubDate);
+          final milliseconds = date.millisecondsSinceEpoch;
+          final duration = item.itunes.duration?.inSeconds ?? 0;
+          final explicit = _getExplicit(item.itunes.explicit);
+
+          if (url != null) {
+            await dbClient.transaction((txn) async {
+              await txn.rawInsert(
+                  """INSERT OR IGNORE INTO Episodes(title, enclosure_url, enclosure_length, pubDate, 
+                description, feed_id, milliseconds, duration, explicit, media_id, is_new) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)""",
+                  [
+                    title,
+                    url,
+                    length,
+                    pubDate,
+                    description,
+                    podcastLocal.id,
+                    milliseconds,
+                    duration,
+                    explicit,
+                    url,
+                  ]);
+            });
+          }
+        }
+
+        var updateList = await dbClient.rawQuery(
+            'SELECT COUNT(*) as count FROM Episodes WHERE feed_id = ?',
+            [podcastLocal.id]);
+        var countUpdate = updateList.first['count'];
+
+        await dbClient.rawUpdate(
+            """UPDATE PodcastLocal SET update_count = ?, episode_count = ? WHERE id = ?""",
+            [countUpdate - count, countUpdate, podcastLocal.id]);
+        return countUpdate - count;
+      }
+      return 0;
+    } catch (e) {
+      developer.log(e.toString(), name: 'Update podcast error');
+      return -1;
+    }
   }
 
   Future<List<EpisodeBrief>> getRssItem(String id, int count,

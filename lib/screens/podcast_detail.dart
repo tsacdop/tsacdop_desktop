@@ -7,9 +7,11 @@ import 'package:line_icons/line_icons.dart';
 import 'package:tsacdop_desktop/models/episodebrief.dart';
 import 'package:tsacdop_desktop/storage/key_value_storage.dart';
 import 'package:tsacdop_desktop/storage/sqflite_db.dart';
+import 'package:tsacdop_desktop/widgets/custom_paint.dart';
 import 'package:tsacdop_desktop/widgets/episodes_grid.dart';
 import 'package:tsacdop_desktop/widgets/podcast_menu.dart';
 
+import 'home_tabs.dart';
 import 'podcasts_page.dart';
 import '../models/podcastlocal.dart';
 import '../utils/extension_helper.dart';
@@ -59,11 +61,14 @@ class _PodcastDetailState extends State<PodcastDetail> {
 
   ScrollController _controller;
 
+  bool _refresh;
+
   @override
   void initState() {
     super.initState();
     _loadMore = false;
     _reverse = false;
+    _refresh = false;
     _multiSelect = false;
     _selectAll = false;
     _selectAfter = false;
@@ -104,6 +109,20 @@ class _PodcastDetailState extends State<PodcastDetail> {
         hideListened: _hideListened);
     _dataCount = episodes.length;
     return episodes;
+  }
+
+  Future<void> _refreshPodacst() async {
+    setState(() {
+      _refresh = true;
+    });
+    context.read(refreshNotification).state =
+        context.s.notificationUpdate(widget.podcastLocal.title);
+    var updateCount = await _dbHelper.updatePodcastRss(widget.podcastLocal);
+    context.read(refreshNotification).state = null;
+    if (mounted)
+      setState(() {
+        _refresh = false;
+      });
   }
 
   Future<int> _getLayout() async {
@@ -220,80 +239,71 @@ class _PodcastDetailState extends State<PodcastDetail> {
                         });
                       }
                       break;
-                    case 3:
-                      //  showGeneralDialog(
-                      //      context: context,
-                      //      barrierDismissible: true,
-                      //      barrierLabel: MaterialLocalizations.of(context)
-                      //          .modalBarrierDismissLabel,
-                      //      barrierColor: Colors.black54,
-                      //      transitionDuration: const Duration(milliseconds: 200),
-                      //      pageBuilder:
-                      //          (context, animaiton, secondaryAnimation) =>
-                      //              SearchEpisode(
-                      //                onSearch: (query) {
-                      //                  setState(() {
-                      //                    _query = query;
-                      //                    _filter = Filter.search;
-                      //                  });
-                      //                },
-                      //              ));
-                      break;
                     default:
                   }
                 }),
             Spacer(),
             Material(
-                color: Colors.transparent,
-                clipBehavior: Clip.hardEdge,
-                child: TweenAnimationBuilder(
-                  duration: Duration(milliseconds: 500),
-                  curve: Curves.easeInOutQuart,
-                  tween: Tween<double>(begin: 0.0, end: 1.0),
-                  builder: (context, angle, child) => Transform.rotate(
-                    angle: math.pi * 2 * angle,
-                    child: SizedBox(
+              color: Colors.transparent,
+              clipBehavior: Clip.hardEdge,
+              child: SizedBox(
+                width: 30,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  tooltip: s.homeSubMenuSortBy,
+                  icon: Icon(
+                    _reverse
+                        ? LineIcons.hourglass_start_solid
+                        : LineIcons.hourglass_end_solid,
+                    color: _reverse ? context.accentColor : null,
+                  ),
+                  iconSize: 18,
+                  onPressed: () {
+                    setState(() => _reverse = !_reverse);
+                  },
+                ),
+              ),
+            ),
+            Material(
+              color: Colors.transparent,
+              clipBehavior: Clip.hardEdge,
+              child: _refresh
+                  ? SizedBox(width: 30, child: _RefreshIndicator())
+                  : SizedBox(
                       width: 30,
                       child: IconButton(
                         padding: EdgeInsets.zero,
-                        tooltip: s.homeSubMenuSortBy,
                         icon: Icon(
-                          _reverse
-                              ? LineIcons.hourglass_start_solid
-                              : LineIcons.hourglass_end_solid,
-                          color: _reverse ? context.accentColor : null,
+                          LineIcons.redo_alt_solid,
                         ),
                         iconSize: 18,
-                        onPressed: () {
-                          setState(() => _reverse = !_reverse);
-                        },
+                        onPressed: _refreshPodacst,
                       ),
                     ),
-                  ),
-                )),
-            //   FutureBuilder<bool>(
-            //       future: _getHideListened(),
-            //       builder: (context, snapshot) {
-            //         if (_hideListened == null) {
-            //           _hideListened = snapshot.data;
-            //         }
-            //         return Material(
-            //             color: Colors.transparent,
-            //             clipBehavior: Clip.hardEdge,
-            //             borderRadius: BorderRadius.circular(100),
-            //             child: IconButton(
-            //               icon: SizedBox(
-            //                 width: 30,
-            //                 height: 30,
-            //                 child: HideListened(
-            //                   hideListened: _hideListened ?? false,
-            //                 ),
+            ),
+            // FutureBuilder<bool>(
+            //     future: _getHideListened(),
+            //     builder: (context, snapshot) {
+            //       if (_hideListened == null) {
+            //         _hideListened = snapshot.data;
+            //       }
+            //       return Material(
+            //           color: Colors.transparent,
+            //           clipBehavior: Clip.hardEdge,
+            //           borderRadius: BorderRadius.circular(100),
+            //           child: IconButton(
+            //             icon: SizedBox(
+            //               width: 30,
+            //               height: 30,
+            //               child: HideListened(
+            //                 hideListened: _hideListened ?? false,
             //               ),
-            //               onPressed: () {
-            //                 setState(() => _hideListened = !_hideListened);
-            //               },
-            //             ));
-            //       }),
+            //             ),
+            //             onPressed: () {
+            //               setState(() => _hideListened = !_hideListened);
+            //             },
+            //           ));
+            //     }),
             FutureBuilder<int>(
                 future: _getLayout(),
                 builder: (context, snapshot) {
@@ -311,26 +321,24 @@ class _PodcastDetailState extends State<PodcastDetail> {
                     ),
                   );
                 }),
-            //   Material(
-            //       color: Colors.transparent,
-            //       clipBehavior: Clip.hardEdge,
-            //       borderRadius: BorderRadius.circular(100),
-            //       child: IconButton(
-            //         icon: SizedBox(
-            //           width: 20,
-            //           height: 10,
-            //           child: CustomPaint(
-            //               painter:
-            //                   MultiSelectPainter(color: context.accentColor)),
-            //         ),
-            //         onPressed: () {
-            //           setState(() {
-            //             _top = -1;
-            //             _selectedEpisodes = [];
-            //             _multiSelect = true;
-            //           });
-            //         },
-            //       )),
+            Material(
+                color: Colors.transparent,
+                clipBehavior: Clip.hardEdge,
+                child: IconButton(
+                  icon: SizedBox(
+                    width: 20,
+                    height: 10,
+                    child: CustomPaint(
+                        painter:
+                            MultiSelectPainter(color: context.accentColor)),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _selectedEpisodes = [];
+                      _multiSelect = true;
+                    });
+                  },
+                )),
             SizedBox(width: 10)
           ],
         ));
@@ -411,6 +419,7 @@ class _PodcastDetailState extends State<PodcastDetail> {
                 ? LayoutBuilder(
                     builder: (context, constraint) => Scrollbar(
                       child: CustomScrollView(
+                        physics: BouncingScrollPhysics(),
                         controller: _controller,
                         slivers: [
                           SliverToBoxAdapter(
@@ -464,5 +473,58 @@ class DotIndicator extends StatelessWidget {
         height: radius,
         decoration: BoxDecoration(
             shape: BoxShape.circle, color: color ?? context.accentColor));
+  }
+}
+
+class _RefreshIndicator extends StatefulWidget {
+  _RefreshIndicator({Key key}) : super(key: key);
+
+  @override
+  __RefreshIndicatorState createState() => __RefreshIndicatorState();
+}
+
+class __RefreshIndicatorState extends State<_RefreshIndicator>
+    with SingleTickerProviderStateMixin {
+  Animation _animation;
+  AnimationController _controller;
+  double _value;
+  @override
+  void initState() {
+    super.initState();
+    _value = 0;
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 1),
+    );
+
+    _animation = Tween(begin: 0.0, end: 1.0).animate(_controller)
+      ..addListener(() {
+        if (mounted) {
+          setState(() {
+            _value = _animation.value;
+          });
+        }
+      });
+
+    _controller.forward();
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _controller.reset();
+        _controller.forward();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.rotate(
+        angle: math.pi * 2 * _value,
+        child: Icon(LineIcons.redo_alt_solid, size: 18));
   }
 }

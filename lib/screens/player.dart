@@ -68,7 +68,7 @@ class PlayerWidget extends ConsumerWidget {
                       data: SliderTheme.of(context).copyWith(
                         activeTrackColor: context.accentColor.withAlpha(70),
                         inactiveTrackColor: context.primaryColorDark,
-                        trackHeight: 8.0,
+                        trackHeight: 4.0,
                         trackShape: MyRectangularTrackShape(),
                         thumbColor: context.accentColor,
                         thumbShape: RoundSliderThumbShape(

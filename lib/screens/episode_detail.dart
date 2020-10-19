@@ -5,10 +5,8 @@ import 'package:linkify/linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:tsacdop_desktop/providers/audio_state.dart';
 
 import 'podcasts_page.dart';
-import '../providers/downloader.dart';
 import '../widgets/episode_menu.dart';
 import '../storage/sqflite_db.dart';
 import '../models/episodebrief.dart';
@@ -45,6 +43,7 @@ class EpisodeDetail extends StatelessWidget {
           ),
           Expanded(
             child: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
               child: Column(
                 children: [
                   Padding(
@@ -79,7 +78,7 @@ class EpisodeDetail extends StatelessWidget {
             ),
           ),
           Container(
-            height: 50,
+            height: 40,
             width: double.infinity,
             color: context.scaffoldBackgroundColor,
             child: Material(
@@ -88,30 +87,7 @@ class EpisodeDetail extends StatelessWidget {
                   FavIcon(episode),
                   DownloadIcon(episode),
                   Spacer(),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () =>
-                          context.read(audioState).loadEpisode(episode),
-                      child: Container(
-                        height: 50,
-                        color: context.accentColor,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Row(
-                            children: [
-                              Text('Play',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold)),
-                              SizedBox(width: 10),
-                              Icon(Icons.play_arrow, color: Colors.white)
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
+                  PlayButton(episode)
                 ],
               ),
             ),

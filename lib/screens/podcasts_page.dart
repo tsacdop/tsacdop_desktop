@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tsacdop_desktop/models/episodebrief.dart';
-import 'package:tsacdop_desktop/models/podcastlocal.dart';
-import 'package:tsacdop_desktop/widgets/custom_dropdown.dart';
+
+import '../models/episodebrief.dart';
+import '../models/podcastlocal.dart';
+import '../widgets/custom_dropdown.dart';
 import '../providers/group_state.dart';
 import '../utils/extension_helper.dart';
 import 'episode_detail.dart';
@@ -80,7 +81,7 @@ class __PodcastGroupState extends State<_PodcastGroup> {
             return watch(openPodcast).state == podcast
                 ? Container(width: 5, color: context.accentColor)
                 : SizedBox(
-                    width: 5,
+                    width: 2,
                   );
           }));
 

@@ -193,8 +193,7 @@ class EpisodesGrid extends StatelessWidget {
                         child: Text(episodes[index].feedTitle,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, color: color)),
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
                       _isNewIndicator(episodes[index]),
                       // _downloadIndicater(context,
@@ -277,7 +276,7 @@ class EpisodesGrid extends StatelessWidget {
                     episode: episodes[index],
                     color: color,
                     radius: 40,
-                    showNum: showNum,
+                    showNum: false,
                     hideAvatar: hideAvatar),
                 Spacer(),
                 //_isNewIndicator(episodes[index]),

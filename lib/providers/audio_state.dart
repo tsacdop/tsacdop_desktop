@@ -6,9 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tsacdop_desktop/models/episodebrief.dart';
 import 'package:tsacdop_desktop/storage/sqflite_db.dart';
 
-final audioState = ChangeNotifierProvider((ref) => AudioState());
+import 'downloader.dart';
+
+final audioState = ChangeNotifierProvider((ref) => AudioState(ref.read));
 
 class AudioState extends ChangeNotifier {
+  AudioState(this.read);
+
   @override
   void addListener(listener) {
     super.addListener(listener);
@@ -22,6 +26,7 @@ class AudioState extends ChangeNotifier {
   }
 
   final _dbHelper = DBHelper();
+  final Reader read;
 
   var _audioPlayer;
   var _position = Duration.zero;
@@ -41,8 +46,11 @@ class AudioState extends ChangeNotifier {
   var _noSlide = true;
 
   Future<void> loadEpisode(EpisodeBrief episode) async {
+    final downloaded = await _dbHelper.isDownloaded(episode.enclosureUrl);
+    if (!downloaded) {
+      await read(downloadProvider).download(episode);
+    }
     final episodeNew = await _dbHelper.getRssItemWithUrl(episode.enclosureUrl);
-    print(episodeNew.mediaId);
     if (!_playerRunning) {
       _audioPlayer = AudioPlayer();
       _playerRunning = true;
@@ -84,8 +92,8 @@ class AudioState extends ChangeNotifier {
   void slideSeek(double value) {
     _noSlide = false;
     notifyListeners();
-    var seekValue = _duration.inSeconds * value.toInt();
-    seekTo(Duration(seconds: seekValue));
+    var seekValue = (_duration.inMilliseconds * value).toInt();
+    seekTo(Duration(milliseconds: seekValue));
     _noSlide = true;
     notifyListeners();
   }

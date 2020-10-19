@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tsacdop_desktop/providers/audio_state.dart';
 import 'package:tsacdop_desktop/providers/downloader.dart';
 import 'package:tsacdop_desktop/widgets/custom_paint.dart';
 
@@ -19,7 +20,7 @@ class MenuButton extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Container(
-            height: 50.0,
+            height: 40.0,
             alignment: Alignment.center,
             padding: EdgeInsets.symmetric(horizontal: 15.0),
             child: child),
@@ -183,6 +184,77 @@ class _DownloadIconState extends State<DownloadIcon> {
           },
         );
       },
+    );
+  }
+}
+
+class PlayButton extends StatefulWidget {
+  final EpisodeBrief episode;
+  PlayButton(this.episode, {Key key}) : super(key: key);
+
+  @override
+  _PlayButtonState createState() => _PlayButtonState();
+}
+
+class _PlayButtonState extends State<PlayButton> {
+  Future<bool> _isDownloaded() async {
+    var dbHelper = DBHelper();
+    return await dbHelper.isDownloaded(widget.episode.enclosureUrl);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => context.read(audioState).loadEpisode(widget.episode),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            FutureBuilder(
+              future: _isDownloaded(),
+              initialData: false,
+              builder: (context, snapshot) {
+                return Container(
+                    height: 40,
+                    width: 120,
+                    color:
+                        snapshot.data ? context.accentColor : Colors.grey[700]);
+              },
+            ),
+            Consumer(builder: (context, watch, child) {
+              final tasks = watch(downloadProvider.state);
+              final index =
+                  context.read(downloadProvider).indexOf(widget.episode);
+              if (index == -1) return Center();
+              return tasks[index].status == DownloadTaskStatus.running
+                  ? Positioned(
+                      left: 0,
+                      child: Container(
+                          height: 40,
+                          width: tasks[index].progress * 1.2,
+                          color: context.accentColor),
+                    )
+                  : Center();
+            }),
+            Container(
+              height: 40,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  children: [
+                    Text(context.s.play,
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold)),
+                    SizedBox(width: 10),
+                    Icon(Icons.cloud_download, color: Colors.white)
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
