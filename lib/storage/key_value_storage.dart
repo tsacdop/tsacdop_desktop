@@ -14,6 +14,8 @@ const String hideListenedKey = 'hideListenedKey';
 const String recentLayoutKey = 'recentLayoutKey';
 const String favLayoutKey = 'favLayoutKey';
 const String refreshDateKey = 'refreshDateKey';
+const String downloadLayoutKey = 'downloadLayoutKey';
+const String playlistKey = 'playlistKey';
 
 class KeyValueStorage {
   final String key;

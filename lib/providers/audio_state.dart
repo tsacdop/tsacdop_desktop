@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_audio_desktop/flutter_audio_desktop.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tsacdop_desktop/models/episodebrief.dart';
+import 'package:tsacdop_desktop/storage/key_value_storage.dart';
 import 'package:tsacdop_desktop/storage/sqflite_db.dart';
 
 import 'downloader.dart';
@@ -17,6 +18,7 @@ class AudioState extends ChangeNotifier {
   void addListener(listener) {
     super.addListener(listener);
     _audioPlayer = AudioPlayer();
+    _initQueue();
   }
 
   @override
@@ -26,6 +28,7 @@ class AudioState extends ChangeNotifier {
   }
 
   final _dbHelper = DBHelper();
+  final _playlistStorage = KeyValueStorage(playlistKey);
   final Reader read;
 
   var _audioPlayer;
@@ -43,24 +46,34 @@ class AudioState extends ChangeNotifier {
 
   bool get playing => _audioPlayer?.isPlaying;
 
+  List<String> _queue;
+
+  List<String> get queue => _queue;
+
+  bool get _haveNext => _queue.isNotEmpty;
+
   var _noSlide = true;
 
-  Future<void> loadEpisode(EpisodeBrief episode) async {
-    final downloaded = await _dbHelper.isDownloaded(episode.enclosureUrl);
+  void loadEpisode(String url) async {
+    final downloaded = await _dbHelper.isDownloaded(url);
     if (!downloaded) {
+      final episode = await _dbHelper.getRssItemWithUrl(url);
       await read(downloadProvider).download(episode);
     }
-    final episodeNew = await _dbHelper.getRssItemWithUrl(episode.enclosureUrl);
+    final episodeNew = await _dbHelper.getRssItemWithUrl(url);
     if (!_playerRunning) {
       _audioPlayer = AudioPlayer();
       _playerRunning = true;
       notifyListeners();
     }
     await _audioPlayer?.stop();
-    print(episode.mediaId);
+    print(episodeNew.mediaId);
     await _audioPlayer.load(episodeNew.mediaId);
-    _duration = await _audioPlayer.getDuration();
-    _playingEpisode = episode;
+    var currentDuration = await _audioPlayer.getDuration();
+    if (currentDuration is Duration) {
+      _duration = currentDuration;
+    }
+    _playingEpisode = episodeNew;
     notifyListeners();
     await _audioPlayer.play();
     Timer.periodic(Duration(milliseconds: 500), (timer) async {
@@ -110,5 +123,31 @@ class AudioState extends ChangeNotifier {
 
   void rewind(Duration duration) {
     _seekRelative(-duration);
+  }
+
+  void stop() {
+    _audioPlayer?.stop();
+    _playerRunning = false;
+    notifyListeners();
+  }
+
+  void _initQueue() async {
+    _queue = await _playlistStorage.getStringList();
+    notifyListeners();
+  }
+
+  void _saveQueue() async {
+    notifyListeners();
+    await _playlistStorage.saveStringList(_queue);
+  }
+
+  void addToPlaylist(String url) {
+    _queue = [..._queue, url];
+    _saveQueue();
+  }
+
+  void removeFromPlaylist(String url) {
+    _queue = _queue.where((e) => e != url).toList();
+    _saveQueue();
   }
 }

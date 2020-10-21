@@ -115,10 +115,7 @@ class _PodcastDetailState extends State<PodcastDetail> {
     setState(() {
       _refresh = true;
     });
-    context.read(refreshNotification).state =
-        context.s.notificationUpdate(widget.podcastLocal.title);
-    var updateCount = await _dbHelper.updatePodcastRss(widget.podcastLocal);
-    context.read(refreshNotification).state = null;
+    await _dbHelper.updatePodcastRss(widget.podcastLocal);
     if (mounted)
       setState(() {
         _refresh = false;
@@ -268,7 +265,7 @@ class _PodcastDetailState extends State<PodcastDetail> {
               color: Colors.transparent,
               clipBehavior: Clip.hardEdge,
               child: _refresh
-                  ? SizedBox(width: 30, child: _RefreshIndicator())
+                  ? SizedBox(width: 30, child: RefreshLoad())
                   : SizedBox(
                       width: 30,
                       child: IconButton(
@@ -456,75 +453,5 @@ class _PodcastDetailState extends State<PodcastDetail> {
         ))
       ],
     );
-  }
-}
-
-class DotIndicator extends StatelessWidget {
-  DotIndicator({this.radius = 8, this.color, Key key})
-      : assert(radius > 0),
-        super(key: key);
-  final Color color;
-  final double radius;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        width: radius,
-        height: radius,
-        decoration: BoxDecoration(
-            shape: BoxShape.circle, color: color ?? context.accentColor));
-  }
-}
-
-class _RefreshIndicator extends StatefulWidget {
-  _RefreshIndicator({Key key}) : super(key: key);
-
-  @override
-  __RefreshIndicatorState createState() => __RefreshIndicatorState();
-}
-
-class __RefreshIndicatorState extends State<_RefreshIndicator>
-    with SingleTickerProviderStateMixin {
-  Animation _animation;
-  AnimationController _controller;
-  double _value;
-  @override
-  void initState() {
-    super.initState();
-    _value = 0;
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 1),
-    );
-
-    _animation = Tween(begin: 0.0, end: 1.0).animate(_controller)
-      ..addListener(() {
-        if (mounted) {
-          setState(() {
-            _value = _animation.value;
-          });
-        }
-      });
-
-    _controller.forward();
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        _controller.reset();
-        _controller.forward();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Transform.rotate(
-        angle: math.pi * 2 * _value,
-        child: Icon(LineIcons.redo_alt_solid, size: 18));
   }
 }

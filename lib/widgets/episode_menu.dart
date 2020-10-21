@@ -63,13 +63,11 @@ class FavIconState extends State<FavIcon> {
         return snapshot.data
             ? MenuButton(
                 onTap: () => _setUnliked(widget.episode),
-                child: Icon(Icons.favorite),
+                child: Icon(Icons.favorite, color: Colors.red, size: 20),
               )
             : MenuButton(
                 onTap: () => _saveLiked(widget.episode),
-                child: Icon(
-                  Icons.favorite_border,
-                ));
+                child: Icon(Icons.favorite_border, size: 20));
       },
     );
   }
@@ -132,20 +130,23 @@ class _DownloadIconState extends State<DownloadIcon> {
             final index =
                 context.read(downloadProvider).indexOf(widget.episode);
             if (index == -1)
-              return InkWell(
-                onTap: _download,
-                child: Container(
-                  height: 50.0,
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(horizontal: 15.0),
-                  child: SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CustomPaint(
-                      painter: DownloadPainter(
-                        color: Colors.grey[700],
-                        fraction: 0,
-                        progressColor: context.accentColor,
+              return Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _download,
+                  child: Container(
+                    height: 50.0,
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(horizontal: 15.0),
+                    child: SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CustomPaint(
+                        painter: DownloadPainter(
+                          color: Colors.grey[700],
+                          fraction: 0,
+                          progressColor: context.accentColor,
+                        ),
                       ),
                     ),
                   ),
@@ -153,6 +154,9 @@ class _DownloadIconState extends State<DownloadIcon> {
               );
             return tasks[index].status != DownloadTaskStatus.complete
                 ? MenuButton(
+                    onTap: () => context
+                        .read(downloadProvider)
+                        .cancelDownload(tasks[index]),
                     child: TweenAnimationBuilder(
                         duration: Duration(milliseconds: 1000),
                         tween: Tween(begin: 0.0, end: 1.0),
@@ -207,7 +211,8 @@ class _PlayButtonState extends State<PlayButton> {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => context.read(audioState).loadEpisode(widget.episode),
+        onTap: () =>
+            context.read(audioState).loadEpisode(widget.episode.enclosureUrl),
         child: Stack(
           alignment: Alignment.center,
           children: [

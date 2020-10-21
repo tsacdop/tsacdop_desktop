@@ -24,13 +24,6 @@ class HomeTabs extends StatefulWidget {
 }
 
 class _HomeTabsState extends State<HomeTabs> {
-  bool _refresh;
-  @override
-  void initState() {
-    super.initState();
-    _refresh = false;
-  }
-
   Future<String> _getRefreshDate(BuildContext context) async {
     int refreshDate;
     var refreshstorage = KeyValueStorage('refreshdate');
@@ -71,7 +64,7 @@ class _HomeTabsState extends State<HomeTabs> {
             padding: EdgeInsets.all(20),
             child: Row(
               children: [
-                Text('My subscription', style: context.textTheme.headline6),
+                Text('My library', style: context.textTheme.headline5),
                 Spacer(),
                 ProviderListener<StateController<String>>(
                   provider: refreshNotification,
@@ -91,10 +84,21 @@ class _HomeTabsState extends State<HomeTabs> {
                       }),
                 ),
                 SizedBox(width: 20),
-                IconButton(
-                    splashRadius: 20,
-                    icon: Icon(LineIcons.redo_alt_solid, size: 20),
-                    onPressed: _refreshAll)
+                Consumer(
+                  builder: (context, watch, child) {
+                    final refresh = watch(refreshNotification).state != null;
+                    return refresh
+                        ? IconButton(
+                            splashRadius: 20,
+                            icon: RefreshLoad(),
+                            onPressed: () {},
+                          )
+                        : IconButton(
+                            splashRadius: 20,
+                            icon: Icon(LineIcons.redo_alt_solid, size: 18),
+                            onPressed: _refreshAll);
+                  },
+                ),
               ],
             ),
           ),
@@ -400,8 +404,7 @@ class _FavTabState extends State<FavTab> {
     if (_hideListened == null) {
       _hideListened = await hideListenedStorage.getBool(defaultValue: false);
     }
-    var dbHelper = DBHelper();
-    var episodes = await dbHelper.getLikedRssItem(top, sortBy,
+    var episodes = await _dbHelper.getLikedRssItem(top, sortBy,
         hideListened: _hideListened);
     return episodes;
   }
@@ -496,8 +499,7 @@ class _FavTabState extends State<FavTab> {
                             if (!_multiSelect)
                               Container(
                                   height: 40,
-                                  color: context.scaffoldBackgroundColor
-                                      .withOpacity(0.6),
+                                  color: context.scaffoldBackgroundColor,
                                   child: Material(
                                     color: Colors.transparent,
                                     child: Row(
@@ -573,30 +575,194 @@ class _FavTabState extends State<FavTab> {
   }
 }
 
-class DownloadTab extends ConsumerWidget {
+class DownloadTab extends StatefulWidget {
+  DownloadTab({Key key}) : super(key: key);
+
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    var tasks = watch(downloadProvider.state);
-    if (tasks.isEmpty) return Center();
-    return ListView.builder(
-      itemCount: tasks.length,
-      itemBuilder: (context, index) {
-        final task = tasks[index];
-        return ListTile(
-          title: Text(
-            task.episode.title,
-            maxLines: 1,
-          ),
-          subtitle: task.status == DownloadTaskStatus.complete
-              ? Center()
-              : SizedBox(
-                  height: 2,
-                  child: LinearProgressIndicator(
-                    value: tasks[index].progress / 100,
-                  ),
-                ),
-        );
-      },
-    );
+  _DownloadTabState createState() => _DownloadTabState();
+}
+
+class _DownloadTabState extends State<DownloadTab> {
+  final _dbHelper = DBHelper();
+
+  Layout _layout;
+  bool _hideListened;
+  int _sortBy;
+
+  ///Selected episode list.
+  List<EpisodeBrief> _selectedEpisodes;
+
+  ///Toggle for multi-select.
+  bool _multiSelect;
+
+  @override
+  void initState() {
+    super.initState();
+    _sortBy = 0;
+    _multiSelect = false;
+  }
+
+  Future<List<EpisodeBrief>> _getDownloadedEpisodes(int sortBy,
+      {bool hideListened}) async {
+    var storage = KeyValueStorage(downloadLayoutKey);
+    var index = await storage.getInt(defaultValue: 1);
+    var hideListenedStorage = KeyValueStorage(hideListenedKey);
+    if (_layout == null) _layout = Layout.values[index];
+    if (_hideListened == null) {
+      _hideListened = await hideListenedStorage.getBool(defaultValue: false);
+    }
+
+    var episodes = await _dbHelper.getDownloadedEpisode(sortBy,
+        hideListened: _hideListened);
+    return episodes;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = context.s;
+    return FutureBuilder<List<EpisodeBrief>>(
+        future: _getDownloadedEpisodes(_sortBy, hideListened: _hideListened),
+        builder: (context, snapshot) {
+          if (snapshot.hasData)
+            return snapshot.data.length == 0
+                ? Padding(
+                    padding: EdgeInsets.only(top: 150),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(LineIcons.cloud_download_alt_solid,
+                            size: 80, color: Colors.grey[500]),
+                        Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                        Text(
+                          s.noEpisodeRecent,
+                          style: TextStyle(color: Colors.grey[500]),
+                        )
+                      ],
+                    ),
+                  )
+                : Stack(
+                    children: [
+                      LayoutBuilder(
+                        builder: (context, constraint) =>
+                            CustomScrollView(slivers: <Widget>[
+                          SliverToBoxAdapter(
+                            child: SizedBox(
+                              height: 40,
+                            ),
+                          ),
+                          Consumer(builder: (context, watch, child) {
+                            var tasks = watch(downloadProvider.state);
+                            if (tasks.isEmpty)
+                              return SliverToBoxAdapter(child: Center());
+                            return SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                    (context, index) {
+                              final task = tasks[index];
+                              if (task.status == DownloadTaskStatus.complete)
+                                return Center();
+                              return ListTile(
+                                title: Text(
+                                  task.episode.title,
+                                  maxLines: 1,
+                                ),
+                                subtitle: SizedBox(
+                                  height: 2,
+                                  child: LinearProgressIndicator(
+                                    value: tasks[index].progress / 100,
+                                  ),
+                                ),
+                              );
+                            }, childCount: tasks.length));
+                          }),
+                          EpisodesGrid(
+                            width: constraint.maxWidth,
+                            episodes: snapshot.data,
+                            layout: _layout,
+                            initNum: 0,
+                            multiSelect: _multiSelect,
+                            selectedList: _selectedEpisodes ?? [],
+                            onSelect: (value) => setState(() {
+                              _selectedEpisodes = value;
+                            }),
+                          ),
+                        ]),
+                      ),
+                      Column(
+                        children: [
+                          if (!_multiSelect)
+                            Container(
+                                height: 40,
+                                color: context.scaffoldBackgroundColor,
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: Row(
+                                    children: <Widget>[
+                                      Spacer(),
+                                      Material(
+                                        color: Colors.transparent,
+                                        child: IconButton(
+                                          tooltip: s.hideListenedSetting,
+                                          icon: SizedBox(
+                                            width: 30,
+                                            height: 15,
+                                            child: HideListened(
+                                              hideListened:
+                                                  _hideListened ?? false,
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            setState(() =>
+                                                _hideListened = !_hideListened);
+                                          },
+                                        ),
+                                      ),
+                                      Material(
+                                        color: Colors.transparent,
+                                        child: LayoutButton(
+                                          layout: _layout,
+                                          onPressed: (layout) => setState(() {
+                                            _layout = layout;
+                                          }),
+                                        ),
+                                      ),
+                                      Material(
+                                          color: Colors.transparent,
+                                          child: IconButton(
+                                            icon: SizedBox(
+                                              width: 20,
+                                              height: 10,
+                                              child: CustomPaint(
+                                                  painter: MultiSelectPainter(
+                                                      color:
+                                                          context.accentColor)),
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                _selectedEpisodes = [];
+                                                _multiSelect = true;
+                                              });
+                                            },
+                                          )),
+                                    ],
+                                  ),
+                                )),
+                          if (_multiSelect)
+                            MultiSelectMenuBar(
+                              selectedList: _selectedEpisodes,
+                              onClose: (value) {
+                                setState(() {
+                                  if (value) {
+                                    _multiSelect = false;
+                                  }
+                                });
+                              },
+                            ),
+                        ],
+                      ),
+                    ],
+                  );
+          else
+            return Center();
+        });
   }
 }

@@ -25,7 +25,6 @@ class SettingsState extends ChangeNotifier {
   ThemeData get lightTheme => ThemeData(
       accentColor: _accentSetColor,
       accentColorBrightness: Brightness.dark,
-      scaffoldBackgroundColor: Colors.white,
       primaryColor: Colors.grey[100],
       primaryColorLight: Colors.white,
       primaryColorDark: Colors.grey[300],

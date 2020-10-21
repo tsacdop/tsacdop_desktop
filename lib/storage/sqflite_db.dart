@@ -749,6 +749,87 @@ class DBHelper {
     return episodes;
   }
 
+  Future<List<EpisodeBrief>> getDownloadedEpisode(int mode,
+      {bool hideListened = false}) async {
+    var dbClient = await database;
+    var episodes = <EpisodeBrief>[];
+    List<Map> list;
+    if (hideListened) {
+      if (mode == 0) {
+        list = await dbClient.rawQuery(
+          """SELECT E.title, E.enclosure_url, E.enclosure_length, E.download_date, E.is_new,
+        E.milliseconds, P.title as feed_title, E.duration, E.explicit, 
+        P.imagePath, P.primaryColor FROM Episodes E INNER JOIN PodcastLocal P ON E.feed_id = P.id 
+        LEFT JOIN PlayHistory H ON E.enclosure_url = H.enclosure_url 
+        WHERE E.enclosure_url != E.media_id GROUP BY E.enclosure_url HAVING SUM(H.listen_time) is null 
+        OR SUM(H.listen_time) = 0 ORDER BY E.download_date DESC""",
+        );
+      } else if (mode == 1) {
+        list = await dbClient.rawQuery(
+          """SELECT E.title, E.enclosure_url, E.enclosure_length, E.download_date,E.is_new,
+        E.milliseconds, P.title as feed_title, E.duration, E.explicit, 
+        P.imagePath, P.primaryColor FROM Episodes E INNER JOIN PodcastLocal P ON E.feed_id = P.id 
+        LEFT JOIN PlayHistory H ON E.enclosure_url = H.enclosure_url 
+        WHERE E.enclosure_url != E.media_id GROUP BY E.enclosure_url HAVING SUM(H.listen_time) is null 
+        OR SUM(H.listen_time) = 0 ORDER BY E.download_date ASC""",
+        );
+      } else if (mode == 2) {
+        list = await dbClient.rawQuery(
+          """SELECT E.title, E.enclosure_url, E.enclosure_length, E.download_date,E.is_new,
+        E.milliseconds, P.title as feed_title, E.duration, E.explicit, 
+        P.imagePath, P.primaryColor FROM Episodes E INNER JOIN PodcastLocal P ON E.feed_id = P.id 
+        LEFT JOIN PlayHistory H ON E.enclosure_url = H.enclosure_url 
+        WHERE E.enclosure_url != E.media_id GROUP BY E.enclosure_url HAVING SUM(H.listen_time) is null 
+        OR SUM(H.listen_time) = 0 ORDER BY E.enclosure_length DESC""",
+        );
+      }
+    } else //Ordered by date
+    {
+      if (mode == 0) {
+        list = await dbClient.rawQuery(
+          """SELECT E.title, E.enclosure_url, E.enclosure_length, E.download_date, E.is_new,
+        E.milliseconds, P.title as feed_title, E.duration, E.explicit, 
+        P.imagePath, P.primaryColor FROM Episodes E INNER JOIN PodcastLocal P ON E.feed_id = P.id 
+        WHERE E.enclosure_url != E.media_id
+        ORDER BY E.download_date DESC""",
+        );
+      } else if (mode == 1) {
+        list = await dbClient.rawQuery(
+          """SELECT E.title, E.enclosure_url, E.enclosure_length, E.download_date,E.is_new,
+        E.milliseconds, P.title as feed_title, E.duration, E.explicit, 
+        P.imagePath, P.primaryColor FROM Episodes E INNER JOIN PodcastLocal P ON E.feed_id = P.id 
+        WHERE E.enclosure_url != E.media_id
+        ORDER BY E.download_date ASC""",
+        );
+      } else if (mode == 2) {
+        list = await dbClient.rawQuery(
+          """SELECT E.title, E.enclosure_url, E.enclosure_length, E.download_date,E.is_new,
+        E.milliseconds, P.title as feed_title, E.duration, E.explicit, 
+        P.imagePath, P.primaryColor FROM Episodes E INNER JOIN PodcastLocal P ON E.feed_id = P.id 
+        WHERE E.enclosure_url != E.media_id
+        ORDER BY E.enclosure_length DESC""",
+        );
+      }
+    }
+    if (list.isNotEmpty) {
+      for (var i in list) {
+        episodes.add(EpisodeBrief(
+            i['title'],
+            i['enclosure_url'],
+            i['enclosure_length'],
+            i['milliseconds'],
+            i['feed_title'],
+            i['primaryColor'],
+            i['duration'],
+            i['explicit'],
+            i['imagePath'],
+            i['is_new'],
+            downloadDate: i['download_date']));
+      }
+    }
+    return episodes;
+  }
+
   Future<String> getDescription(String url) async {
     var dbClient = await database;
     List<Map> list = await dbClient.rawQuery(
@@ -994,5 +1075,14 @@ class DBHelper {
           skipSecondsEnd: list.first['skip_seconds_end']);
       return episode;
     }
+  }
+
+  Future<void> removeEpisodeNewMark(String url) async {
+    var dbClient = await database;
+    await dbClient.transaction((txn) async {
+      await txn.rawUpdate(
+          "UPDATE Episodes SET is_new = 0 WHERE enclosure_url = ?", [url]);
+    });
+    developer.log('remove new episode $url');
   }
 }

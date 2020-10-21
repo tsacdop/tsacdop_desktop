@@ -8,8 +8,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../screens/podcasts_page.dart';
 import '../models/episodebrief.dart';
 import '../utils/extension_helper.dart';
+import 'episode_menu.dart';
 
 enum Layout { multi, one }
+final hoverEpisode = StateProvider<EpisodeBrief>((ref) => null);
 
 class EpisodesGrid extends StatelessWidget {
   final List<EpisodeBrief> episodes;
@@ -152,6 +154,63 @@ class EpisodesGrid extends StatelessWidget {
         ]);
   }
 
+  Widget _hoverMenuBat(int index, {double width}) {
+    return Consumer(
+      builder: (context, watch, child) {
+        final episode = watch(hoverEpisode).state;
+        if (episode != null && episode == episodes[index])
+          return TweenAnimationBuilder(
+            tween: Tween<double>(begin: 0, end: 1),
+            duration: Duration(milliseconds: 500),
+            curve: Curves.easeInCubic,
+            builder: (context, value, child) {
+              final episode = episodes[index];
+              return width == null
+                  ? Container(
+                      color: context.primaryColorDark,
+                      height: 40 * value,
+                      child: SingleChildScrollView(
+                        child: SizedBox(
+                          height: 40,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              FavIcon(episode),
+                              DownloadIcon(episode),
+                              PlayButton(episode)
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  : Container(
+                      color: context.primaryColorDark,
+                      height: 40 * value,
+                      width: width,
+                      child: SingleChildScrollView(
+                        child: SizedBox(
+                          height: 40,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              FavIcon(episode),
+                              Spacer(),
+                              DownloadIcon(episode),
+                              // PlayButton(episode)
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+            },
+          );
+        return Center();
+      },
+    );
+  }
+
   Widget _layoutOneCard(BuildContext context,
       {int index,
       Color color,
@@ -159,98 +218,105 @@ class EpisodesGrid extends StatelessWidget {
       bool showNum,
       bool isDownloaded,
       bool hideAvatar}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Center(
-              child: _circleImage(context,
-                  episode: episodes[index],
-                  color: color,
-                  hideAvatar: hideAvatar,
-                  showNum: showNumber,
-                  index: index,
-                  radius: 60),
-            ),
-          ),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(episodes[index].feedTitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                      ),
-                      _isNewIndicator(episodes[index]),
-                      // _downloadIndicater(context,
-                      //     episode: episodes[index], isDownloaded: isDownloaded),
-                    ],
-                  ),
+    return Stack(
+      alignment: Alignment.bottomRight,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 100,
+                child: Center(
+                  child: _circleImage(context,
+                      episode: episodes[index],
+                      color: color,
+                      hideAvatar: hideAvatar,
+                      showNum: showNumber,
+                      index: index,
+                      radius: 60),
                 ),
-                Expanded(
-                    flex: 2,
-                    child: Align(
-                        alignment: Alignment.topLeft,
-                        child: _title(episodes[index]))),
-                Expanded(
-                  flex: 1,
-                  child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        if (episodes[index].duration != 0)
-                          Align(
-                            alignment: Alignment.center,
-                            child: Text(
-                              episodes[index].duration.toTime,
-                            ),
+              ),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Expanded(
+                            child: Text(episodes[index].feedTitle,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontWeight: FontWeight.bold)),
                           ),
-                        if (episodes[index].duration != 0 &&
-                            episodes[index].enclosureLength != null &&
-                            episodes[index].enclosureLength != 0)
-                          Text(
-                            '|',
-                            style: TextStyle(),
-                          ),
-                        if (episodes[index].enclosureLength != null &&
-                            episodes[index].enclosureLength != 0)
-                          Align(
-                            alignment: Alignment.center,
-                            child: Text(
-                              '${(episodes[index].enclosureLength) ~/ 1000000}MB',
-                            ),
-                          ),
-                        SizedBox(width: 4),
-                        if (isLiked)
-                          Icon(
-                            Icons.favorite,
-                            color: Colors.red,
-                          ),
-                        Spacer(),
-                        _pubDate(context,
-                            episode: episodes[index], color: context.textColor)
-                      ]),
-                )
-              ],
-            ),
+                          _isNewIndicator(episodes[index]),
+                          // _downloadIndicater(context,
+                          //     episode: episodes[index], isDownloaded: isDownloaded),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                        flex: 2,
+                        child: Align(
+                            alignment: Alignment.topLeft,
+                            child: _title(episodes[index]))),
+                    Expanded(
+                      flex: 1,
+                      child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            if (episodes[index].duration != 0)
+                              Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  episodes[index].duration.toTime,
+                                ),
+                              ),
+                            if (episodes[index].duration != 0 &&
+                                episodes[index].enclosureLength != null &&
+                                episodes[index].enclosureLength != 0)
+                              Text(
+                                '|',
+                                style: TextStyle(),
+                              ),
+                            if (episodes[index].enclosureLength != null &&
+                                episodes[index].enclosureLength != 0)
+                              Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '${(episodes[index].enclosureLength) ~/ 1000000}MB',
+                                ),
+                              ),
+                            SizedBox(width: 4),
+                            if (isLiked)
+                              Icon(
+                                Icons.favorite,
+                                color: Colors.red,
+                              ),
+                            Spacer(),
+                            _pubDate(context,
+                                episode: episodes[index],
+                                color: context.textColor)
+                          ]),
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(width: 20)
+            ],
           ),
-          SizedBox(width: 20)
-        ],
-      ),
+        ),
+        _hoverMenuBat(index)
+      ],
     );
   }
 
@@ -261,59 +327,65 @@ class EpisodesGrid extends StatelessWidget {
       bool isDownloaded,
       bool showNum,
       bool hideAvatar}) {
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Expanded(
-            flex: 2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                _circleImage(context,
-                    episode: episodes[index],
-                    color: color,
-                    radius: 40,
-                    showNum: false,
-                    hideAvatar: hideAvatar),
-                Spacer(),
-                //_isNewIndicator(episodes[index]),
-                // _downloadIndicater(context,
-                //     episode: episodes[index], isDownloaded: isDownloaded),
-                _numberIndicater(context, index: index, color: color)
-              ],
-            ),
-          ),
-          Expanded(
-              flex: 5,
-              child: Column(
-                children: [
-                  _infoWidget(index),
-                  _title(episodes[index]),
-                ],
-              )),
-          Expanded(
-            flex: 1,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                _pubDate(context, episode: episodes[index], color: color),
-                Padding(
-                  padding: EdgeInsets.all(1),
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                flex: 2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    _circleImage(context,
+                        episode: episodes[index],
+                        color: color,
+                        radius: 40,
+                        showNum: false,
+                        hideAvatar: hideAvatar),
+                    Spacer(),
+                    //_isNewIndicator(episodes[index]),
+                    // _downloadIndicater(context,
+                    //     episode: episodes[index], isDownloaded: isDownloaded),
+                    _numberIndicater(context, index: index, color: color)
+                  ],
                 ),
-                if (isLiked)
-                  Icon(
-                    Icons.favorite,
-                    color: Colors.red,
-                  )
-              ],
-            ),
+              ),
+              Expanded(
+                  flex: 5,
+                  child: Column(
+                    children: [
+                      _infoWidget(index),
+                      _title(episodes[index]),
+                    ],
+                  )),
+              Expanded(
+                flex: 1,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    _pubDate(context, episode: episodes[index], color: color),
+                    Padding(
+                      padding: EdgeInsets.all(1),
+                    ),
+                    if (isLiked)
+                      Icon(
+                        Icons.favorite,
+                        color: Colors.red,
+                      )
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        _hoverMenuBat(index, width: width)
+      ],
     );
   }
 
@@ -328,6 +400,12 @@ class EpisodesGrid extends StatelessWidget {
               return Column(
                 children: [
                   InkWell(
+                    onHover: (value) {
+                      if (value && context.read(hoverEpisode).state == null)
+                        context.read(hoverEpisode).state = episodes[index];
+                      else
+                        context.read(hoverEpisode).state = null;
+                    },
                     onTap: () =>
                         context.read(openEpisode).state = episodes[index],
                     child: Container(
@@ -362,6 +440,12 @@ class EpisodesGrid extends StatelessWidget {
               (BuildContext context, int index) {
                 final c = episodes[index].backgroudColor(context);
                 return InkWell(
+                  onHover: (value) {
+                    if (value && context.read(hoverEpisode).state == null)
+                      context.read(hoverEpisode).state = episodes[index];
+                    else
+                      context.read(hoverEpisode).state = null;
+                  },
                   onTap: () =>
                       context.read(openEpisode).state = episodes[index],
                   child: Container(
