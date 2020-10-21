@@ -116,7 +116,10 @@ class _HomeTabsState extends State<HomeTabs> {
               ],
             ),
           ),
-          Divider(height: 1),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: Divider(height: 1),
+          ),
           Expanded(
             child: TabBarView(
               children: [
@@ -252,16 +255,19 @@ class _RecentTabState extends State<RecentTab> {
                                   height: 40,
                                 ),
                               ),
-                              EpisodesGrid(
-                                width: constraint.maxWidth,
-                                episodes: snapshot.data,
-                                layout: _layout,
-                                initNum: 0,
-                                multiSelect: _multiSelect,
-                                selectedList: _selectedEpisodes ?? [],
-                                onSelect: (value) => setState(() {
-                                  _selectedEpisodes = value;
-                                }),
+                              SliverPadding(
+                                padding: EdgeInsets.only(left: 20, right: 10),
+                                sliver: EpisodesGrid(
+                                  width: constraint.maxWidth,
+                                  episodes: snapshot.data,
+                                  layout: _layout,
+                                  initNum: 0,
+                                  multiSelect: _multiSelect,
+                                  selectedList: _selectedEpisodes ?? [],
+                                  onSelect: (value) => setState(() {
+                                    _selectedEpisodes = value;
+                                  }),
+                                ),
                               ),
                               SliverList(
                                 delegate: SliverChildBuilderDelegate(
@@ -469,16 +475,19 @@ class _FavTabState extends State<FavTab> {
                                 height: 40,
                               ),
                             ),
-                            EpisodesGrid(
-                              width: constraint.maxWidth,
-                              episodes: snapshot.data,
-                              layout: _layout,
-                              initNum: 0,
-                              multiSelect: _multiSelect,
-                              selectedList: _selectedEpisodes ?? [],
-                              onSelect: (value) => setState(() {
-                                _selectedEpisodes = value;
-                              }),
+                            SliverPadding(
+                              padding: EdgeInsets.only(left: 20, right: 10),
+                              sliver: EpisodesGrid(
+                                width: constraint.maxWidth,
+                                episodes: snapshot.data,
+                                layout: _layout,
+                                initNum: 0,
+                                multiSelect: _multiSelect,
+                                selectedList: _selectedEpisodes ?? [],
+                                onSelect: (value) => setState(() {
+                                  _selectedEpisodes = value;
+                                }),
+                              ),
                             ),
                             SliverList(
                               delegate: SliverChildBuilderDelegate(
@@ -674,16 +683,19 @@ class _DownloadTabState extends State<DownloadTab> {
                               );
                             }, childCount: tasks.length));
                           }),
-                          EpisodesGrid(
-                            width: constraint.maxWidth,
-                            episodes: snapshot.data,
-                            layout: _layout,
-                            initNum: 0,
-                            multiSelect: _multiSelect,
-                            selectedList: _selectedEpisodes ?? [],
-                            onSelect: (value) => setState(() {
-                              _selectedEpisodes = value;
-                            }),
+                          SliverPadding(
+                            padding: EdgeInsets.only(left: 20, right: 10),
+                            sliver: EpisodesGrid(
+                              width: constraint.maxWidth,
+                              episodes: snapshot.data,
+                              layout: _layout,
+                              initNum: 0,
+                              multiSelect: _multiSelect,
+                              selectedList: _selectedEpisodes ?? [],
+                              onSelect: (value) => setState(() {
+                                _selectedEpisodes = value;
+                              }),
+                            ),
                           ),
                         ]),
                       ),

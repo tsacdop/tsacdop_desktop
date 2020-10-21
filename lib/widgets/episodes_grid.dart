@@ -162,7 +162,7 @@ class EpisodesGrid extends StatelessWidget {
           return TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: 1),
             duration: Duration(milliseconds: 500),
-            curve: Curves.easeInCubic,
+            curve: Curves.easeOutCubic,
             builder: (context, value, child) {
               final episode = episodes[index];
               return width == null
@@ -178,6 +178,7 @@ class EpisodesGrid extends StatelessWidget {
                             children: [
                               FavIcon(episode),
                               DownloadIcon(episode),
+                              PlaylistButton(episode),
                               PlayButton(episode)
                             ],
                           ),

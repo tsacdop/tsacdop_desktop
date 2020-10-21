@@ -17,7 +17,6 @@ class AudioState extends ChangeNotifier {
   @override
   void addListener(listener) {
     super.addListener(listener);
-    _audioPlayer = AudioPlayer();
     _initQueue();
   }
 
@@ -61,7 +60,7 @@ class AudioState extends ChangeNotifier {
       await read(downloadProvider).download(episode);
     }
     final episodeNew = await _dbHelper.getRssItemWithUrl(url);
-    if (!_playerRunning) {
+    if (_audioPlayer == null) {
       _audioPlayer = AudioPlayer();
       _playerRunning = true;
       notifyListeners();
@@ -131,19 +130,22 @@ class AudioState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _initQueue() async {
+  Future<void> _initQueue() async {
     _queue = await _playlistStorage.getStringList();
     notifyListeners();
+    print(_queue.length);
   }
 
-  void _saveQueue() async {
+  Future<void> _saveQueue() async {
     notifyListeners();
     await _playlistStorage.saveStringList(_queue);
   }
 
   void addToPlaylist(String url) {
-    _queue = [..._queue, url];
-    _saveQueue();
+    if (!_queue.contains(url)) {
+      _queue = [..._queue, url];
+      _saveQueue();
+    }
   }
 
   void removeFromPlaylist(String url) {

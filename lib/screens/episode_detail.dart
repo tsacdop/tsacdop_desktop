@@ -86,6 +86,7 @@ class EpisodeDetail extends StatelessWidget {
                 children: [
                   FavIcon(episode),
                   DownloadIcon(episode),
+                  PlaylistButton(episode),
                   Spacer(),
                   PlayButton(episode)
                 ],

@@ -136,6 +136,7 @@ class Downloader extends StateNotifier<List<DownloadTask>> {
     if (response.statusCode == 200) {
       _updateTask(downloadTask.copyWith(
           progress: 100, status: DownloadTaskStatus.complete));
+
       read(downloadNotification).state = null;
       var fileStat = await File(filePath).stat();
       _dbHelper.saveMediaId(

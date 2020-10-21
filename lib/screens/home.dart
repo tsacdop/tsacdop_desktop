@@ -7,8 +7,10 @@ import 'about.dart';
 import 'home_tabs.dart';
 import 'podcasts_page.dart';
 import 'search.dart';
+import 'playlist_page.dart';
 import '../providers/downloader.dart';
 import '../providers/group_state.dart';
+import '../widgets/custom_button.dart';
 import '../utils/extension_helper.dart';
 import '../providers/settings_state.dart';
 
@@ -21,10 +23,64 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   Widget _body;
+  String _selectMenu;
+  OverlayEntry _overlayEntry;
   @override
   void initState() {
     _body = PodcastsPage();
+    _selectMenu = 'home';
     super.initState();
+  }
+
+  OverlayEntry _createOverlayEntry() {
+    RenderBox renderBox = context.findRenderObject();
+    var offset = renderBox.localToGlobal(Offset.zero);
+    return OverlayEntry(
+      builder: (constext) => Positioned(
+        bottom: offset.dx + 50,
+        left: offset.dy + 60,
+        child: LimitedBox(
+          maxHeight: 300,
+          child: FittedBox(
+            alignment: Alignment.bottomCenter,
+            child: Material(
+              child: Container(
+                width: 300,
+                decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    border: Border.all(color: context.primaryColorDark)),
+                child: Consumer(builder: (context, watch, child) {
+                  var tasks = watch(downloadProvider.state);
+                  if (tasks.isEmpty)
+                    return SizedBox(
+                      height: 10,
+                    );
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: tasks.length,
+                    itemBuilder: (context, index) {
+                      final task = tasks[index];
+                      return ListTile(
+                        title: Text(
+                          task.episode.title,
+                          maxLines: 1,
+                        ),
+                        subtitle: SizedBox(
+                          height: 4,
+                          child: LinearProgressIndicator(
+                            value: tasks[index].progress / 100,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -47,43 +103,74 @@ class _HomeState extends State<Home> {
                       child: Column(
                         children: [
                           SizedBox(height: 20),
-                          IconButton(
-                            splashRadius: 20,
+                          CustomIconButton(
+                            pressed: _selectMenu == 'home',
                             icon: Icon(LineIcons.home_solid),
                             onPressed: () {
                               setState(() {
                                 _body = PodcastsPage();
+                                _selectMenu = 'home';
                               });
                             },
                           ),
-                          IconButton(
-                            splashRadius: 20,
+                          CustomIconButton(
+                            pressed: _selectMenu == 'search',
                             icon: Icon(LineIcons.search_solid),
                             onPressed: () {
                               setState(() {
                                 _body = SearchPage();
+                                _selectMenu = 'search';
                               });
                             },
                           ),
-                          IconButton(
-                            splashRadius: 20,
+                          CustomIconButton(
+                            pressed: _selectMenu == 'playlist',
                             icon: Icon(Icons.playlist_play),
-                            onPressed: () {},
+                            onPressed: () {
+                              setState(() {
+                                _body = PlaylistPage();
+                                _selectMenu = 'playlist';
+                              });
+                            },
                           ),
-                          IconButton(
-                            splashRadius: 20,
+                          CustomIconButton(
+                            pressed: _selectMenu == 'about',
                             icon: Icon(LineIcons.info_circle_solid),
                             onPressed: () {
                               setState(() {
                                 _body = About();
+                                _selectMenu = 'about';
                               });
                             },
                           ),
                           Spacer(),
-                          IconButton(
-                            splashRadius: 20,
+                          Consumer(builder: (context, watch, child) {
+                            var tasks = watch(downloadProvider.state);
+                            if (tasks.isNotEmpty)
+                              return CustomIconButton(
+                                pressed: _overlayEntry == null,
+                                icon: Icon(LineIcons.bell_solid),
+                                onPressed: () {
+                                  if (_overlayEntry == null) {
+                                    _overlayEntry = _createOverlayEntry();
+                                    Overlay.of(context).insert(_overlayEntry);
+                                  } else {
+                                    _overlayEntry.remove();
+                                    _overlayEntry = null;
+                                  }
+                                  setState(() {});
+                                },
+                              );
+                            return Center();
+                          }),
+                          CustomIconButton(
+                            pressed: _selectMenu == 'settings',
                             icon: Icon(LineIcons.cog_solid),
-                            onPressed: () {},
+                            onPressed: () {
+                              setState(() {
+                                _selectMenu = 'settings';
+                              });
+                            },
                           ),
                           IconButton(
                             splashRadius: 20,

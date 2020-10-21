@@ -104,22 +104,17 @@ class _DownloadIconState extends State<DownloadIcon> {
       initialData: false,
       builder: (context, snapshot) {
         if (snapshot.data)
-          return InkWell(
+          return MenuButton(
             onTap: _deleleDonwload,
-            child: Container(
-              height: 50.0,
-              alignment: Alignment.center,
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: SizedBox(
-                height: 20,
-                width: 20,
-                child: CustomPaint(
-                  painter: DownloadPainter(
-                    color: context.accentColor,
-                    fraction: 1,
-                    progressColor: context.accentColor,
-                    progress: 1,
-                  ),
+            child: SizedBox(
+              height: 20,
+              width: 20,
+              child: CustomPaint(
+                painter: DownloadPainter(
+                  color: context.accentColor,
+                  fraction: 1,
+                  progressColor: context.accentColor,
+                  progress: 1,
                 ),
               ),
             ),
@@ -188,6 +183,27 @@ class _DownloadIconState extends State<DownloadIcon> {
           },
         );
       },
+    );
+  }
+}
+
+class PlaylistButton extends ConsumerWidget {
+  final EpisodeBrief episode;
+  PlaylistButton(this.episode, {Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, ScopedReader read) {
+    final queue = read(audioState).queue;
+    final url = episode.enclosureUrl;
+    if (queue.contains(url))
+      return MenuButton(
+        onTap: () => context.read(audioState).removeFromPlaylist(url),
+        child: Icon(Icons.playlist_add_check,
+            color: context.accentColor, size: 20),
+      );
+    return MenuButton(
+      onTap: () => context.read(audioState).addToPlaylist(url),
+      child: Icon(Icons.playlist_add, size: 20),
     );
   }
 }

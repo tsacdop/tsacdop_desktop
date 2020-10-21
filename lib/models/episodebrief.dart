@@ -68,4 +68,9 @@ class EpisodeBrief extends Equatable {
 
   @override
   List<Object> get props => [enclosureUrl, title];
+
+  @override
+  String toString() {
+    return '$title $enclosureUrl';
+  }
 }

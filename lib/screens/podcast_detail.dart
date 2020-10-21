@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,7 +10,6 @@ import 'package:tsacdop_desktop/widgets/custom_paint.dart';
 import 'package:tsacdop_desktop/widgets/episodes_grid.dart';
 import 'package:tsacdop_desktop/widgets/podcast_menu.dart';
 
-import 'home_tabs.dart';
 import 'podcasts_page.dart';
 import '../models/podcastlocal.dart';
 import '../utils/extension_helper.dart';
@@ -422,26 +420,30 @@ class _PodcastDetailState extends State<PodcastDetail> {
                           SliverToBoxAdapter(
                             child: SizedBox(height: 10),
                           ),
-                          EpisodesGrid(
-                            episodes: snapshot.data,
-                            showFavorite: true,
-                            showNumber: _filter == Filter.all && !_hideListened
-                                ? true
-                                : false,
-                            layout: _layout,
-                            reverse: _reverse,
-                            episodeCount: _episodeCount,
-                            initNum: 0,
-                            width: constraint.maxWidth,
-                            multiSelect: _multiSelect,
-                            selectedList: _selectedEpisodes ?? [],
-                            onSelect: (value) => setState(
-                              () {
-                                _selectAll = false;
-                                _selectBefore = false;
-                                _selectAfter = false;
-                                _selectedEpisodes = value;
-                              },
+                          SliverPadding(
+                            padding: EdgeInsets.only(right: 10),
+                            sliver: EpisodesGrid(
+                              episodes: snapshot.data,
+                              showFavorite: true,
+                              showNumber:
+                                  _filter == Filter.all && !_hideListened
+                                      ? true
+                                      : false,
+                              layout: _layout,
+                              reverse: _reverse,
+                              episodeCount: _episodeCount,
+                              initNum: 0,
+                              width: constraint.maxWidth,
+                              multiSelect: _multiSelect,
+                              selectedList: _selectedEpisodes ?? [],
+                              onSelect: (value) => setState(
+                                () {
+                                  _selectAll = false;
+                                  _selectBefore = false;
+                                  _selectAfter = false;
+                                  _selectedEpisodes = value;
+                                },
+                              ),
                             ),
                           ),
                         ],
