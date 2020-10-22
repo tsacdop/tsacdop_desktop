@@ -84,7 +84,6 @@ class _SearchPageState extends State<SearchPage> {
         Container(
           height: 100,
           width: double.infinity,
-          color: Colors.grey[700],
           alignment: Alignment.centerLeft,
           child: SizedBox(
             width: 500,
@@ -153,6 +152,10 @@ class _SearchPageState extends State<SearchPage> {
               ],
             ),
           ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Divider(height: 1),
         ),
         if (_query != '')
           Expanded(
@@ -338,11 +341,7 @@ class __SearchResultState extends State<_SearchResult> {
                 children: [
                   Padding(
                     padding: EdgeInsets.only(top: 10.0, bottom: 20.0),
-                    child: OutlineButton(
-                      highlightedBorderColor: context.accentColor,
-                      splashColor: context.accentColor.withOpacity(0.5),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(100)),
+                    child: TextButton(
                       child: _loading
                           ? SizedBox(
                               height: 20,
@@ -414,11 +413,6 @@ class SearchResult extends StatelessWidget {
                     alignment: Alignment.center,
                     color: context.primaryColorDark,
                     child: child,
-                    //   SizedBox(
-                    //     width: 20,
-                    //     height: 2,
-                    //     child: LinearProgressIndicator(),
-                    //   ),
                   ),
                   errorBuilder: (context, error, stackTrace) => Container(
                       width: 50,

@@ -16,6 +16,8 @@ const String favLayoutKey = 'favLayoutKey';
 const String refreshDateKey = 'refreshDateKey';
 const String downloadLayoutKey = 'downloadLayoutKey';
 const String playlistKey = 'playlistKey';
+const String localeKey = 'localeKey';
+const String proxyKey = 'proxyKey';
 
 class KeyValueStorage {
   final String key;

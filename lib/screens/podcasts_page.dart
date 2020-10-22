@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:state_notifier/state_notifier.dart';
 
 import '../models/episodebrief.dart';
 import '../models/podcastlocal.dart';
@@ -13,17 +14,12 @@ import 'podcast_detail.dart';
 final openPodcast = StateProvider<PodcastLocal>((ref) => null);
 final openEpisode = StateProvider<EpisodeBrief>((ref) => null);
 
-class PodcastsPage extends StatefulWidget {
+class PodcastsPage extends StatelessWidget {
   PodcastsPage({Key key}) : super(key: key);
 
   @override
-  _PodcastsPageState createState() => _PodcastsPageState();
-}
-
-class _PodcastsPageState extends State<PodcastsPage> {
-  @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: double.infinity,
       child: Row(
@@ -87,59 +83,64 @@ class __PodcastGroupState extends State<_PodcastGroup> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(builder: (context, watch, _) {
-      var groupList = watch(groupState).groups;
-      return groupList.isEmpty
-          ? Center()
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                ListTile(
-                  leading: MyDropdownButton<int>(
-                    hint: Center(),
-                    underline: Center(),
-                    elevation: 0,
-                    displayItemCount: 5,
-                    value: _groupIndex,
-                    dropdownColor: context.primaryColorDark,
-                    onChanged: (value) {
-                      setState(() => _groupIndex = value);
-                    },
-                    items: [
-                      for (var group in groupList)
-                        DropdownMenuItem<int>(
-                            value: groupList.indexOf(group),
-                            child: Text(group.name))
-                    ],
-                  ),
-                  trailing: IconButton(
-                    splashRadius: 20,
-                    icon: Icon(Icons.add),
-                    onPressed: () {
-                      showGeneralDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          barrierLabel: MaterialLocalizations.of(context)
-                              .modalBarrierDismissLabel,
-                          barrierColor: Colors.black54,
-                          transitionDuration: const Duration(milliseconds: 200),
-                          pageBuilder:
-                              (context, animaiton, secondaryAnimation) =>
-                                  AddGroup());
-                    },
-                  ),
-                ),
-                if (groupList[_groupIndex].podcasts.isNotEmpty)
-                  Expanded(
-                      child: ListView(
-                    shrinkWrap: true,
-                    children: [
-                      for (var podcast in groupList[_groupIndex].podcasts)
-                        _podcastListTile(context, podcast)
-                    ],
-                  ))
+    return Consumer(builder: (context, watch, child) {
+      final groupList = watch(groupState.state);
+      if (groupList.isEmpty) {
+        return Center();
+      }
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          ListTile(
+            leading: MyDropdownButton<int>(
+              hint: Center(),
+              underline: Center(),
+              elevation: 0,
+              displayItemCount: 5,
+              value: _groupIndex,
+              dropdownColor: context.primaryColorDark,
+              onChanged: (value) {
+                setState(() => _groupIndex = value);
+              },
+              items: [
+                for (var group in groupList)
+                  DropdownMenuItem<int>(
+                      value: groupList.indexOf(group), child: Text(group.name))
               ],
-            );
+            ),
+            trailing: IconButton(
+              splashRadius: 20,
+              icon: Icon(Icons.add),
+              onPressed: () {
+                showGeneralDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    barrierLabel: MaterialLocalizations.of(context)
+                        .modalBarrierDismissLabel,
+                    barrierColor: Colors.black54,
+                    transitionDuration: const Duration(milliseconds: 200),
+                    pageBuilder: (context, animaiton, secondaryAnimation) =>
+                        AddGroup());
+              },
+            ),
+          ),
+          FutureBuilder<List<PodcastLocal>>(
+            future: groupList[_groupIndex].getPodcasts(),
+            initialData: [],
+            builder: (context, snapshot) {
+              if (snapshot.data.isEmpty) return Center();
+              return Expanded(
+                  child: ListView(
+                shrinkWrap: true,
+                children: [
+                  for (var podcast in snapshot.data)
+                    _podcastListTile(context, podcast)
+                ],
+              ));
+            },
+          ),
+        ],
+      );
     });
   }
 }
@@ -170,8 +171,6 @@ class _AddGroupState extends State<AddGroup> {
   @override
   Widget build(BuildContext context) {
     final s = context.s;
-    final groupList = context.read(groupState);
-    List list = groupList.groups.map((e) => e.name).toList();
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       elevation: 1,
@@ -198,10 +197,10 @@ class _AddGroupState extends State<AddGroup> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
           ),
           onPressed: () async {
-            if (list.contains(_newGroup)) {
+            if (context.read(groupState).isExisted(_newGroup)) {
               setState(() => _error = 1);
             } else {
-              groupList.addGroup(PodcastGroup(_newGroup));
+              context.read(groupState).addGroup(PodcastGroup(_newGroup));
               Navigator.of(context).pop();
             }
           },
@@ -219,12 +218,10 @@ class _AddGroupState extends State<AddGroup> {
               hintStyle: TextStyle(fontSize: 18),
               filled: true,
               focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                    color: Theme.of(context).accentColor, width: 2.0),
+                borderSide: BorderSide(color: context.accentColor, width: 2.0),
               ),
               enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                    color: Theme.of(context).accentColor, width: 2.0),
+                borderSide: BorderSide(color: context.accentColor, width: 2.0),
               ),
             ),
             cursorRadius: Radius.circular(2),

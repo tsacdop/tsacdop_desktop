@@ -20,67 +20,80 @@ import '../storage/sqflite_db.dart';
 
 enum SubscribeState { none, start, subscribe, fetch, stop, exist, error }
 
-final groupState = ChangeNotifierProvider((ref) => GroupList());
+final groupState = StateNotifierProvider((ref) => GroupList(ref.read));
 
-class GroupList extends ChangeNotifier {
-  final List<PodcastGroup> _groups = [];
-  List<PodcastGroup> get groups => _groups;
-  final DBHelper _dbHelper = DBHelper();
-  final KeyValueStorage _groupStorage = KeyValueStorage(groupsKey);
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
+final currentSubscribeItem = StateProvider<SubscribeItem>((ref) => null);
 
-  @override
-  void addListener(VoidCallback listener) {
-    loadGroups().then((value) => super.addListener(listener));
+class GroupList extends StateNotifier<List<PodcastGroup>> {
+  GroupList(this.read) : super([]) {
+    _loadGroup();
   }
 
+  final Reader read;
+  final DBHelper _dbHelper = DBHelper();
+  final KeyValueStorage _groupStorage = KeyValueStorage(groupsKey);
+
   /// Load groups from storage at start.
-  Future<void> loadGroups() async {
-    _isLoading = true;
-    notifyListeners();
-    _groupStorage.getGroups().then((loadgroups) async {
-      _groups.addAll(loadgroups.map(PodcastGroup.fromEntity));
-      for (var group in _groups) {
-        await group.getPodcasts();
-      }
-      _isLoading = false;
-      notifyListeners();
-    });
+  Future<void> _loadGroup() async {
+    final loadgroups = await _groupStorage.getGroups();
+    state = loadgroups.map(PodcastGroup.fromEntity).toList();
   }
 
   /// Add new group.
   Future<void> addGroup(PodcastGroup podcastGroup) async {
-    _isLoading = true;
-    _groups.add(podcastGroup);
+    state = [...state, podcastGroup];
     await _saveGroup();
-    _isLoading = false;
-    notifyListeners();
+  }
+
+  bool isExisted(String name) {
+    for (var group in state) {
+      if (group.name == name) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /// Remove group.
   Future<void> delGroup(PodcastGroup podcastGroup) async {
-    _isLoading = true;
     for (var podcast in podcastGroup.podcastList) {
-      if (!_groups.first.podcastList.contains(podcast)) {
-        _groups[0].podcastList.insert(0, podcast);
+      if (!state.first.podcastList.contains(podcast)) {
+        state[0].podcastList.insert(0, podcast);
       }
     }
+    state = state.where((group) => group.id == podcastGroup.id).toList();
     await _saveGroup();
-    _groups.remove(podcastGroup);
-    await _groups[0].getPodcasts();
-    _isLoading = false;
-    notifyListeners();
+  }
+
+  List<PodcastGroup> getPodcastGroup(String id) {
+    var result = <PodcastGroup>[];
+    for (var group in state) {
+      if (group.podcastList.contains(id)) {
+        result.add(group);
+      }
+    }
+    return result;
+  }
+
+  //Change podcast groups
+  Future<void> changeGroup(String id, List<PodcastGroup> list) async {
+    for (var group in getPodcastGroup(id)) {
+      if (list.contains(group)) {
+        list.remove(group);
+      } else {
+        group.podcastList.remove(id);
+      }
+    }
+    for (var group in list) {
+      group.podcastList.insert(0, id);
+    }
+    state = [...state];
+    await _saveGroup();
   }
 
   Future<void> _saveGroup() async {
-    await _groupStorage.saveGroup(_groups.map((it) => it.toEntity()).toList());
+    await _groupStorage.saveGroup(state.map((it) => it.toEntity()).toList());
   }
-
-  /// Current subsribe item from isolate.
-  SubscribeItem _currentSubscribeItem =
-      SubscribeItem('', '', subscribeState: SubscribeState.none);
-  SubscribeItem get currentSubscribeItem => _currentSubscribeItem;
 
   Future<void> subscribePodcast(OnlinePodcast podcast) async {
     var rss = podcast.rss;
@@ -191,39 +204,27 @@ class GroupList extends ChangeNotifier {
   }
 
   void _setSubscribeState(OnlinePodcast podcast, SubscribeState state) {
-    _currentSubscribeItem =
+    read(currentSubscribeItem).state =
         SubscribeItem(podcast.rss, podcast.title, subscribeState: state);
-    notifyListeners();
   }
 
   /// Subscribe podcast from OPML.
   Future<bool> _subscribeNewPodcast(
       {String id, String groupName = 'Home'}) async {
-    //List<String> groupNames = _groups.map((e) => e.name).toList();
-    for (var group in _groups) {
+    for (var group in state) {
       if (group.name == groupName) {
         if (group.podcastList.contains(id)) {
           return true;
         } else {
-          _isLoading = true;
-          notifyListeners();
           group.podcastList.insert(0, id);
           await _saveGroup();
           await group.getPodcasts();
-          _isLoading = false;
-          notifyListeners();
           return true;
         }
       }
     }
-    _isLoading = true;
-    notifyListeners();
-    _groups.add(PodcastGroup(groupName, podcastList: [id]));
-    //_groups.last.podcastList.insert(0, id);
+    state.add(PodcastGroup(groupName, podcastList: [id]));
     await _saveGroup();
-    await _groups.last.getPodcasts();
-    _isLoading = false;
-    notifyListeners();
     return true;
   }
 
@@ -259,39 +260,36 @@ class PodcastGroup extends Equatable {
   /// Group name.
   final String name;
 
+  /// Group id.
   final String id;
 
   /// Group theme color, not used.
   final String color;
 
   /// Id lists of podcasts in group.
-  List<String> _podcastList;
-
-  List<String> get podcastList => _podcastList;
-
-  set podcastList(list) {
-    _podcastList = list;
-  }
+  final List<String> podcastList;
 
   PodcastGroup(this.name,
       {this.color = '#000000', String id, List<String> podcastList})
       : id = id ?? Uuid().v4(),
-        _podcastList = podcastList ?? [];
+        podcastList = podcastList ?? [];
 
-  Future<void> getPodcasts() async {
+  Future<List<PodcastLocal>> getPodcasts() async {
     var dbHelper = DBHelper();
-    if (_podcastList != []) {
+    List<PodcastLocal> podcasts = [];
+    if (podcastList != []) {
       try {
-        _podcasts = await dbHelper.getPodcastLocal(_podcastList);
+        podcasts = await dbHelper.getPodcastLocal(podcastList);
       } catch (e) {
         await Future.delayed(Duration(milliseconds: 200));
         try {
-          _podcasts = await dbHelper.getPodcastLocal(_podcastList);
+          podcasts = await dbHelper.getPodcastLocal(podcastList);
         } catch (e) {
           developer.log(e.toString());
         }
       }
     }
+    return podcasts;
   }
 
   Color getColor() {
@@ -302,16 +300,6 @@ class PodcastGroup extends Equatable {
       return Colors.blue[400];
     }
   }
-
-  ///Podcast in group.
-  List<PodcastLocal> _podcasts;
-  List<PodcastLocal> get podcasts => _podcasts;
-
-  ///Ordered podcast list.
-  List<PodcastLocal> _orderedPodcasts;
-  List<PodcastLocal> get orderedPodcasts => _orderedPodcasts;
-
-  set orderedPodcasts(list) => _orderedPodcasts = list;
 
   GroupEntity toEntity() {
     return GroupEntity(name, id, color, podcastList);

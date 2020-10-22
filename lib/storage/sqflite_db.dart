@@ -1085,4 +1085,12 @@ class DBHelper {
     });
     developer.log('remove new episode $url');
   }
+
+  Future<String> getFeedDescription(String id) async {
+    var dbClient = await database;
+    List<Map> list = await dbClient
+        .rawQuery('SELECT description FROM PodcastLocal WHERE id = ?', [id]);
+    String description = list[0]['description'];
+    return description;
+  }
 }

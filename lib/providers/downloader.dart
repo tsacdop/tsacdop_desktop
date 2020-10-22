@@ -20,39 +20,6 @@ enum DownloadTaskStatus {
   paused
 }
 
-class DownloadTask extends Equatable {
-  final EpisodeBrief episode;
-  final String taskId;
-  final String filename;
-  final String savedDir;
-  final int timeCreated;
-  final int progress;
-  final DownloadTaskStatus status;
-  final CancelToken cancelToken;
-  DownloadTask(this.episode,
-      {String taskId,
-      this.filename,
-      this.savedDir,
-      this.timeCreated,
-      this.progress = 0,
-      this.status = DownloadTaskStatus.undefined,
-      this.cancelToken})
-      : taskId = taskId ?? Uuid().v4();
-
-  DownloadTask copyWith({int progress, DownloadTaskStatus status}) {
-    return DownloadTask(episode,
-        filename: filename,
-        savedDir: savedDir,
-        timeCreated: timeCreated,
-        taskId: taskId,
-        progress: progress,
-        status: status);
-  }
-
-  @override
-  List<Object> get props => [taskId, episode.enclosureUrl];
-}
-
 final downloadNotification = StateProvider<String>((ref) => null);
 
 final downloadProvider = StateNotifierProvider((ref) => Downloader(ref.read));
@@ -163,4 +130,37 @@ class Downloader extends StateNotifier<List<DownloadTask>> {
     await _dbHelper.delDownloaded(episode.enclosureUrl);
     state = state.where((task) => task.episode != episode).toList();
   }
+}
+
+class DownloadTask extends Equatable {
+  final EpisodeBrief episode;
+  final String taskId;
+  final String filename;
+  final String savedDir;
+  final int timeCreated;
+  final int progress;
+  final DownloadTaskStatus status;
+  final CancelToken cancelToken;
+  DownloadTask(this.episode,
+      {String taskId,
+      this.filename,
+      this.savedDir,
+      this.timeCreated,
+      this.progress = 0,
+      this.status = DownloadTaskStatus.undefined,
+      this.cancelToken})
+      : taskId = taskId ?? Uuid().v4();
+
+  DownloadTask copyWith({int progress, DownloadTaskStatus status}) {
+    return DownloadTask(episode,
+        filename: filename,
+        savedDir: savedDir,
+        timeCreated: timeCreated,
+        taskId: taskId,
+        progress: progress,
+        status: status);
+  }
+
+  @override
+  List<Object> get props => [taskId, episode.enclosureUrl];
 }

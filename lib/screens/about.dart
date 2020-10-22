@@ -112,6 +112,7 @@ class About extends StatelessWidget {
               onPressed: () =>
                   'https://tsacdop.stonegate.me/#/privacy'.launchUrl,
               style: TextButton.styleFrom(
+                  padding: EdgeInsets.all(8),
                   primary: context.accentColor,
                   textStyle: TextStyle(fontWeight: FontWeight.bold)),
               child: Text(
@@ -123,6 +124,7 @@ class About extends StatelessWidget {
               onPressed: () =>
                   'https://tsacdop.stonegate.me/#/changelog'.launchUrl,
               style: TextButton.styleFrom(
+                  padding: EdgeInsets.all(8),
                   primary: context.accentColor,
                   textStyle: TextStyle(fontWeight: FontWeight.bold)),
               child: Text(s.changelog,
@@ -141,63 +143,67 @@ class About extends StatelessWidget {
             children: [
               Expanded(
                 flex: 1,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Row(
-                      children: [
-                        SizedBox(width: 25),
-                        Text(
-                          s.developer,
-                          style: TextStyle(
-                              color: context.accentColor,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    _listItem(context, 'Twitter @tsacdop', LineIcons.twitter,
-                        'https://twitter.com/tsacdop'),
-                    _listItem(context, 'GitHub', LineIcons.github_alt,
-                        'https://github.com/stonega/tsacdop'),
-                    _listItem(context, 'Telegram', LineIcons.telegram,
-                        'https://t.me/joinchat/Bk3LkRpTHy40QYC78PK7Qg'),
-                    SizedBox(height: 30),
-                    SizedBox(
-                      width: 200,
-                      child: ElevatedButton(
-                        onPressed: () =>
-                            'https://www.buymeacoffee.com/stonegate'.launchUrl,
-                        style: OutlinedButton.styleFrom(
-                          elevation: 0,
-                          backgroundColor: context.accentColor,
-                          shape: RoundedRectangleBorder(),
-                          padding: EdgeInsets.zero,
-                          minimumSize: Size(100, 58),
-                        ),
-                        child: Container(
-                          height: 50.0,
-                          padding: EdgeInsets.symmetric(horizontal: 4.0),
-                          alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Text('Buy Me A Coffee',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                              SizedBox(width: 10),
-                              Image(
-                                image: AssetImage('assets/buymeacoffee.png'),
-                                height: 30,
-                                fit: BoxFit.fitHeight,
-                              ),
-                            ],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Row(
+                        children: [
+                          SizedBox(width: 25),
+                          Text(
+                            s.developer,
+                            style: TextStyle(
+                                color: context.accentColor,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      _listItem(context, 'Twitter @tsacdop', LineIcons.twitter,
+                          'https://twitter.com/tsacdop'),
+                      _listItem(context, 'GitHub', LineIcons.github_alt,
+                          'https://github.com/stonega/tsacdop'),
+                      _listItem(context, 'Telegram', LineIcons.telegram,
+                          'https://t.me/joinchat/Bk3LkRpTHy40QYC78PK7Qg'),
+                      SizedBox(height: 30),
+                      SizedBox(
+                        width: 200,
+                        child: ElevatedButton(
+                          onPressed: () =>
+                              'https://www.buymeacoffee.com/stonegate'
+                                  .launchUrl,
+                          style: OutlinedButton.styleFrom(
+                            elevation: 0,
+                            backgroundColor: context.accentColor,
+                            shape: RoundedRectangleBorder(),
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size(100, 58),
+                          ),
+                          child: Container(
+                            height: 50.0,
+                            padding: EdgeInsets.symmetric(horizontal: 4.0),
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Text('Buy Me A Coffee',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                SizedBox(width: 10),
+                                Image(
+                                  image: AssetImage('assets/buymeacoffee.png'),
+                                  height: 30,
+                                  fit: BoxFit.fitHeight,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               SizedBox(width: 100),

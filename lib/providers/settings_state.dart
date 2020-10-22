@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tsacdop_desktop/storage/key_value_storage.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/intl_standalone.dart';
+
+import '../generated/l10n.dart';
+import '../storage/key_value_storage.dart';
 
 final settingsState = SettingsState();
 final settings = ChangeNotifierProvider((ref) => settingsState);
@@ -9,16 +13,21 @@ class SettingsState extends ChangeNotifier {
   var _themeStorage = KeyValueStorage(themesKey);
   var _accentStorage = KeyValueStorage(accentColorKey);
   var _realDarkStorage = KeyValueStorage(realDarkKey);
+  var _proxyStorage = KeyValueStorage(proxyKey);
 
   Future initTheme() async {
     await _getTheme();
     await _getAccentSetColor();
     await _getRealDark();
+    await _getProxy();
   }
 
   Color _accentSetColor;
   ThemeMode _themeMode;
   bool _realDark;
+  String _proxy;
+  Locale _locale;
+  String get proxy => _proxy;
 
   ThemeMode get themeMode => _themeMode;
 
@@ -81,6 +90,12 @@ class SettingsState extends ChangeNotifier {
     notifyListeners();
   }
 
+  set setProxy(String proxy) {
+    _proxy = proxy;
+    _saveProxy();
+    notifyListeners();
+  }
+
   Future _getTheme() async {
     var mode = await _themeStorage.getInt();
     _themeMode = ThemeMode.values[mode];
@@ -101,6 +116,30 @@ class SettingsState extends ChangeNotifier {
     _realDark = await _realDarkStorage.getBool(defaultValue: false);
   }
 
+  Future _getProxy() async {
+    _proxy = await _proxyStorage.getString();
+  }
+
+  Future _getLocale() async {
+    var localeString = await KeyValueStorage(localeKey).getStringList();
+    if (localeString.isEmpty) {
+      await findSystemLocale();
+      var systemLanCode;
+      final list = Intl.systemLocale.split('_');
+      if (list.length == 2) {
+        systemLanCode = list.first;
+      } else if (list.length == 3) {
+        systemLanCode = '${list[0]}_${list[1]}';
+      } else {
+        systemLanCode = 'en';
+      }
+      _locale = Locale(systemLanCode);
+    } else {
+      _locale = Locale(localeString.first, localeString[1]);
+    }
+    await S.load(_locale);
+  }
+
   Future<void> _saveAccentSetColor() async {
     await _accentStorage
         .saveString(_accentSetColor.toString().substring(10, 16));
@@ -112,5 +151,9 @@ class SettingsState extends ChangeNotifier {
 
   Future<void> _setRealDark() async {
     await _realDarkStorage.saveBool(_realDark);
+  }
+
+  Future<void> _saveProxy() async {
+    await _proxyStorage.saveString(_proxy);
   }
 }

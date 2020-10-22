@@ -8,6 +8,7 @@ import 'home_tabs.dart';
 import 'podcasts_page.dart';
 import 'search.dart';
 import 'playlist_page.dart';
+import 'settings.dart';
 import '../providers/downloader.dart';
 import '../providers/group_state.dart';
 import '../widgets/custom_button.dart';
@@ -168,6 +169,7 @@ class _HomeState extends State<Home> {
                             icon: Icon(LineIcons.cog_solid),
                             onPressed: () {
                               setState(() {
+                                _body = Settings();
                                 _selectMenu = 'settings';
                               });
                             },
@@ -227,7 +229,7 @@ class _NotificationBar extends ConsumerWidget {
   Widget build(BuildContext context, ScopedReader watch) {
     final s = context.s;
     var refreshNotifier = watch(refreshNotification).state;
-    var item = watch(groupState).currentSubscribeItem;
+    var item = watch(currentSubscribeItem).state;
     var downloadNotifier = watch(downloadNotification).state;
     if (downloadNotifier != null) {
       return _notifierText(downloadNotifier, context);
@@ -235,20 +237,22 @@ class _NotificationBar extends ConsumerWidget {
     if (refreshNotifier != null) {
       return _notifierText(refreshNotifier, context);
     }
-    switch (item.subscribeState) {
-      case SubscribeState.start:
-        return _notifierText(s.notificationSubscribe(item.title), context);
-      case SubscribeState.subscribe:
-        return _notifierText(s.notificaitonFatch(item.title), context);
-      case SubscribeState.fetch:
-        return _notifierText(s.notificationSuccess(item.title), context);
-      case SubscribeState.exist:
-        return _notifierText(
-            s.notificationSubscribeExisted(item.title), context);
-      case SubscribeState.error:
-        return _notifierText(s.notificationNetworkError(item.title), context);
-      default:
-        return Center();
-    }
+    if (item != null)
+      switch (item.subscribeState) {
+        case SubscribeState.start:
+          return _notifierText(s.notificationSubscribe(item.title), context);
+        case SubscribeState.subscribe:
+          return _notifierText(s.notificaitonFatch(item.title), context);
+        case SubscribeState.fetch:
+          return _notifierText(s.notificationSuccess(item.title), context);
+        case SubscribeState.exist:
+          return _notifierText(
+              s.notificationSubscribeExisted(item.title), context);
+        case SubscribeState.error:
+          return _notifierText(s.notificationNetworkError(item.title), context);
+        default:
+          return Center();
+      }
+    return Center();
   }
 }
