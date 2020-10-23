@@ -4,7 +4,7 @@ import 'package:line_icons/line_icons.dart';
 
 import '../utils/extension_helper.dart';
 
-final version = '0.1.0';
+final version = '0.0.1';
 
 class About extends StatelessWidget {
   const About({Key key}) : super(key: key);

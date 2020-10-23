@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_desktop/flutter_audio_desktop.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tsacdop_desktop/models/episodebrief.dart';
-import 'package:tsacdop_desktop/storage/key_value_storage.dart';
-import 'package:tsacdop_desktop/storage/sqflite_db.dart';
+
+import '../models/episodebrief.dart';
+import '../storage/key_value_storage.dart';
+import '../storage/sqflite_db.dart';
 
 import 'downloader.dart';
 
@@ -102,11 +103,15 @@ class AudioState extends ChangeNotifier {
     _audioPlayer.play();
   }
 
-  Future<void> slideSeek(double value) async {
+  Future<void> slideSeek(double value, {bool end = false}) async {
     _noSlide = false;
     var seekValue = _duration * value;
-    await _audioPlayer.setPosition(seekValue);
-    _noSlide = true;
+    _position = seekValue;
+    notifyListeners();
+    if (end) {
+      await _audioPlayer.setPosition(seekValue);
+      _noSlide = true;
+    }
   }
 
   void setVolume(double value) {
@@ -125,6 +130,7 @@ class AudioState extends ChangeNotifier {
 
   Future<void> _seekRelative(Duration duration) async {
     var seekPosition = _position + duration;
+    print(seekPosition.inSeconds);
     if (seekPosition < Duration.zero) seekPosition = Duration.zero;
     await _audioPlayer.setPosition(seekPosition);
   }
@@ -140,6 +146,7 @@ class AudioState extends ChangeNotifier {
   void stop() {
     _audioPlayer?.stop();
     _playerRunning = false;
+    _audioPlayer = null;
     notifyListeners();
   }
 

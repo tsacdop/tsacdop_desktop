@@ -62,8 +62,8 @@ class PlayerWidget extends ConsumerWidget {
                                 IconButton(
                                   splashRadius: 20,
                                   icon: Icon(LineIcons.fast_backward_solid),
-                                  onPressed: () =>
-                                      audio.rewind(Duration(seconds: 15)),
+                                  onPressed: () async =>
+                                      await audio.rewind(Duration(seconds: 15)),
                                 ),
                                 audio.playing
                                     ? IconButton(
@@ -80,8 +80,8 @@ class PlayerWidget extends ConsumerWidget {
                                 IconButton(
                                   splashRadius: 20,
                                   icon: Icon(LineIcons.fast_forward_solid),
-                                  onPressed: () =>
-                                      audio.fastForward(Duration(seconds: 15)),
+                                  onPressed: () async => await audio
+                                      .fastForward(Duration(seconds: 15)),
                                 ),
                               ],
                             ),
@@ -172,7 +172,10 @@ class PlayerWidget extends ConsumerWidget {
                               ? 0
                               : audio.position.inMilliseconds /
                                   audio.duration.inMilliseconds,
-                          onChanged: audio.slideSeek,
+                          onChangeEnd: (value) {
+                            audio.slideSeek(value, end: true);
+                          },
+                          onChanged: (value) => audio.slideSeek(value),
                         ),
                       ),
                     ),

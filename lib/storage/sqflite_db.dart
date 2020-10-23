@@ -1,13 +1,15 @@
 import 'dart:developer' as developer;
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
-import 'package:tsacdop_desktop/models/episodebrief.dart';
-import 'package:tsacdop_desktop/models/podcastlocal.dart';
 import 'package:webfeed/domain/rss_feed.dart';
+
+import '../models/episodebrief.dart';
+import '../models/podcastlocal.dart';
 
 enum Filter { downloaded, liked, search, all }
 
@@ -21,9 +23,8 @@ class DBHelper {
 
   initDb() async {
     sqfliteFfiInit();
-
-    var documentsDirectory = await getApplicationSupportDirectory();
-    var path = join(documentsDirectory.path, "podcasts.db");
+    var documentsDirectory = Directory.current.path;
+    var path = join(documentsDirectory, "podcasts.db");
     var databaseFactory = databaseFactoryFfi;
     var theDb = await databaseFactory.openDatabase(
       path,

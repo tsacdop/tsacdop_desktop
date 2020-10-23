@@ -8,7 +8,6 @@ import 'package:path/path.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
-import 'package:path_provider/path_provider.dart';
 import 'package:webfeed/webfeed.dart';
 import 'package:uuid/uuid.dart';
 
@@ -116,8 +115,8 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
         _setSubscribeState(podcast, SubscribeState.error);
       }
 
-      var dir = await getApplicationSupportDirectory();
-      var localPath = join(dir.path, 'images');
+      var location = Directory.current.path;
+      var localPath = join(location, 'images');
       final saveDir = Directory(localPath);
       var hasExisted = await saveDir.exists();
       if (!hasExisted) {
