@@ -124,7 +124,6 @@ class Downloader extends StateNotifier<List<DownloadTask>> {
     final episodeNew = await _dbHelper.getRssItemWithUrl(episode.enclosureUrl);
     var file = File(episodeNew.mediaId);
     if (file.existsSync()) {
-      print(file.path);
       await file.delete();
     }
     await _dbHelper.delDownloaded(episode.enclosureUrl);

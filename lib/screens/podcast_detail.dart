@@ -568,7 +568,17 @@ class _PodcastInfo extends StatelessWidget {
                   .copyWith(color: context.accentColor)),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: Text('Rss link: ${podcast.rssUrl}'),
+            child: Linkify(
+              onOpen: (link) {
+                link.url.launchUrl;
+              },
+              text: 'Rss link: ${podcast.rssUrl}',
+              linkStyle: TextStyle(
+                  color: context.accentColor,
+                  height: 2,
+                  decoration: TextDecoration.underline,
+                  textBaseline: TextBaseline.ideographic),
+            ),
           ),
           Expanded(
             child: FutureBuilder(
@@ -646,7 +656,6 @@ class __PodcastSettingsState extends State<_PodcastSettings> {
                         setState(() {
                           if (!value) {
                             _selectedGroups.remove(group);
-                            print('set');
                           } else {
                             _selectedGroups.add(group);
                           }

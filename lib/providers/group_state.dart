@@ -116,7 +116,13 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
         _setSubscribeState(podcast, SubscribeState.error);
       }
 
-      var dir = await getApplicationDocumentsDirectory();
+      var dir = await getApplicationSupportDirectory();
+      var localPath = join(dir.path, 'images');
+      final saveDir = Directory(localPath);
+      var hasExisted = await saveDir.exists();
+      if (!hasExisted) {
+        saveDir.create();
+      }
       var realUrl =
           response.redirects.isEmpty ? rss : response.realUri.toString();
       var checkUrl = await _dbHelper.checkPodcast(realUrl);
@@ -163,7 +169,7 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
           }
         }
         var uuid = Uuid().v4();
-        var imagePath = join(dir.path, '$uuid.png');
+        var imagePath = join(saveDir.path, '$uuid.png');
         File(imagePath)..writeAsBytesSync(img.encodePng(thumbnail));
         var primaryColor = await _getColor(thumbnail);
         var author = p.itunes.author ?? p.author ?? '';

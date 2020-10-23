@@ -146,7 +146,6 @@ class AudioState extends ChangeNotifier {
   Future<void> _initQueue() async {
     _queue = await _playlistStorage.getStringList();
     notifyListeners();
-    print(_queue.length);
   }
 
   Future<void> _saveQueue() async {
