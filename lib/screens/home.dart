@@ -148,8 +148,11 @@ class _HomeState extends State<Home> {
                           Consumer(builder: (context, watch, child) {
                             var tasks = watch(downloadProvider.state);
                             if (tasks.isNotEmpty)
-                              return CustomIconButton(
-                                pressed: _overlayEntry == null,
+                              return IconButton(
+                                splashRadius: 20,
+                                color: _overlayEntry != null
+                                    ? context.accentColor
+                                    : null,
                                 icon: Icon(LineIcons.bell_solid),
                                 onPressed: () {
                                   if (_overlayEntry == null) {
@@ -164,16 +167,6 @@ class _HomeState extends State<Home> {
                               );
                             return Center();
                           }),
-                          CustomIconButton(
-                            pressed: _selectMenu == 'settings',
-                            icon: Icon(LineIcons.cog_solid),
-                            onPressed: () {
-                              setState(() {
-                                _body = Settings();
-                                _selectMenu = 'settings';
-                              });
-                            },
-                          ),
                           IconButton(
                             splashRadius: 20,
                             icon: Icon(LineIcons.lightbulb),
@@ -186,6 +179,16 @@ class _HomeState extends State<Home> {
                                 context.read(settings).setTheme =
                                     ThemeMode.light;
                               }
+                            },
+                          ),
+                          CustomIconButton(
+                            pressed: _selectMenu == 'settings',
+                            icon: Icon(LineIcons.cog_solid),
+                            onPressed: () {
+                              setState(() {
+                                _body = Settings();
+                                _selectMenu = 'settings';
+                              });
                             },
                           ),
                         ],

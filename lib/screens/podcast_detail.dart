@@ -605,7 +605,15 @@ class _PodcastSettings extends StatefulWidget {
 }
 
 class __PodcastSettingsState extends State<_PodcastSettings> {
-  List<PodcastGroup> _selectedGroups = [];
+  List<PodcastGroup> _selectedGroups;
+
+  @override
+  void initState() {
+    _selectedGroups =
+        context.read(groupState).getPodcastGroup(widget.podcast.id);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = context.s;
@@ -620,8 +628,7 @@ class __PodcastSettingsState extends State<_PodcastSettings> {
       Consumer(
         builder: (context, watch, child) {
           final groupList = watch(groupState.state);
-          _selectedGroups.addAll(
-              context.read(groupState).getPodcastGroup(widget.podcast.id));
+
           return Padding(
             padding: const EdgeInsets.all(20.0),
             child: Align(
@@ -639,6 +646,7 @@ class __PodcastSettingsState extends State<_PodcastSettings> {
                         setState(() {
                           if (!value) {
                             _selectedGroups.remove(group);
+                            print('set');
                           } else {
                             _selectedGroups.add(group);
                           }
@@ -665,6 +673,12 @@ class __PodcastSettingsState extends State<_PodcastSettings> {
                                 widget.podcast.id,
                                 _selectedGroups,
                               );
+                          if (mounted)
+                            setState(() {
+                              _selectedGroups = context
+                                  .read(groupState)
+                                  .getPodcastGroup(widget.podcast.id);
+                            });
                         }
                       },
                     ),

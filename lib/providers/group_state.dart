@@ -77,15 +77,13 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
 
   //Change podcast groups
   Future<void> changeGroup(String id, List<PodcastGroup> list) async {
-    for (var group in getPodcastGroup(id)) {
-      if (list.contains(group)) {
-        list.remove(group);
+    for (var group in state) {
+      if (group.podcastList.contains(id)) {
+        if (!list.contains(group))
+          group.podcastList.removeWhere((groupId) => groupId == id);
       } else {
-        group.podcastList.remove(id);
+        if (list.contains(group)) group.podcastList.insert(0, id);
       }
-    }
-    for (var group in list) {
-      group.podcastList.insert(0, id);
     }
     state = [...state];
     await _saveGroup();
