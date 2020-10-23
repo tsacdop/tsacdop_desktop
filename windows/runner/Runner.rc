@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "A new Flutter project." "\0"
+            VALUE "CompanyName", "Tsacdop" "\0"
+            VALUE "FileDescription", "Enjoy podcasts with Tsacdop." "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "tsacdop_desktop" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2020 com.example. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2020 Tsacdop. All rights reserved." "\0"
             VALUE "OriginalFilename", "tsacdop_desktop.exe" "\0"
-            VALUE "ProductName", "tsacdop_desktop" "\0"
+            VALUE "ProductName", "Tsacdop Desktop" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
