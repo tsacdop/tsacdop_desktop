@@ -40,7 +40,7 @@ class AudioState extends ChangeNotifier {
   var _playerRunning = false;
   bool get playerRunning => _playerRunning;
 
-  var _playingEpisode;
+  EpisodeBrief _playingEpisode;
   EpisodeBrief get playingEpisode => _playingEpisode;
 
   bool get playing => _audioPlayer?.isPlaying;
@@ -50,6 +50,8 @@ class AudioState extends ChangeNotifier {
   List<String> get queue => _queue;
 
   bool get _haveNext => _queue.isNotEmpty;
+
+  double get volume => _audioPlayer?.volume ?? 1;
 
   var _noSlide = true;
 
@@ -66,7 +68,6 @@ class AudioState extends ChangeNotifier {
       notifyListeners();
     }
     await _audioPlayer?.stop();
-    print(episodeNew.mediaId);
     await _audioPlayer.load(episodeNew.mediaId);
     var currentDuration = await _audioPlayer.getDuration();
     if (currentDuration is Duration) {
@@ -83,6 +84,10 @@ class AudioState extends ChangeNotifier {
         }
         notifyListeners();
       }
+      if (_duration == _position && _position != Duration.zero) {
+        timer.cancel();
+        playNext();
+      }
       if (_audioPlayer == null) {
         timer.cancel();
       }
@@ -97,31 +102,39 @@ class AudioState extends ChangeNotifier {
     _audioPlayer.play();
   }
 
-  void seekTo(Duration duration) {
-    _audioPlayer.setPosition(duration);
-  }
-
-  void slideSeek(double value) {
+  Future<void> slideSeek(double value) async {
     _noSlide = false;
-    notifyListeners();
-    var seekValue = (_duration.inMilliseconds * value).toInt();
-    seekTo(Duration(milliseconds: seekValue));
+    var seekValue = _duration * value;
+    await _audioPlayer.setPosition(seekValue);
     _noSlide = true;
-    notifyListeners();
   }
 
-  void _seekRelative(Duration duration) {
+  void setVolume(double value) {
+    _audioPlayer.setVolume(value);
+  }
+
+  void playNext() {
+    if (_haveNext) {
+      _queue.remove(_playingEpisode.enclosureUrl);
+      loadEpisode(_queue.first);
+      _saveQueue();
+    } else {
+      stop();
+    }
+  }
+
+  Future<void> _seekRelative(Duration duration) async {
     var seekPosition = _position + duration;
     if (seekPosition < Duration.zero) seekPosition = Duration.zero;
-    seekTo(seekPosition);
+    await _audioPlayer.setPosition(seekPosition);
   }
 
-  void fastForward(Duration duration) {
-    _seekRelative(duration);
+  Future<void> fastForward(Duration duration) async {
+    await _seekRelative(duration);
   }
 
-  void rewind(Duration duration) {
-    _seekRelative(-duration);
+  Future<void> rewind(Duration duration) async {
+    await _seekRelative(-duration);
   }
 
   void stop() {
@@ -157,4 +170,12 @@ class AudioState extends ChangeNotifier {
     _queue = _queue.where((e) => e != url).toList();
     _saveQueue();
   }
+}
+
+class PlaybackState {
+  final Duration position;
+  final Duration audioDuration;
+  final EpisodeBrief episode;
+
+  PlaybackState(this.episode, {this.position, this.audioDuration});
 }

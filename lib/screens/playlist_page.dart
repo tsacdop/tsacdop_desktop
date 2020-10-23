@@ -88,8 +88,8 @@ class PlaylistPage extends StatelessWidget {
                                     if (episode.explicit == 1)
                                       Container(
                                           decoration: BoxDecoration(
-                                              color: Colors.red[800],
-                                              shape: BoxShape.circle),
+                                            color: Colors.red[800],
+                                          ),
                                           height: 25.0,
                                           width: 25.0,
                                           margin: EdgeInsets.only(right: 10.0),
@@ -110,6 +110,27 @@ class PlaylistPage extends StatelessWidget {
                                               ? ''
                                               : '${(episode.enclosureLength) ~/ 1000000}MB',
                                           Colors.lightBlue[300]),
+                                    SizedBox(
+                                      height: 25,
+                                      child: ElevatedButton(
+                                        child: Text(s.play),
+                                        style: OutlinedButton.styleFrom(
+                                          elevation: 0,
+                                          backgroundColor: context.accentColor,
+                                          shape: RoundedRectangleBorder(
+                                              side: BorderSide(
+                                                  width: 4,
+                                                  color: context
+                                                      .primaryColorDark)),
+                                          padding: EdgeInsets.zero,
+                                          minimumSize: Size(100, 30),
+                                        ),
+                                        onPressed: () {
+                                          context.read(audioState).loadEpisode(
+                                              episode.enclosureUrl);
+                                        },
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),

@@ -47,42 +47,105 @@ class PlayerWidget extends ConsumerWidget {
               Expanded(
                 child: Column(
                   children: [
+                    SizedBox(height: 10),
                     Material(
                       color: Colors.transparent,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          IconButton(
-                            splashRadius: 20,
-                            icon: Icon(LineIcons.fast_backward_solid),
-                            onPressed: () =>
-                                audio.rewind(Duration(seconds: 15)),
-                          ),
-                          SizedBox(width: 50),
-                          audio.playing
-                              ? IconButton(
+                          Expanded(
+                            flex: 2,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                IconButton(
                                   splashRadius: 20,
-                                  icon: Icon(LineIcons.pause_circle_solid,
-                                      size: 25),
-                                  onPressed: audio.pauseAduio,
-                                )
-                              : IconButton(
+                                  icon: Icon(LineIcons.fast_backward_solid),
+                                  onPressed: () =>
+                                      audio.rewind(Duration(seconds: 15)),
+                                ),
+                                audio.playing
+                                    ? IconButton(
+                                        splashRadius: 20,
+                                        icon: Icon(LineIcons.pause_circle_solid,
+                                            size: 25),
+                                        onPressed: audio.pauseAduio,
+                                      )
+                                    : IconButton(
+                                        splashRadius: 20,
+                                        icon: Icon(LineIcons.play_circle_solid,
+                                            size: 25),
+                                        onPressed: audio.play),
+                                IconButton(
                                   splashRadius: 20,
-                                  icon: Icon(LineIcons.play_circle_solid,
-                                      size: 25),
-                                  onPressed: audio.play),
-                          SizedBox(width: 50),
-                          IconButton(
-                            splashRadius: 20,
-                            icon: Icon(LineIcons.fast_forward_solid),
-                            onPressed: () =>
-                                audio.fastForward(Duration(seconds: 15)),
+                                  icon: Icon(LineIcons.fast_forward_solid),
+                                  onPressed: () =>
+                                      audio.fastForward(Duration(seconds: 15)),
+                                ),
+                              ],
+                            ),
                           ),
-                          IconButton(
-                            splashRadius: 20,
-                            icon: Icon(LineIcons.window_close_solid),
-                            onPressed: audio.stop,
+                          Expanded(
+                            flex: 1,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                IconButton(
+                                  splashRadius: 20,
+                                  onPressed: () => audio.setVolume(0),
+                                  icon: Icon(
+                                    LineIcons.volume_down_solid,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: SliderTheme(
+                                    data: SliderTheme.of(context).copyWith(
+                                      activeTrackColor:
+                                          context.primaryColorDark,
+                                      inactiveTrackColor:
+                                          context.primaryColorDark,
+                                      activeTickMarkColor:
+                                          context.primaryColorDark,
+                                      trackHeight: 2.0,
+                                      thumbColor: context.primaryColorDark,
+                                      thumbShape: RoundSliderThumbShape(
+                                        enabledThumbRadius: 6.0,
+                                        disabledThumbRadius: 6.0,
+                                      ),
+                                      overlayColor: context.primaryColorDark,
+                                      overlayShape: RoundSliderOverlayShape(
+                                          overlayRadius: 4.0),
+                                    ),
+                                    child: Slider(
+                                        divisions: 10,
+                                        label: audio.volume.toStringAsFixed(2),
+                                        value: audio.volume,
+                                        onChanged: (value) {
+                                          audio.setVolume(value);
+                                        }),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  splashRadius: 20,
+                                  icon: Icon(LineIcons.step_forward_solid),
+                                  onPressed: audio.playNext,
+                                ),
+                                IconButton(
+                                  splashRadius: 20,
+                                  icon: Icon(LineIcons.window_close_solid),
+                                  onPressed: audio.stop,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
