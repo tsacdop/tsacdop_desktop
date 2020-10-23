@@ -20,6 +20,7 @@ class SettingsState extends ChangeNotifier {
     await _getAccentSetColor();
     await _getRealDark();
     await _getProxy();
+    await _getLocale();
   }
 
   Color _accentSetColor;

@@ -25,7 +25,8 @@ class PlaylistPage extends StatelessWidget {
     }
     return Container(
       decoration: BoxDecoration(
-          color: color, borderRadius: BorderRadius.circular(15.0)),
+        color: color,
+      ),
       height: 25.0,
       margin: EdgeInsets.only(right: 10.0),
       padding: EdgeInsets.symmetric(horizontal: 8.0),

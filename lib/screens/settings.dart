@@ -55,7 +55,9 @@ class _SettingsState extends State<Settings> {
                 ),
               ),
               ListTile(
-                onTap: () => setState(() => _settings = LanguageSetting()),
+                onTap: () => setState(() => _settings = LanguageSetting(
+                      onChange: () => setState(() {}),
+                    )),
                 leading:
                     Icon(LineIcons.language_solid, color: Colors.purpleAccent),
                 title: Text(s.settingsLanguages),
@@ -175,7 +177,8 @@ class ThemeSettings extends ConsumerWidget {
 }
 
 class LanguageSetting extends StatefulWidget {
-  const LanguageSetting({Key key}) : super(key: key);
+  final Function() onChange;
+  const LanguageSetting({this.onChange, Key key}) : super(key: key);
 
   @override
   _LanguageSettingState createState() => _LanguageSettingState();
@@ -199,6 +202,7 @@ class _LanguageSettingState extends State<LanguageSetting> {
       await S.load(Locale(systemLanCode));
       if (mounted) {
         setState(() {});
+        widget.onChange();
       }
     } else {
       await localeStorage
@@ -206,6 +210,7 @@ class _LanguageSettingState extends State<LanguageSetting> {
       await S.load(locale);
       if (mounted) {
         setState(() {});
+        widget.onChange();
       }
     }
   }
@@ -365,6 +370,9 @@ class _StorageSettingState extends State<StorageSetting> {
                         context.read(settings).setProxy = value,
                     onChanged: (value) => _query = value,
                     decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                         focusColor: context.primaryColor,
                         hoverColor: context.primaryColor,
                         hintText: '127.0.0.1:8080',
