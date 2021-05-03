@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -280,6 +282,7 @@ class __SearchResultState extends State<_SearchResult> {
       searchResult = await _searchEngine.searchPodcasts(
           searchText: searchText, limit: limit);
     } catch (e) {
+      log(e.toString());
       _loadError = true;
       _loading = false;
       return [];
@@ -560,7 +563,7 @@ class _SubscribeButton extends StatelessWidget {
         backgroundColor: context.primaryColorDark,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       ),
-      onPressed: () => context.read(groupState).subscribePodcast(podcast),
+      onPressed: () => context.read(groupState.notifier).subscribePodcast(podcast),
     );
   }
 }

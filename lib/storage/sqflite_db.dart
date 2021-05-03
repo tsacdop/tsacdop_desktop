@@ -401,7 +401,7 @@ class DBHelper {
         var updateList = await dbClient.rawQuery(
             'SELECT COUNT(*) as count FROM Episodes WHERE feed_id = ?',
             [podcastLocal.id]);
-        var countUpdate = updateList.first['count'];
+        var countUpdate = updateList.first['count'] as int;
 
         await dbClient.rawUpdate(
             """UPDATE PodcastLocal SET update_count = ?, episode_count = ? WHERE id = ?""",

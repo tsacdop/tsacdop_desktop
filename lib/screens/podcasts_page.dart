@@ -83,7 +83,7 @@ class __PodcastGroupState extends State<_PodcastGroup> {
   @override
   Widget build(BuildContext context) {
     return Consumer(builder: (context, watch, child) {
-      final groupList = watch(groupState.state);
+      final groupList = watch(groupState);
       if (groupList.isEmpty) {
         return Center();
       }

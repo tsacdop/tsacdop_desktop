@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/all.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:tsacdop_desktop/screens/player.dart';
 
@@ -51,7 +51,7 @@ class _HomeState extends State<Home> {
                     color: Colors.grey[200],
                     border: Border.all(color: context.primaryColorDark)),
                 child: Consumer(builder: (context, watch, child) {
-                  var tasks = watch(downloadProvider.state);
+                  var tasks = watch(downloadProvider);
                   if (tasks.isEmpty)
                     return SizedBox(
                       height: 10,
@@ -146,7 +146,7 @@ class _HomeState extends State<Home> {
                           ),
                           Spacer(),
                           Consumer(builder: (context, watch, child) {
-                            var tasks = watch(downloadProvider.state);
+                            var tasks = watch(downloadProvider);
                             if (tasks.isNotEmpty)
                               return IconButton(
                                 splashRadius: 20,

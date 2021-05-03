@@ -121,7 +121,7 @@ class _DownloadIconState extends State<DownloadIcon> {
           );
         return Consumer(
           builder: (context, watch, child) {
-            final tasks = watch(downloadProvider.state);
+            final tasks = watch(downloadProvider);
             final index =
                 context.read(downloadProvider).indexOf(widget.episode);
             if (index == -1)
@@ -244,7 +244,7 @@ class _PlayButtonState extends State<PlayButton> {
               },
             ),
             Consumer(builder: (context, watch, child) {
-              final tasks = watch(downloadProvider.state);
+              final tasks = watch(downloadProvider);
               final index =
                   context.read(downloadProvider).indexOf(widget.episode);
               if (index == -1) return Center();

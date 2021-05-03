@@ -660,7 +660,7 @@ class _DownloadTabState extends State<DownloadTab> {
                             ),
                           ),
                           Consumer(builder: (context, watch, child) {
-                            var tasks = watch(downloadProvider.state);
+                            var tasks = watch(downloadProvider);
                             if (tasks.isEmpty)
                               return SliverToBoxAdapter(child: Center());
                             return SliverList(

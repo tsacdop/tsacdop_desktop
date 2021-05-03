@@ -60,7 +60,7 @@ class AudioState extends ChangeNotifier {
     final downloaded = await _dbHelper.isDownloaded(url);
     if (!downloaded) {
       final episode = await _dbHelper.getRssItemWithUrl(url);
-      await read(downloadProvider).download(episode);
+      await read(downloadProvider.notifier).download(episode);
     }
     final episodeNew = await _dbHelper.getRssItemWithUrl(url);
     if (_audioPlayer == null) {

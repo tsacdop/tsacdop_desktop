@@ -6,9 +6,11 @@ import 'package:dio/dio.dart';
 import '../models/service_api/index_episode.dart';
 import '../models/service_api/index_podcast.dart';
 
-import '../.env.dart';
-
 const String version = '0.1.0';
+const podcastIndexApi = {
+  "podcastIndexApiKey": "XXWQEGULBJABVHZUM8NF",
+  "podcastIndexApiSecret": "KZ2uy4upvq4t3e\$m\$3r2TeFS2fEpFTAaF92xcNdX"
+};
 
 class PodcastsIndexSearch {
   final _dio = Dio(BaseOptions(connectTimeout: 30000, receiveTimeout: 90000));
@@ -16,8 +18,8 @@ class PodcastsIndexSearch {
   Map<String, String> _initSearch() {
     final unixTime =
         (DateTime.now().millisecondsSinceEpoch / 1000).round().toString();
-    final apiKey = environment['podcastIndexApiKey'];
-    final apiSecret = environment['podcastIndexApiSecret'];
+    final apiKey = podcastIndexApi['podcastIndexApiKey'];
+    final apiSecret = podcastIndexApi['podcastIndexApiSecret'];
     final firstChunk = utf8.encode(apiKey);
     final secondChunk = utf8.encode(apiSecret);
     final thirdChunk = utf8.encode(unixTime);

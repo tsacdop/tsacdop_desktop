@@ -620,7 +620,7 @@ class __PodcastSettingsState extends State<_PodcastSettings> {
   @override
   void initState() {
     _selectedGroups =
-        context.read(groupState).getPodcastGroup(widget.podcast.id);
+        context.read(groupState.notifier).getPodcastGroup(widget.podcast.id);
     super.initState();
   }
 
@@ -637,7 +637,7 @@ class __PodcastSettingsState extends State<_PodcastSettings> {
       ),
       Consumer(
         builder: (context, watch, child) {
-          final groupList = watch(groupState.state);
+          final groupList = watch(groupState);
 
           return Padding(
             padding: const EdgeInsets.all(20.0),
