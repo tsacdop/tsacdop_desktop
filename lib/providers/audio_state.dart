@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_audio_desktop/flutter_audio_desktop.dart';
+import 'package:dart_vlc/dart_vlc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/episodebrief.dart';
@@ -23,7 +23,10 @@ class AudioState extends ChangeNotifier {
 
   @override
   void dispose() {
-    _audioPlayer.release();
+    _audioPlayer.dispose();
+    _generalStateStream.cancel();
+    _playbackStateStream.cancel();
+    _postionStateStream.cancel();
     super.dispose();
   }
 
@@ -31,8 +34,14 @@ class AudioState extends ChangeNotifier {
   final _playlistStorage = KeyValueStorage(playlistKey);
   final Reader read;
 
-  var _audioPlayer;
-  var _position = Duration.zero;
+  Player _audioPlayer;
+  Playlist _playlist;
+  StreamSubscription<GeneralState> _generalStateStream;
+  StreamSubscription<PlaybackState> _playbackStateStream;
+  StreamSubscription<PositionState> _postionStateStream;
+
+  Duration _position = Duration.zero;
+
   Duration get position => _position;
 
   var _duration = Duration.zero;
@@ -44,7 +53,8 @@ class AudioState extends ChangeNotifier {
   EpisodeBrief _playingEpisode;
   EpisodeBrief get playingEpisode => _playingEpisode;
 
-  bool get playing => _audioPlayer?.isPlaying;
+  bool _playing = false;
+  bool get playing => _playing;
 
   List<String> _queue;
 
@@ -52,47 +62,48 @@ class AudioState extends ChangeNotifier {
 
   bool get _haveNext => _queue.isNotEmpty;
 
-  double get volume => _audioPlayer?.volume ?? 1;
+  double _volume;
+  double get volume => _volume ?? 1;
 
   var _noSlide = true;
 
   void loadEpisode(String url) async {
-    final downloaded = await _dbHelper.isDownloaded(url);
-    if (!downloaded) {
-      final episode = await _dbHelper.getRssItemWithUrl(url);
-      await read(downloadProvider.notifier).download(episode);
-    }
+    // final downloaded = await _dbHelper.isDownloaded(url);
+    // if (!downloaded) {
+    //   final episode = await _dbHelper.getRssItemWithUrl(url);
+    //   await read(downloadProvider.notifier).download(episode);
+    // }
     final episodeNew = await _dbHelper.getRssItemWithUrl(url);
     if (_audioPlayer == null) {
-      _audioPlayer = AudioPlayer();
+      _audioPlayer = Player(id: 69420);
       _playerRunning = true;
       notifyListeners();
     }
     await _audioPlayer?.stop();
-    await _audioPlayer.load(episodeNew.mediaId);
-    var currentDuration = await _audioPlayer.getDuration();
-    if (currentDuration is Duration) {
-      _duration = currentDuration;
-    }
+    _playlist =
+        Playlist(medias: [await Media.network(episodeNew.enclosureUrl)]);
+    await _audioPlayer.open(_playlist);
+    _generalStateStream = _audioPlayer.generateStream.listen((event) {
+      if (event is GeneralState) {
+        _volume = event.volume;
+        notifyListeners();
+      }
+    });
+    _playbackStateStream = _audioPlayer.playbackStream.listen((event) {
+      if (event is PlaybackState) {
+        _playing = event.isPlaying;
+      }
+    });
+    _postionStateStream = _audioPlayer.positionStream.listen((event) {
+      if (event is PositionState) {
+        _duration = event.duration;
+        if (_noSlide) _position = event.position;
+        notifyListeners();
+      }
+    });
     _playingEpisode = episodeNew;
     notifyListeners();
     await _audioPlayer.play();
-    Timer.periodic(Duration(milliseconds: 500), (timer) async {
-      if (_noSlide) {
-        var currentPosition = await _audioPlayer.getPosition();
-        if (currentPosition is Duration) {
-          _position = currentPosition;
-        }
-        notifyListeners();
-      }
-      if (_duration == _position && _position != Duration.zero) {
-        timer.cancel();
-        playNext();
-      }
-      if (_audioPlayer == null) {
-        timer.cancel();
-      }
-    });
   }
 
   void pauseAduio() async {
@@ -109,7 +120,7 @@ class AudioState extends ChangeNotifier {
     _position = seekValue;
     notifyListeners();
     if (end) {
-      await _audioPlayer.setPosition(seekValue);
+      await _audioPlayer.seek(seekValue);
       _noSlide = true;
     }
   }
@@ -132,7 +143,7 @@ class AudioState extends ChangeNotifier {
     var seekPosition = _position + duration;
     print(seekPosition.inSeconds);
     if (seekPosition < Duration.zero) seekPosition = Duration.zero;
-    await _audioPlayer.setPosition(seekPosition);
+    await _audioPlayer.seek(seekPosition);
   }
 
   Future<void> fastForward(Duration duration) async {
@@ -178,10 +189,10 @@ class AudioState extends ChangeNotifier {
   }
 }
 
-class PlaybackState {
+class CurrentPlaybackState {
   final Duration position;
   final Duration audioDuration;
   final EpisodeBrief episode;
 
-  PlaybackState(this.episode, {this.position, this.audioDuration});
+  CurrentPlaybackState(this.episode, {this.position, this.audioDuration});
 }

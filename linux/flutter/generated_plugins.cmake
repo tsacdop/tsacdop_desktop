@@ -4,7 +4,6 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   dart_vlc
-  flutter_audio_desktop
   url_launcher_linux
 )
 
