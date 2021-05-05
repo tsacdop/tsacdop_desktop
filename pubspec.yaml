@@ -31,6 +31,10 @@ dependencies:
   url_launcher: ^6.0.3
   uuid: ^3.0.4
   dart_vlc: ^0.0.6
+  bitsdojo_window: ^0.1.0
+  flutter_gtk:
+    git:
+      url: https://github.com/stonega/flutter_gtk.git
   line_icons:
     git:
       url: https://github.com/galonsos/line_icons.git

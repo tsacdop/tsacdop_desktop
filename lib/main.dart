@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'generated/l10n.dart';
+import 'linux_ui/home.dart';
 import 'screens/home.dart';
 import 'providers/settings_state.dart';
 
@@ -43,7 +44,7 @@ class MyApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: S.delegate.supportedLocales,
-      home: Home(),
+      home: LinuxHome(),
     );
   }
 }
