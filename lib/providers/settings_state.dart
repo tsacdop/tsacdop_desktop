@@ -10,10 +10,10 @@ final settingsState = SettingsState();
 final settings = ChangeNotifierProvider((ref) => settingsState);
 
 class SettingsState extends ChangeNotifier {
-  var _themeStorage = KeyValueStorage(themesKey);
-  var _accentStorage = KeyValueStorage(accentColorKey);
-  var _realDarkStorage = KeyValueStorage(realDarkKey);
-  var _proxyStorage = KeyValueStorage(proxyKey);
+  final _themeStorage = KeyValueStorage(themesKey);
+  final _accentStorage = KeyValueStorage(accentColorKey);
+  final _realDarkStorage = KeyValueStorage(realDarkKey);
+  final _proxyStorage = KeyValueStorage(proxyKey);
 
   Future initTheme() async {
     await _getTheme();
@@ -33,9 +33,13 @@ class SettingsState extends ChangeNotifier {
   ThemeMode get themeMode => _themeMode;
 
   ThemeData get lightTheme => ThemeData(
-      accentColor: _accentSetColor,
-      accentColorBrightness: Brightness.dark,
+      colorScheme: ColorScheme.light(
+        primary: Colors.grey[100],
+        secondary: _accentSetColor,
+      ),
+      splashColor: Colors.transparent,
       primaryColor: Colors.grey[100],
+      splashFactory: NoSplash.splashFactory,
       primaryColorLight: Colors.white,
       primaryColorDark: Colors.grey[300],
       dialogBackgroundColor: Colors.white,
@@ -45,7 +49,10 @@ class SettingsState extends ChangeNotifier {
         elevation: 0,
       ),
       textTheme: TextTheme(
-        bodyText2: TextStyle(fontSize: 15.0, fontWeight: FontWeight.normal),
+        bodyText2: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+        bodyText1: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+        subtitle1: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
+        subtitle2: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
       ),
       tabBarTheme: TabBarTheme(
         labelColor: Colors.black,
@@ -62,16 +69,26 @@ class SettingsState extends ChangeNotifier {
           splashColor: _accentSetColor.withAlpha(70)));
 
   ThemeData get darkTheme => ThemeData.dark().copyWith(
-      accentColor: _accentSetColor,
-      primaryColorDark: Colors.grey[800],
-      scaffoldBackgroundColor: _realDark ? Colors.black87 : Color(0XFF212121),
-      primaryColor: _realDark ? Colors.black : Color(0XFF1B1B1B),
-      popupMenuTheme: PopupMenuThemeData()
-          .copyWith(color: _realDark ? Colors.grey[900] : null),
-      appBarTheme: AppBarTheme(elevation: 0),
-      buttonTheme: ButtonThemeData(height: 32),
-      dialogBackgroundColor: _realDark ? Colors.grey[900] : null,
-      cursorColor: _accentSetColor);
+        colorScheme: ColorScheme.dark(
+          secondary: _accentSetColor,
+          primary: Colors.grey[100],
+        ),
+        splashFactory: NoSplash.splashFactory,
+        primaryColorDark: Colors.grey[800],
+        scaffoldBackgroundColor: _realDark ? Colors.black87 : Color(0XFF212121),
+        primaryColor: _realDark ? Colors.black : Color(0XFF1B1B1B),
+        popupMenuTheme: PopupMenuThemeData()
+            .copyWith(color: _realDark ? Colors.grey[900] : null),
+        appBarTheme: AppBarTheme(elevation: 0),
+        buttonTheme: ButtonThemeData(height: 32),
+        dialogBackgroundColor: _realDark ? Colors.grey[900] : null,
+        textTheme: TextTheme(
+          bodyText2: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+          bodyText1: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+          subtitle1: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
+          subtitle2: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
+        ),
+      );
 
   set setAccentColor(Color color) {
     _accentSetColor = color;

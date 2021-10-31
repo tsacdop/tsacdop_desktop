@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tsacdop_desktop/widgets/custom_list_tile.dart';
 
 import '../models/episodebrief.dart';
 import '../models/podcastlocal.dart';
-import '../widgets/custom_dropdown.dart';
 import '../providers/group_state.dart';
 import '../utils/extension_helper.dart';
+import '../widgets/custom_dropdown.dart';
 import 'episode_detail.dart';
 import 'home_tabs.dart';
 import 'podcast_detail.dart';
@@ -25,16 +26,23 @@ class PodcastsPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(flex: 1, child: _PodcastGroup()),
+          Container(
+            width: 2,
+            color: context.primaryColorDark,
+          ),
           Expanded(
-              flex: 2,
-              child: Consumer(builder: (context, watch, _) {
+            flex: 2,
+            child: Consumer(
+              builder: (context, watch, _) {
                 final podcast = watch(openPodcast).state;
                 final episode = watch(openEpisode).state;
                 if (episode != null)
                   return EpisodeDetail(episode);
                 else if (podcast != null) return PodcastDetail(podcast);
                 return HomeTabs();
-              })),
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -56,30 +64,6 @@ class __PodcastGroupState extends State<_PodcastGroup> {
     _groupIndex = 0;
   }
 
-  Widget _podcastListTile(BuildContext context, PodcastLocal podcast) =>
-      ListTile(
-          onTap: () {
-            context.read(openEpisode).state = null;
-            context.read(openPodcast).state = podcast;
-          },
-          contentPadding: EdgeInsets.fromLTRB(10, 10, 0, 10),
-          leading: CircleAvatar(
-              backgroundColor: podcast.backgroudColor(context).withOpacity(0.5),
-              backgroundImage: podcast.avatarImage),
-          title: Text(podcast.title,
-              maxLines: 1, style: context.textTheme.bodyText1),
-          subtitle: Text(
-            podcast.author,
-            maxLines: 1,
-          ),
-          trailing: Consumer(builder: (context, watch, _) {
-            return watch(openPodcast).state == podcast
-                ? Container(width: 5, color: context.accentColor)
-                : SizedBox(
-                    width: 2,
-                  );
-          }));
-
   @override
   Widget build(BuildContext context) {
     return Consumer(builder: (context, watch, child) {
@@ -90,37 +74,42 @@ class __PodcastGroupState extends State<_PodcastGroup> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          ListTile(
-            leading: MyDropdownButton<int>(
-              hint: Center(),
-              underline: Center(),
-              elevation: 0,
-              displayItemCount: 5,
-              value: _groupIndex,
-              dropdownColor: context.primaryColorDark,
-              onChanged: (value) {
-                setState(() => _groupIndex = value);
-              },
-              items: [
-                for (var group in groupList)
-                  DropdownMenuItem<int>(
-                      value: groupList.indexOf(group), child: Text(group.name))
-              ],
-            ),
-            trailing: IconButton(
-              splashRadius: 20,
-              icon: Icon(Icons.add),
-              onPressed: () {
-                showGeneralDialog(
-                    context: context,
-                    barrierDismissible: true,
-                    barrierLabel: MaterialLocalizations.of(context)
-                        .modalBarrierDismissLabel,
-                    barrierColor: Colors.black54,
-                    transitionDuration: const Duration(milliseconds: 200),
-                    pageBuilder: (context, animaiton, secondaryAnimation) =>
-                        AddGroup());
-              },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8.0),
+            child: ListTile(
+              leading: MyDropdownButton<int>(
+                hint: Center(),
+                underline: Center(),
+                elevation: 0,
+                displayItemCount: 5,
+                value: _groupIndex,
+                dropdownColor: context.primaryColorDark,
+                onChanged: (value) {
+                  setState(() => _groupIndex = value);
+                },
+                items: [
+                  for (var group in groupList)
+                    DropdownMenuItem<int>(
+                        value: groupList.indexOf(group),
+                        child: Text(group.name))
+                ],
+              ),
+              trailing: IconButton(
+                hoverColor: context.accentColor,
+                splashRadius: 20,
+                icon: Icon(Icons.add),
+                onPressed: () {
+                  showGeneralDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      barrierLabel: MaterialLocalizations.of(context)
+                          .modalBarrierDismissLabel,
+                      barrierColor: Colors.black54,
+                      transitionDuration: const Duration(milliseconds: 200),
+                      pageBuilder: (context, animaiton, secondaryAnimation) =>
+                          AddGroup());
+                },
+              ),
             ),
           ),
           FutureBuilder<List<PodcastLocal>>(
@@ -129,19 +118,62 @@ class __PodcastGroupState extends State<_PodcastGroup> {
             builder: (context, snapshot) {
               if (snapshot.data.isEmpty) return Center();
               return Expanded(
-                  child: ListView(
-                shrinkWrap: true,
-                children: [
-                  for (var podcast in snapshot.data)
-                    _podcastListTile(context, podcast)
-                ],
-              ));
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    for (var podcast in snapshot.data)
+                      _podcastListTile(context, podcast)
+                  ],
+                ),
+              );
             },
           ),
         ],
       );
     });
   }
+
+  Widget _podcastListTile(BuildContext context, PodcastLocal podcast) =>
+      Consumer(
+        builder: (context, watch, _) {
+          final selected = watch(openPodcast).state == podcast;
+          return Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: CustomListTile(
+              selected: selected,
+              onTap: () {
+                context.read(openEpisode).state = null;
+                context.read(openPodcast).state = podcast;
+              },
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 10),
+                    child: CircleAvatar(
+                        backgroundColor:
+                            podcast.backgroudColor(context).withOpacity(0.5),
+                        backgroundImage: podcast.avatarImage),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(podcast.title,
+                            maxLines: 1, style: context.textTheme.bodyText1),
+                        Text(
+                          podcast.author,
+                          maxLines: 1,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
 }
 
 class AddGroup extends StatefulWidget {
@@ -171,7 +203,7 @@ class _AddGroupState extends State<AddGroup> {
   Widget build(BuildContext context) {
     final s = context.s;
     return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       elevation: 1,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20),
       titlePadding: EdgeInsets.all(20),
@@ -180,6 +212,7 @@ class _AddGroupState extends State<AddGroup> {
         TextButton(
           style: OutlinedButton.styleFrom(
             primary: context.textColor,
+            splashFactory: NoSplash.splashFactory,
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
           ),
@@ -192,6 +225,7 @@ class _AddGroupState extends State<AddGroup> {
         TextButton(
           style: OutlinedButton.styleFrom(
             primary: context.textColor,
+            splashFactory: NoSplash.splashFactory,
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
           ),

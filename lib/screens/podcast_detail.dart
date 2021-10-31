@@ -276,7 +276,7 @@ class __EpisodeListState extends State<_EpisodeList> {
         clipBehavior: clip ? Clip.hardEdge : Clip.none,
         child: PopupMenuButton<int>(
           color: context.primaryColorDark,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
           elevation: 1,
           tooltip: tooltip,
           child: child,
@@ -297,7 +297,7 @@ class __EpisodeListState extends State<_EpisodeList> {
                 child: Container(
                   height: 30,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.zero,
+                      borderRadius: BorderRadius.circular(4),
                       border: Border.all(color: context.primaryColorDark)),
                   padding: EdgeInsets.symmetric(horizontal: 10),
                   child: Row(
@@ -379,6 +379,7 @@ class __EpisodeListState extends State<_EpisodeList> {
             Material(
               color: Colors.transparent,
               clipBehavior: Clip.hardEdge,
+              borderRadius: BorderRadius.circular(4),
               child: SizedBox(
                 width: 30,
                 child: IconButton(
@@ -400,6 +401,7 @@ class __EpisodeListState extends State<_EpisodeList> {
             Material(
               color: Colors.transparent,
               clipBehavior: Clip.hardEdge,
+              borderRadius: BorderRadius.circular(4),
               child: _refresh
                   ? SizedBox(width: 30, child: RefreshLoad())
                   : SizedBox(
@@ -414,29 +416,6 @@ class __EpisodeListState extends State<_EpisodeList> {
                       ),
                     ),
             ),
-            // FutureBuilder<bool>(
-            //     future: _getHideListened(),
-            //     builder: (context, snapshot) {
-            //       if (_hideListened == null) {
-            //         _hideListened = snapshot.data;
-            //       }
-            //       return Material(
-            //           color: Colors.transparent,
-            //           clipBehavior: Clip.hardEdge,
-            //           borderRadius: BorderRadius.circular(100),
-            //           child: IconButton(
-            //             icon: SizedBox(
-            //               width: 30,
-            //               height: 30,
-            //               child: HideListened(
-            //                 hideListened: _hideListened ?? false,
-            //               ),
-            //             ),
-            //             onPressed: () {
-            //               setState(() => _hideListened = !_hideListened);
-            //             },
-            //           ));
-            //     }),
             FutureBuilder<int>(
                 future: _getLayout(),
                 builder: (context, snapshot) {
@@ -457,6 +436,7 @@ class __EpisodeListState extends State<_EpisodeList> {
             Material(
                 color: Colors.transparent,
                 clipBehavior: Clip.hardEdge,
+                borderRadius: BorderRadius.circular(4),
                 child: IconButton(
                   icon: SizedBox(
                     width: 20,
@@ -493,42 +473,39 @@ class __EpisodeListState extends State<_EpisodeList> {
           builder: (context, snapshot) {
             return snapshot.hasData
                 ? LayoutBuilder(
-                    builder: (context, constraint) => Scrollbar(
-                      child: CustomScrollView(
-                        physics: BouncingScrollPhysics(),
-                        controller: _controller,
-                        slivers: [
-                          SliverToBoxAdapter(
-                            child: SizedBox(height: 10),
-                          ),
-                          SliverPadding(
-                            padding: EdgeInsets.only(right: 10),
-                            sliver: EpisodesGrid(
-                              episodes: snapshot.data,
-                              showFavorite: true,
-                              showNumber:
-                                  _filter == Filter.all && !_hideListened
-                                      ? true
-                                      : false,
-                              layout: _layout,
-                              reverse: _reverse,
-                              episodeCount: _episodeCount,
-                              initNum: 0,
-                              width: constraint.maxWidth,
-                              multiSelect: _multiSelect,
-                              selectedList: _selectedEpisodes ?? [],
-                              onSelect: (value) => setState(
-                                () {
-                                  _selectAll = false;
-                                  _selectBefore = false;
-                                  _selectAfter = false;
-                                  _selectedEpisodes = value;
-                                },
-                              ),
+                    builder: (context, constraint) => CustomScrollView(
+                      physics: BouncingScrollPhysics(),
+                      controller: _controller,
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: SizedBox(height: 10),
+                        ),
+                        SliverPadding(
+                          padding: EdgeInsets.only(right: 10),
+                          sliver: EpisodesGrid(
+                            episodes: snapshot.data,
+                            showFavorite: true,
+                            showNumber: _filter == Filter.all && !_hideListened
+                                ? true
+                                : false,
+                            layout: _layout,
+                            reverse: _reverse,
+                            episodeCount: _episodeCount,
+                            initNum: 0,
+                            width: constraint.maxWidth,
+                            multiSelect: _multiSelect,
+                            selectedList: _selectedEpisodes ?? [],
+                            onSelect: (value) => setState(
+                              () {
+                                _selectAll = false;
+                                _selectBefore = false;
+                                _selectAfter = false;
+                                _selectedEpisodes = value;
+                              },
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   )
                 : Center();

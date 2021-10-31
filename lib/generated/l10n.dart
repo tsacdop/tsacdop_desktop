@@ -14,22 +14,23 @@ import 'intl/messages_all.dart';
 
 class S {
   S();
-  
+
   static S current;
-  
-  static const AppLocalizationDelegate delegate =
-    AppLocalizationDelegate();
+
+  static const AppLocalizationDelegate delegate = AppLocalizationDelegate();
 
   static Future<S> load(Locale locale) {
-    final name = (locale.countryCode?.isEmpty ?? false) ? locale.languageCode : locale.toString();
-    final localeName = Intl.canonicalizedLocale(name); 
+    final name = (locale.countryCode?.isEmpty ?? false)
+        ? locale.languageCode
+        : locale.toString();
+    final localeName = Intl.canonicalizedLocale(name);
     return initializeMessages(localeName).then((_) {
       Intl.defaultLocale = localeName;
       S.current = S();
-      
+
       return S.current;
     });
-  } 
+  }
 
   static S of(BuildContext context) {
     return Localizations.of<S>(context, S);
@@ -705,7 +706,8 @@ class S {
     return Intl.message(
       'Group already exists',
       name: 'groupExisted',
-      desc: 'Group name validate in add group dialog. User can\'t add group with same name.',
+      desc:
+          'Group name validate in add group dialog. User can\'t add group with same name.',
       args: [],
     );
   }
@@ -1643,7 +1645,8 @@ class S {
     return Intl.message(
       'Recover subscribe',
       name: 'recoverSubscribe',
-      desc: 'User can recover subscribe podcast after remove it in subscribe history page.',
+      desc:
+          'User can recover subscribe podcast after remove it in subscribe history page.',
       args: [],
     );
   }
@@ -2009,7 +2012,8 @@ class S {
     return Intl.message(
       'Reenable "Discover Features"',
       name: 'settingsDiscovery',
-      desc: 'Reset feature discovery state. User tap it and restart app, will see features tutorial again.',
+      desc:
+          'Reset feature discovery state. User tap it and restart app, will see features tutorial again.',
       args: [],
     );
   }
@@ -2719,7 +2723,8 @@ class S {
     return Intl.message(
       'Last time $time',
       name: 'timeLastPlayed',
-      desc: 'Show last time stop position  in player when a episode have been played.',
+      desc:
+          'Show last time stop position  in player when a episode have been played.',
       args: [time],
     );
   }
@@ -2759,7 +2764,8 @@ class S {
     return Intl.message(
       'Discovery feature reenabled, please reopen the app',
       name: 'toastDiscovery',
-      desc: 'Toast displayed when user tap Discovery Features Again in settings page.',
+      desc:
+          'Toast displayed when user tap Discovery Features Again in settings page.',
       args: [],
     );
   }

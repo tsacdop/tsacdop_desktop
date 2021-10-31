@@ -278,13 +278,11 @@ class _DropdownMenuState<T> extends State<_DropdownMenu<T>> {
             textStyle: route.style,
             child: ScrollConfiguration(
               behavior: const _DropdownScrollBehavior(),
-              child: Scrollbar(
-                child: ListView(
-                  controller: widget.route.scrollController,
-                  padding: kMaterialListPadding,
-                  shrinkWrap: true,
-                  children: children,
-                ),
+              child: ListView(
+                controller: widget.route.scrollController,
+                padding: kMaterialListPadding,
+                shrinkWrap: true,
+                children: children,
               ),
             ),
           ),

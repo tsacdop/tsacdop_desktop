@@ -16,6 +16,11 @@ void main() async {
     HttpOverrides.global = _HttpOverrides(settingsState.proxy);
   }
   runApp(ProviderScope(child: MyApp()));
+  // const initialSize = Size(1280, 720);
+  // appWindow.minSize = initialSize;
+  // appWindow.size = initialSize;
+  // appWindow.alignment = Alignment.center;
+  // appWindow.show();
 }
 
 class _HttpOverrides extends HttpOverrides {
@@ -44,7 +49,7 @@ class MyApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: S.delegate.supportedLocales,
-      home: LinuxHome(),
+      home: Home(),
     );
   }
 }

@@ -248,41 +248,42 @@ class _RecentTabState extends State<RecentTab> {
                     child: Stack(
                       children: [
                         LayoutBuilder(
-                          builder: (context, constraint) => Scrollbar(
-                            child: CustomScrollView(slivers: <Widget>[
-                              SliverToBoxAdapter(
-                                child: SizedBox(
-                                  height: 40,
+                          builder: (context, constraint) => CustomScrollView(
+                              controller: ScrollController(),
+                              physics: BouncingScrollPhysics(),
+                              slivers: <Widget>[
+                                SliverToBoxAdapter(
+                                  child: SizedBox(
+                                    height: 40,
+                                  ),
                                 ),
-                              ),
-                              SliverPadding(
-                                padding: EdgeInsets.only(left: 20, right: 10),
-                                sliver: EpisodesGrid(
-                                  width: constraint.maxWidth,
-                                  episodes: snapshot.data,
-                                  layout: _layout,
-                                  initNum: 0,
-                                  multiSelect: _multiSelect,
-                                  selectedList: _selectedEpisodes ?? [],
-                                  onSelect: (value) => setState(() {
-                                    _selectedEpisodes = value;
-                                  }),
+                                SliverPadding(
+                                  padding: EdgeInsets.only(left: 20, right: 10),
+                                  sliver: EpisodesGrid(
+                                    width: constraint.maxWidth,
+                                    episodes: snapshot.data,
+                                    layout: _layout,
+                                    initNum: 0,
+                                    multiSelect: _multiSelect,
+                                    selectedList: _selectedEpisodes ?? [],
+                                    onSelect: (value) => setState(() {
+                                      _selectedEpisodes = value;
+                                    }),
+                                  ),
                                 ),
-                              ),
-                              SliverList(
-                                delegate: SliverChildBuilderDelegate(
-                                  (context, index) {
-                                    return _loadMore
-                                        ? Container(
-                                            height: 2,
-                                            child: LinearProgressIndicator())
-                                        : Center();
-                                  },
-                                  childCount: 1,
+                                SliverList(
+                                  delegate: SliverChildBuilderDelegate(
+                                    (context, index) {
+                                      return _loadMore
+                                          ? Container(
+                                              height: 2,
+                                              child: LinearProgressIndicator())
+                                          : Center();
+                                    },
+                                    childCount: 1,
+                                  ),
                                 ),
-                              ),
-                            ]),
-                          ),
+                              ]),
                         ),
                         Column(
                           children: [

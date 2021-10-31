@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_gtk/flutter_gtk.dart';
 import 'package:line_icons/line_icons.dart';
@@ -18,7 +17,6 @@ class LinuxHome extends StatefulWidget {
 
 class _LinuxHomeState extends State<LinuxHome> {
   Widget _body;
-  OverlayEntry _overlayEntry;
   @override
   void initState() {
     _body = PodcastsPage();
@@ -32,9 +30,9 @@ class _LinuxHomeState extends State<LinuxHome> {
         children: [
           GestureDetector(
             behavior: HitTestBehavior.translucent,
-            onPanStart: (_) => appWindow.startDragging(),
+            // onPanStart: (_) => appWindow.startDragging(),
             child: AdwaitaHeaderBar(
-              onClose: () => appWindow.close(),
+              // onClose: () => appWindow.close(),
               leading: AdwaitaHeaderButton(
                 icon: Icons.add,
                 onTap: () => setState(() => _body = SearchPage()),

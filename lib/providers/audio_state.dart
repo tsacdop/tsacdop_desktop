@@ -56,7 +56,7 @@ class AudioState extends ChangeNotifier {
   bool _playing = false;
   bool get playing => _playing;
 
-  List<String> _queue;
+  List<String> _queue = [];
 
   List<String> get queue => _queue;
 
@@ -79,11 +79,10 @@ class AudioState extends ChangeNotifier {
       _playerRunning = true;
       notifyListeners();
     }
-    await _audioPlayer?.stop();
-    _playlist =
-        Playlist(medias: [await Media.network(episodeNew.enclosureUrl)]);
-    await _audioPlayer.open(_playlist);
-    _generalStateStream = _audioPlayer.generateStream.listen((event) {
+    _audioPlayer?.stop();
+    _playlist = Playlist(medias: [Media.network(episodeNew.enclosureUrl)]);
+    _audioPlayer.open(_playlist);
+    _generalStateStream = _audioPlayer.generalStream.listen((event) {
       if (event is GeneralState) {
         _volume = event.volume;
         notifyListeners();
@@ -103,11 +102,11 @@ class AudioState extends ChangeNotifier {
     });
     _playingEpisode = episodeNew;
     notifyListeners();
-    await _audioPlayer.play();
+    _audioPlayer.play();
   }
 
   void pauseAduio() async {
-    await _audioPlayer.pause();
+    _audioPlayer.pause();
   }
 
   void play() {
@@ -120,7 +119,7 @@ class AudioState extends ChangeNotifier {
     _position = seekValue;
     notifyListeners();
     if (end) {
-      await _audioPlayer.seek(seekValue);
+      _audioPlayer.seek(seekValue);
       _noSlide = true;
     }
   }
@@ -143,7 +142,7 @@ class AudioState extends ChangeNotifier {
     var seekPosition = _position + duration;
     print(seekPosition.inSeconds);
     if (seekPosition < Duration.zero) seekPosition = Duration.zero;
-    await _audioPlayer.seek(seekPosition);
+    _audioPlayer.seek(seekPosition);
   }
 
   Future<void> fastForward(Duration duration) async {

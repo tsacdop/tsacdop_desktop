@@ -102,15 +102,12 @@ class EpisodesGrid extends StatelessWidget {
             ? Center()
             : CircleAvatar(
                 backgroundColor: color.withOpacity(0.5),
-                backgroundImage: episode.avatarImage,
+                // backgroundImage: episode.avatarImage,
                 child: showNum
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(radius),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-                          child: _numberIndicater(context,
-                              index: index, color: Colors.white),
-                        ),
+                        child: _numberIndicater(context,
+                            index: index, color: Colors.white),
                       )
                     : Center(),
               ),
@@ -167,7 +164,10 @@ class EpisodesGrid extends StatelessWidget {
               final episode = episodes[index];
               return width == null
                   ? Container(
-                      color: context.primaryColorDark,
+                      decoration: BoxDecoration(
+                        color: context.primaryColorDark,
+                        borderRadius: BorderRadius.circular(6)
+                      ),
                       height: 40 * value,
                       child: SingleChildScrollView(
                         child: SizedBox(
@@ -398,35 +398,30 @@ class EpisodesGrid extends StatelessWidget {
             delegate:
                 SliverChildBuilderDelegate((BuildContext context, int index) {
               final c = episodes[index].backgroudColor(context);
-              return Column(
-                children: [
-                  InkWell(
-                    onHover: (value) {
-                      if (value && context.read(hoverEpisode).state == null)
-                        context.read(hoverEpisode).state = episodes[index];
-                      else
-                        context.read(hoverEpisode).state = null;
-                    },
-                    onTap: () =>
-                        context.read(openEpisode).state = episodes[index],
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.zero,
-                          color: context.primaryColor),
-                      height: 100,
-                      child: _layoutOneCard(context,
-                          index: index,
-                          isLiked: false,
-                          isDownloaded: false,
-                          showNum: showNumber,
-                          color: c,
-                          hideAvatar: false),
-                    ),
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(6),
+                  onHover: (value) {
+                    if (value && context.read(hoverEpisode).state == null)
+                      context.read(hoverEpisode).state = episodes[index];
+                    else
+                      context.read(hoverEpisode).state = null;
+                  },
+                  onTap: () =>
+                      context.read(openEpisode).state = episodes[index],
+                  child: Container(
+                    height: 100,
+                    child: _layoutOneCard(context,
+                        index: index,
+                        isLiked: false,
+                        isDownloaded: false,
+                        showNum: showNumber,
+                        color: c,
+                        hideAvatar: false),
                   ),
-                  SizedBox(
-                    height: 10,
-                  )
-                ],
+                ),
               );
             }, childCount: episodes.length),
           )

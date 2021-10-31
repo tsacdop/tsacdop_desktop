@@ -27,7 +27,8 @@ class _SearchPageState extends State<SearchPage> {
   String get _input => _controller.text;
 
   OutlineInputBorder _inputBorder(Color color) => OutlineInputBorder(
-      borderRadius: BorderRadius.zero, borderSide: BorderSide(color: color));
+      borderRadius: BorderRadius.circular(4),
+      borderSide: BorderSide(width: 2, color: color));
 
   @override
   void initState() {
@@ -42,40 +43,6 @@ class _SearchPageState extends State<SearchPage> {
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
-  }
-
-  void _reset() {
-    if (_input == '') {
-      setState(() {
-        _query = '';
-      });
-    }
-  }
-
-  void _submitSearch(String result) {
-    setState(() => _query = result);
-    if (result != '') {
-      context.read(selectedPodcast).state = null;
-      _saveHistory(result);
-    }
-  }
-
-  void _showResult() {
-    _focusNode?.unfocus();
-    _submitSearch('');
-    _submitSearch(_input);
-  }
-
-  Future<void> _saveHistory(String query) async {
-    final storage = KeyValueStorage(searchHistoryKey);
-    final history = await storage.getStringList();
-    if (!history.contains(query)) {
-      if (history.length >= 6) {
-        history.removeLast();
-      }
-      history.insert(0, query);
-      await storage.saveStringList(history);
-    }
   }
 
   @override
@@ -109,8 +76,8 @@ class _SearchPageState extends State<SearchPage> {
                                   hintText: context.s.searchEpisode,
                                   fillColor: context.primaryColor,
                                   filled: true,
-                                  border:
-                                      _inputBorder(context.primaryColorDark),
+                                  border: _inputBorder(context.primaryColorDark
+                                      .withOpacity(0.5)),
                                   focusedBorder:
                                       _inputBorder(context.accentColor))),
                         ),
@@ -138,12 +105,15 @@ class _SearchPageState extends State<SearchPage> {
                     ElevatedButton.icon(
                       icon: Icon(Icons.search),
                       label: Text(s.search),
-                      style: OutlinedButton.styleFrom(
+                      style: ElevatedButton.styleFrom(
                         elevation: 0,
-                        backgroundColor: context.accentColor,
-                        shape: RoundedRectangleBorder(),
+                        primary: context.accentColor,
+                        onPrimary: context.textColor,
+                        splashFactory: NoSplash.splashFactory,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4)),
                         padding: EdgeInsets.zero,
-                        minimumSize: Size(100, 58),
+                        minimumSize: Size(120, 58),
                       ),
                       onPressed: () {
                         _showResult();
@@ -231,6 +201,40 @@ class _SearchPageState extends State<SearchPage> {
           )
       ],
     );
+  }
+
+  void _reset() {
+    if (_input == '') {
+      setState(() {
+        _query = '';
+      });
+    }
+  }
+
+  void _submitSearch(String result) {
+    setState(() => _query = result);
+    if (result != '') {
+      context.read(selectedPodcast).state = null;
+      _saveHistory(result);
+    }
+  }
+
+  void _showResult() {
+    _focusNode?.unfocus();
+    _submitSearch('');
+    _submitSearch(_input);
+  }
+
+  Future<void> _saveHistory(String query) async {
+    final storage = KeyValueStorage(searchHistoryKey);
+    final history = await storage.getStringList();
+    if (!history.contains(query)) {
+      if (history.length >= 6) {
+        history.removeLast();
+      }
+      history.insert(0, query);
+      await storage.saveStringList(history);
+    }
   }
 }
 
@@ -559,11 +563,12 @@ class _SubscribeButton extends StatelessWidget {
       child: Text(s.subscribe),
       style: OutlinedButton.styleFrom(
         primary: context.textColor,
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+        splashFactory: NoSplash.splashFactory,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         backgroundColor: context.primaryColorDark,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       ),
-      onPressed: () => context.read(groupState.notifier).subscribePodcast(podcast),
+      onPressed: () =>
+          context.read(groupState.notifier).subscribePodcast(podcast),
     );
   }
 }

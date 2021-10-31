@@ -26,7 +26,6 @@ class MenuButton extends StatelessWidget {
             child: child),
       ),
     );
-    ;
   }
 }
 
@@ -229,6 +228,7 @@ class _PlayButtonState extends State<PlayButton> {
       child: InkWell(
         onTap: () =>
             context.read(audioState).loadEpisode(widget.episode.enclosureUrl),
+        borderRadius: BorderRadius.only(bottomRight: Radius.circular(6)),
         child: Stack(
           alignment: Alignment.center,
           children: [

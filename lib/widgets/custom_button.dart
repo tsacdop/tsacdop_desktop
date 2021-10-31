@@ -19,26 +19,35 @@ class CustomIconButton extends StatelessWidget {
       color: Colors.transparent,
       child: Stack(
         children: [
-          InkWell(
-            onTap: onPressed,
-            child: SizedBox(
-              height: size.height,
-              width: size.width,
-              child: IconTheme(
-                  data: IconThemeData(
-                      color: pressed
-                          ? context.textColor
-                          : context.textColor.withOpacity(0.4)),
-                  child: icon),
+          ClipRRect(
+            borderRadius: BorderRadius.only(
+                topRight: Radius.circular(4), bottomRight: Radius.circular(4)),
+            child: InkWell(
+              onTap: onPressed,
+              child: SizedBox(
+                height: size.height,
+                width: size.width,
+                child: IconTheme(
+                    data: IconThemeData(
+                        color: pressed
+                            ? context.accentColor
+                            : context.textColor),
+                    child: icon),
+              ),
             ),
           ),
           if (pressed)
             Positioned(
               left: 0,
               child: Container(
-                  width: size.width / 10,
-                  height: size.height,
-                  color: context.accentColor),
+                width: size.width / 10,
+                height: size.height,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(4),
+                        bottomRight: Radius.circular(4)),
+                    color: context.accentColor),
+              ),
             )
         ],
       ),
