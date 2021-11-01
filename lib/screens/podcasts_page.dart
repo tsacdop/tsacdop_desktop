@@ -137,39 +137,36 @@ class __PodcastGroupState extends State<_PodcastGroup> {
       Consumer(
         builder: (context, watch, _) {
           final selected = watch(openPodcast).state == podcast;
-          return Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: CustomListTile(
-              selected: selected,
-              onTap: () {
-                context.read(openEpisode).state = null;
-                context.read(openPodcast).state = podcast;
-              },
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 10),
-                    child: CircleAvatar(
-                        backgroundColor:
-                            podcast.backgroudColor(context).withOpacity(0.5),
-                        backgroundImage: podcast.avatarImage),
+          return CustomListTile(
+            selected: selected,
+            onTap: () {
+              context.read(openEpisode).state = null;
+              context.read(openPodcast).state = podcast;
+            },
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 20, horizontal: 10),
+                  child: CircleAvatar(
+                      backgroundColor:
+                          podcast.backgroudColor(context).withOpacity(0.5),
+                      backgroundImage: podcast.avatarImage),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(podcast.title,
+                          maxLines: 1, style: context.textTheme.bodyText1),
+                      Text(
+                        podcast.author,
+                        maxLines: 1,
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(podcast.title,
-                            maxLines: 1, style: context.textTheme.bodyText1),
-                        Text(
-                          podcast.author,
-                          maxLines: 1,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         },

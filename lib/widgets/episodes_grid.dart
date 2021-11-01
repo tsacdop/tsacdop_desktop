@@ -101,8 +101,8 @@ class EpisodesGrid extends StatelessWidget {
         child: hideAvatar
             ? Center()
             : CircleAvatar(
-                backgroundColor: color.withOpacity(0.5),
-                // backgroundImage: episode.avatarImage,
+                backgroundColor: color.withOpacity(0.8),
+                backgroundImage: showNum ? null : episode.avatarImage,
                 child: showNum
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(radius),
