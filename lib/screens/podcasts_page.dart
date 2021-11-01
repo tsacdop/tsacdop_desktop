@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tsacdop_desktop/widgets/custom_list_tile.dart';
+import 'package:resizable_widget/resizable_widget.dart';
 
 import '../models/episodebrief.dart';
 import '../models/podcastlocal.dart';
 import '../providers/group_state.dart';
 import '../utils/extension_helper.dart';
 import '../widgets/custom_dropdown.dart';
+import '../widgets/custom_list_tile.dart';
 import 'episode_detail.dart';
 import 'home_tabs.dart';
 import 'podcast_detail.dart';
@@ -22,26 +23,23 @@ class PodcastsPage extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ResizableWidget(
+        isHorizontalSeparator: false, // optional
+        isDisabledSmartHide: false, // optional
+        separatorColor: context.primaryColorDark, // optional
+        separatorSize: 1,
+        percentages: [0.3, 0.7],
         children: [
-          Expanded(flex: 1, child: _PodcastGroup()),
-          Container(
-            width: 2,
-            color: context.primaryColorDark,
-          ),
-          Expanded(
-            flex: 2,
-            child: Consumer(
-              builder: (context, watch, _) {
-                final podcast = watch(openPodcast).state;
-                final episode = watch(openEpisode).state;
-                if (episode != null)
-                  return EpisodeDetail(episode);
-                else if (podcast != null) return PodcastDetail(podcast);
-                return HomeTabs();
-              },
-            ),
+          _PodcastGroup(),
+          Consumer(
+            builder: (context, watch, _) {
+              final podcast = watch(openPodcast).state;
+              final episode = watch(openEpisode).state;
+              if (episode != null)
+                return EpisodeDetail(episode);
+              else if (podcast != null) return PodcastDetail(podcast);
+              return HomeTabs();
+            },
           ),
         ],
       ),
@@ -146,8 +144,8 @@ class __PodcastGroupState extends State<_PodcastGroup> {
             child: Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 20, horizontal: 10),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
                   child: CircleAvatar(
                       backgroundColor:
                           podcast.backgroudColor(context).withOpacity(0.5),

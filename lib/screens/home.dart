@@ -49,6 +49,7 @@ class _HomeState extends State<Home> {
                 width: 300,
                 decoration: BoxDecoration(
                     color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(4.0),
                     border: Border.all(color: context.primaryColorDark)),
                 child: Consumer(builder: (context, watch, child) {
                   var tasks = watch(downloadProvider);
@@ -221,9 +222,11 @@ class _NotificationBar extends ConsumerWidget {
   Widget _notifierText(String text, BuildContext context) {
     return Container(
       height: 30,
-      color: Colors.grey[600].withOpacity(0.6),
+      decoration: BoxDecoration(
+          color: Colors.grey[600].withOpacity(0.6),
+          borderRadius: BorderRadius.circular(4.0)),
       padding: EdgeInsets.symmetric(horizontal: 10),
-      alignment: Alignment.centerLeft,
+      alignment: Alignment.centerRight,
       child: Text(text, maxLines: 1, style: TextStyle(color: Colors.white)),
     );
   }

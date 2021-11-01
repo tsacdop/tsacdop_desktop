@@ -87,12 +87,12 @@ class _DownloadIconState extends State<DownloadIcon> {
   }
 
   Future<void> _deleleDonwload() async {
-    await context.read(downloadProvider).deleteDownload(widget.episode);
+    await context.read(downloadProvider.notifier).deleteDownload(widget.episode);
     if (mounted) setState(() {});
   }
 
   void _download() {
-    context.read(downloadProvider).download(widget.episode);
+    context.read(downloadProvider.notifier).download(widget.episode);
     setState(() {});
   }
 

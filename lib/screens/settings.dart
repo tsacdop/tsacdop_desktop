@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/intl_standalone.dart';
+import 'package:resizable_widget/resizable_widget.dart';
 import 'package:tsacdop_desktop/widgets/custom_list_tile.dart';
 
 import '../generated/l10n.dart';
@@ -31,74 +32,69 @@ class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     final s = context.s;
-    return Row(
+    return ResizableWidget(
+      key: UniqueKey(),
+      isHorizontalSeparator: false, // optional
+      isDisabledSmartHide: false, // optional
+      separatorColor: context.primaryColorDark, // optional
+      separatorSize: 1,
+      percentages: [0.3, 0.7],
       children: [
-        Expanded(
-          flex: 1,
-          child: ListView(
-            children: [
-              SizedBox(height: 8),
-              CustomListTile(
-                onTap: () {
-                  setState(() {
-                    _settings = ThemeSettings();
-                    _settingsIndex = 0;
-                  });
-                },
-                leading:
-                    Icon(LineIcons.adjust_solid, color: context.accentColor),
-                title: s.settingsAppearance,
-                subtitle: s.settingsAppearanceDes,
-                selected: _settingsIndex == 0,
-              ),
-              CustomListTile(
-                onTap: () => setState(() {
-                  _settings = StorageSetting();
-                  _settingsIndex = 1;
-                }),
-                leading: Icon(LineIcons.save, color: Colors.green[700]),
-                title: s.settingStorage,
-                subtitle: s.settingsStorageDes,
-                selected: _settingsIndex == 1,
-              ),
-              CustomListTile(
-                onTap: () => setState(() {
-                  _settings = LanguageSetting(
-                    onChange: () => setState(() {}),
-                  );
-                  _settingsIndex = 2;
-                }),
-                leading:
-                    Icon(LineIcons.language_solid, color: Colors.purpleAccent),
-                title: s.settingsLanguages,
-                subtitle: s.settingsLanguagesDes,
-                selected: _settingsIndex == 2,
-              ),
-              // ListTile(
-              //   leading: Icon(LineIcons.file_code_solid,
-              //       color: Colors.lightGreen[700]),
-              //   title: Text(s.settingsBackup),
-              //   subtitle: Text(s.settingsBackupDes),
-              // ),
-              // ListTile(
-              //     leading: Icon(LineIcons.book_open_solid,
-              //         color: Colors.purple[700]),
-              //     title: Text(s.settingsLibraries),
-              //     subtitle: Text(s.settingsLibrariesDes)),
-            ],
-          ),
+        ListView(
+          children: [
+            SizedBox(height: 8),
+            CustomListTile(
+              onTap: () {
+                setState(() {
+                  _settings = ThemeSettings();
+                  _settingsIndex = 0;
+                });
+              },
+              leading:
+                  Icon(LineIcons.adjust_solid, color: context.accentColor),
+              title: s.settingsAppearance,
+              subtitle: s.settingsAppearanceDes,
+              selected: _settingsIndex == 0,
+            ),
+            CustomListTile(
+              onTap: () => setState(() {
+                _settings = StorageSetting();
+                _settingsIndex = 1;
+              }),
+              leading: Icon(LineIcons.save, color: Colors.green[700]),
+              title: s.settingStorage,
+              subtitle: s.settingsStorageDes,
+              selected: _settingsIndex == 1,
+            ),
+            CustomListTile(
+              onTap: () => setState(() {
+                _settings = LanguageSetting(
+                  onChange: () => setState(() {}),
+                );
+                _settingsIndex = 2;
+              }),
+              leading:
+                  Icon(LineIcons.language_solid, color: Colors.purpleAccent),
+              title: s.settingsLanguages,
+              subtitle: s.settingsLanguagesDes,
+              selected: _settingsIndex == 2,
+            ),
+            // ListTile(
+            //   leading: Icon(LineIcons.file_code_solid,
+            //       color: Colors.lightGreen[700]),
+            //   title: Text(s.settingsBackup),
+            //   subtitle: Text(s.settingsBackupDes),
+            // ),
+            // ListTile(
+            //     leading: Icon(LineIcons.book_open_solid,
+            //         color: Colors.purple[700]),
+            //     title: Text(s.settingsLibraries),
+            //     subtitle: Text(s.settingsLibrariesDes)),
+          ],
         ),
-        Container(
-          width: 1,
-          height: double.infinity,
-          color: context.primaryColorDark,
-        ),
-        Expanded(
-          flex: 2,
-          child: AnimatedSwitcher(
-            child: _settings,
-            duration: Duration(milliseconds: 300),
-          ),
+        AnimatedSwitcher(
+          child: _settings,
+          duration: Duration(milliseconds: 300),
         )
       ],
     );

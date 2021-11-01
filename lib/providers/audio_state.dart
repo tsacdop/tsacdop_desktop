@@ -173,11 +173,11 @@ class AudioState extends ChangeNotifier {
   void addToPlaylist(String url) async {
     if (!_queue.contains(url)) {
       _queue = [..._queue, url];
-      final downloaded = await _dbHelper.isDownloaded(url);
-      if (!downloaded) {
-        final episode = await _dbHelper.getRssItemWithUrl(url);
-        await read(downloadProvider).download(episode);
-      }
+      // final downloaded = await _dbHelper.isDownloaded(url);
+      // if (!downloaded) {
+      //   final episode = await _dbHelper.getRssItemWithUrl(url);
+      //   await read(downloadProvider.notifier).download(episode);
+      // }
       _saveQueue();
     }
   }

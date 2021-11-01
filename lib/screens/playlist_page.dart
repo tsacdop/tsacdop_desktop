@@ -24,12 +24,11 @@ class PlaylistPage extends StatelessWidget {
       return Center();
     }
     return Container(
-      decoration: BoxDecoration(
-        color: color,
-      ),
+      decoration:
+          BoxDecoration(color: color, borderRadius: BorderRadius.circular(20)),
       height: 25.0,
       margin: EdgeInsets.only(right: 10.0),
-      padding: EdgeInsets.symmetric(horizontal: 8.0),
+      padding: EdgeInsets.symmetric(horizontal: 10.0),
       alignment: Alignment.center,
       child: Text(text, style: TextStyle(fontSize: 14.0, color: Colors.black)),
     );
@@ -71,18 +70,23 @@ class PlaylistPage extends StatelessWidget {
                       : ListView.builder(
                           shrinkWrap: true,
                           itemCount: snapshot.data.length,
+                          padding: EdgeInsets.symmetric(vertical: 10),
                           itemBuilder: (context, index) {
                             final episode = episodes[index];
                             return ListTile(
-                              leading: CircleAvatar(
-                                  backgroundColor: episodes[index]
-                                      .backgroudColor(context)
-                                      .withOpacity(0.5),
-                                  backgroundImage: episodes[index].avatarImage),
+                              leading: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: CircleAvatar(
+                                    backgroundColor: episodes[index]
+                                        .backgroudColor(context)
+                                        .withOpacity(0.5),
+                                    backgroundImage:
+                                        episodes[index].avatarImage),
+                              ),
                               title: Text(episodes[index].title),
                               subtitle: Container(
                                 padding: EdgeInsets.only(top: 5, bottom: 5),
-                                height: 35,
+                                height: 50,
                                 child: Row(
                                   children: <Widget>[
                                     if (episode.explicit == 1)
@@ -110,29 +114,27 @@ class PlaylistPage extends StatelessWidget {
                                               ? ''
                                               : '${(episode.enclosureLength) ~/ 1000000}MB',
                                           Colors.lightBlue[300]),
-                                    SizedBox(
-                                      height: 25,
-                                      child: ElevatedButton(
-                                        child: Text(s.play),
-                                        style: OutlinedButton.styleFrom(
-                                          elevation: 0,
-                                          backgroundColor: context.accentColor,
-                                          shape: RoundedRectangleBorder(
-                                              side: BorderSide(
-                                                  width: 4,
-                                                  color: context
-                                                      .primaryColorDark)),
-                                          padding: EdgeInsets.zero,
-                                          minimumSize: Size(100, 30),
-                                        ),
-                                        onPressed: () {
-                                          context.read(audioState).loadEpisode(
-                                              episode.enclosureUrl);
-                                        },
-                                      ),
-                                    ),
                                   ],
                                 ),
+                              ),
+                              trailing: ElevatedButton(
+                                child: Text(s.play),
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  splashFactory: NoSplash.splashFactory,
+                                  shadowColor: Colors.transparent,
+                                  onSurface: Colors.transparent,
+                                  primary: context.accentColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(4)),
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: Size(100, 40),
+                                ),
+                                onPressed: () {
+                                  context
+                                      .read(audioState)
+                                      .loadEpisode(episode.enclosureUrl);
+                                },
                               ),
                             );
                           },

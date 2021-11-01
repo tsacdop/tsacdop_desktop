@@ -102,13 +102,13 @@ class _SearchPageState extends State<SearchPage> {
                       ]),
                     ),
                     SizedBox(width: 20),
-                    ElevatedButton.icon(
-                      icon: Icon(Icons.search),
-                      label: Text(s.search),
+                    ElevatedButton(
+                      // icon: Icon(Icons.search),
+                      child: Text(s.search),
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
                         primary: context.accentColor,
-                        onPrimary: context.textColor,
+                        shadowColor: Colors.transparent,
                         splashFactory: NoSplash.splashFactory,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4)),

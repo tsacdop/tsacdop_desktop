@@ -41,6 +41,7 @@ dependencies:
   webfeed:
     git:
       url: https://github.com/stonega/webfeed.git
+  resizable_widget: ^1.0.5
 
 dependency_overrides:
   xml: 5.0.0

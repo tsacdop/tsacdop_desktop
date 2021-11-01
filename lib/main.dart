@@ -1,11 +1,11 @@
 import 'dart:io';
 
+import 'package:dart_vlc/dart_vlc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'generated/l10n.dart';
-import 'linux_ui/home.dart';
 import 'screens/home.dart';
 import 'providers/settings_state.dart';
 
@@ -15,12 +15,8 @@ void main() async {
   if (settingsState.proxy != '') {
     HttpOverrides.global = _HttpOverrides(settingsState.proxy);
   }
+  DartVLC.initialize();
   runApp(ProviderScope(child: MyApp()));
-  // const initialSize = Size(1280, 720);
-  // appWindow.minSize = initialSize;
-  // appWindow.size = initialSize;
-  // appWindow.alignment = Alignment.center;
-  // appWindow.show();
 }
 
 class _HttpOverrides extends HttpOverrides {
