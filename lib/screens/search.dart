@@ -564,6 +564,7 @@ class _SubscribeButton extends StatelessWidget {
       style: OutlinedButton.styleFrom(
         primary: context.textColor,
         splashFactory: NoSplash.splashFactory,
+        minimumSize: Size(100, 50),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         backgroundColor: context.primaryColorDark,
       ),

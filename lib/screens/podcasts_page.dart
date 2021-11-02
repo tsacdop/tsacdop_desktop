@@ -102,7 +102,7 @@ class __PodcastGroupState extends State<_PodcastGroup> {
                       barrierDismissible: true,
                       barrierLabel: MaterialLocalizations.of(context)
                           .modalBarrierDismissLabel,
-                      barrierColor: Colors.black54,
+                      barrierColor: Colors.transparent,
                       transitionDuration: const Duration(milliseconds: 200),
                       pageBuilder: (context, animaiton, secondaryAnimation) =>
                           AddGroup());
@@ -156,7 +156,9 @@ class __PodcastGroupState extends State<_PodcastGroup> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(podcast.title,
-                          maxLines: 1, style: context.textTheme.bodyText1),
+                          maxLines: 1,
+                          style: context.textTheme.bodyText1
+                              .copyWith(fontWeight: FontWeight.bold)),
                       Text(
                         podcast.author,
                         maxLines: 1,
@@ -197,80 +199,88 @@ class _AddGroupState extends State<AddGroup> {
   @override
   Widget build(BuildContext context) {
     final s = context.s;
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      elevation: 1,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-      titlePadding: EdgeInsets.all(20),
-      actionsPadding: EdgeInsets.all(4),
-      actions: <Widget>[
-        TextButton(
-          style: OutlinedButton.styleFrom(
-            primary: context.textColor,
-            splashFactory: NoSplash.splashFactory,
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(
-            s.cancel,
-            style: TextStyle(color: Colors.grey[600]),
+    return Stack(
+      children: [
+        Positioned(
+          top: 20,
+          left: 40,
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            elevation: 4,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+            titlePadding: EdgeInsets.all(20),
+            actionsPadding: EdgeInsets.all(4),
+            actions: <Widget>[
+              TextButton(
+                style: OutlinedButton.styleFrom(
+                  primary: context.textColor,
+                  splashFactory: NoSplash.splashFactory,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(
+                  s.cancel,
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+              ),
+              TextButton(
+                style: OutlinedButton.styleFrom(
+                  primary: context.textColor,
+                  splashFactory: NoSplash.splashFactory,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                ),
+                onPressed: () async {
+                  if (context.read(groupState.notifier).isExisted(_newGroup)) {
+                    setState(() => _error = 1);
+                  } else {
+                    context.read(groupState.notifier).addGroup(PodcastGroup(_newGroup));
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: Text(s.confirm, style: TextStyle(color: context.accentColor)),
+              )
+            ],
+            title: SizedBox(child: Text(s.newGroup)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                TextField(
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                    hintText: s.newGroup,
+                    hintStyle: TextStyle(fontSize: 18),
+                    filled: true,
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: context.accentColor, width: 2.0),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: context.accentColor, width: 2.0),
+                    ),
+                  ),
+                  cursorRadius: Radius.circular(2),
+                  autofocus: true,
+                  maxLines: 1,
+                  controller: _controller,
+                  onChanged: (value) {
+                    _newGroup = value;
+                  },
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: (_error == 1)
+                      ? Text(
+                          s.groupExisted,
+                          style: TextStyle(color: Colors.red[400]),
+                        )
+                      : Center(),
+                ),
+              ],
+            ),
           ),
         ),
-        TextButton(
-          style: OutlinedButton.styleFrom(
-            primary: context.textColor,
-            splashFactory: NoSplash.splashFactory,
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-          ),
-          onPressed: () async {
-            if (context.read(groupState).isExisted(_newGroup)) {
-              setState(() => _error = 1);
-            } else {
-              context.read(groupState).addGroup(PodcastGroup(_newGroup));
-              Navigator.of(context).pop();
-            }
-          },
-          child: Text(s.confirm, style: TextStyle(color: context.accentColor)),
-        )
       ],
-      title: SizedBox(child: Text(s.newGroup)),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          TextField(
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 10),
-              hintText: s.newGroup,
-              hintStyle: TextStyle(fontSize: 18),
-              filled: true,
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: context.accentColor, width: 2.0),
-              ),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: context.accentColor, width: 2.0),
-              ),
-            ),
-            cursorRadius: Radius.circular(2),
-            autofocus: true,
-            maxLines: 1,
-            controller: _controller,
-            onChanged: (value) {
-              _newGroup = value;
-            },
-          ),
-          Container(
-            alignment: Alignment.centerLeft,
-            child: (_error == 1)
-                ? Text(
-                    s.groupExisted,
-                    style: TextStyle(color: Colors.red[400]),
-                  )
-                : Center(),
-          ),
-        ],
-      ),
     );
   }
 }

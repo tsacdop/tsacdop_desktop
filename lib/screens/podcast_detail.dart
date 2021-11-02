@@ -416,42 +416,42 @@ class __EpisodeListState extends State<_EpisodeList> {
                       ),
                     ),
             ),
-            FutureBuilder<int>(
-                future: _getLayout(),
-                builder: (context, snapshot) {
-                  if (_layout == null && snapshot.data != null) {
-                    _layout = Layout.values[snapshot.data];
-                  }
-                  return Material(
-                    color: Colors.transparent,
-                    clipBehavior: Clip.hardEdge,
-                    child: LayoutButton(
-                      layout: _layout ?? Layout.one,
-                      onPressed: (layout) => setState(() {
-                        _layout = layout;
-                      }),
-                    ),
-                  );
-                }),
-            Material(
-                color: Colors.transparent,
-                clipBehavior: Clip.hardEdge,
-                borderRadius: BorderRadius.circular(4),
-                child: IconButton(
-                  icon: SizedBox(
-                    width: 20,
-                    height: 10,
-                    child: CustomPaint(
-                        painter:
-                            MultiSelectPainter(color: context.accentColor)),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _selectedEpisodes = [];
-                      _multiSelect = true;
-                    });
-                  },
-                )),
+            // FutureBuilder<int>(
+            //     future: _getLayout(),
+            //     builder: (context, snapshot) {
+            //       if (_layout == null && snapshot.data != null) {
+            //         _layout = Layout.values[snapshot.data];
+            //       }
+            //       return Material(
+            //         color: Colors.transparent,
+            //         clipBehavior: Clip.hardEdge,
+            //         child: LayoutButton(
+            //           layout: _layout ?? Layout.one,
+            //           onPressed: (layout) => setState(() {
+            //             _layout = layout;
+            //           }),
+            //         ),
+            //       );
+            //     }),
+            // Material(
+            //     color: Colors.transparent,
+            //     clipBehavior: Clip.hardEdge,
+            //     borderRadius: BorderRadius.circular(4),
+            //     child: IconButton(
+            //       icon: SizedBox(
+            //         width: 20,
+            //         height: 10,
+            //         child: CustomPaint(
+            //             painter:
+            //                 MultiSelectPainter(color: context.accentColor)),
+            //       ),
+            //       onPressed: () {
+            //         setState(() {
+            //           _selectedEpisodes = [];
+            //           _multiSelect = true;
+            //         });
+            //       },
+            //     )),
             SizedBox(width: 10)
           ],
         ));

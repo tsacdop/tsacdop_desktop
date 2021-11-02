@@ -1,0 +1,62 @@
+name: Build tsacdop desktop
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build_linux:
+    name: Tsacdop Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: "beta"
+      - run: sudo apt-get update
+      - run: sudo apt-get install clang cmake ninja-build pkg-config libgtk-3-dev libwebkit2gtk-4.0-dev libmediainfo-dev dpkg-dev alien
+      - run: flutter config --enable-linux-desktop
+      - run: flutter pub get
+      - run: flutter build linux --verbose
+
+      - name: Build .deb executable
+        run: |
+          cp -fr build/linux/x64/release/bundle linux/debian/usr/bin
+          dpkg-deb --build --root-owner-group linux/debian
+          cp linux/*.deb tsacdop-linux-x86_64.deb
+          
+      - name: Build .rpm executable
+        run: |
+          alien -r tsacdop-linux-x86_64.deb
+          mv tsacdop*.rpm tsacdop-linux-x86_64.rpm
+
+      - name: Build Tarball
+        run: |
+          mkdir -p AppDir/
+          cp -r linux/debian/usr AppDir/
+          ln -sr AppDir/usr/bin/tsacdop AppDir/tsacdop
+          tar czf tsacdop-linux-x86_64.tar.gz -C AppDir/ .
+
+      - name: Build AppImage
+        run: |
+          echo '#!/bin/sh
+          cd "$(dirname "$0")"
+          exec ./tsacdop' > AppDir/AppRun
+          chmod +x AppDir/AppRun
+          ln -sr AppDir/usr/share/icons/hicolor/256x256/apps/tsacdop.png AppDir/tsacdop.png
+          cp AppDir/usr/share/applications/tsacdop.desktop AppDir/tsacdop.desktop
+          curl -L https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -o appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
+          ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir/ tsacdop-linux-x86_64.AppImage
+
+      # - name: Release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     draft: true
+      #     prerelease: false
+      #     body: ""
+      #     tag_name: "vnext"
+      #     files: tsacdop-linux-*
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+    

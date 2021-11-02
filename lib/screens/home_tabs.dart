@@ -314,33 +314,33 @@ class _RecentTabState extends State<RecentTab> {
                                             },
                                           ),
                                         ),
-                                        Material(
-                                          color: Colors.transparent,
-                                          child: LayoutButton(
-                                            layout: _layout,
-                                            onPressed: (layout) => setState(() {
-                                              _layout = layout;
-                                            }),
-                                          ),
-                                        ),
-                                        Material(
-                                            color: Colors.transparent,
-                                            child: IconButton(
-                                              icon: SizedBox(
-                                                width: 20,
-                                                height: 10,
-                                                child: CustomPaint(
-                                                    painter: MultiSelectPainter(
-                                                        color: context
-                                                            .accentColor)),
-                                              ),
-                                              onPressed: () {
-                                                setState(() {
-                                                  _selectedEpisodes = [];
-                                                  _multiSelect = true;
-                                                });
-                                              },
-                                            )),
+                                        // Material(
+                                        //   color: Colors.transparent,
+                                        //   child: LayoutButton(
+                                        //     layout: _layout,
+                                        //     onPressed: (layout) => setState(() {
+                                        //       _layout = layout;
+                                        //     }),
+                                        //   ),
+                                        // ),
+                                        // Material(
+                                        //     color: Colors.transparent,
+                                        //     child: IconButton(
+                                        //       icon: SizedBox(
+                                        //         width: 20,
+                                        //         height: 10,
+                                        //         child: CustomPaint(
+                                        //             painter: MultiSelectPainter(
+                                        //                 color: context
+                                        //                     .accentColor)),
+                                        //       ),
+                                        //       onPressed: () {
+                                        //         setState(() {
+                                        //           _selectedEpisodes = [];
+                                        //           _multiSelect = true;
+                                        //         });
+                                        //       },
+                                        //     )),
                                       ],
                                     ),
                                   )),
