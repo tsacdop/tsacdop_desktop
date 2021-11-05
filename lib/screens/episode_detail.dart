@@ -31,7 +31,7 @@ class EpisodeDetail extends StatelessWidget {
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () => context.read(openEpisode).state = null,
-                  hoverColor: context.primaryColorDark.withOpacity(0.3),
+                  hoverColor: context.accentColor,
                   child: Container(
                     height: 30,
                     width: 30,

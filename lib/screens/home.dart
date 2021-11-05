@@ -63,6 +63,7 @@ class _HomeState extends State<Home> {
                     itemBuilder: (context, index) {
                       final task = tasks[index];
                       return ListTile(
+                        leading: Text(tasks[index].progress),
                         title: Text(
                           task.episode.title,
                           maxLines: 1,
@@ -208,7 +209,7 @@ class _HomeState extends State<Home> {
             ],
           ),
           Positioned(
-              left: 0,
+              right: 0,
               bottom: 0,
               child: IgnorePointer(child: _NotificationBar())),
         ],
@@ -224,7 +225,7 @@ class _NotificationBar extends ConsumerWidget {
       height: 30,
       decoration: BoxDecoration(
           color: Colors.grey[600].withOpacity(0.6),
-          borderRadius: BorderRadius.circular(4.0)),
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(4.0))),
       padding: EdgeInsets.symmetric(horizontal: 10),
       alignment: Alignment.centerRight,
       child: Text(text, maxLines: 1, style: TextStyle(color: Colors.white)),

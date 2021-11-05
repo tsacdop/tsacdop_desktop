@@ -87,7 +87,9 @@ class _DownloadIconState extends State<DownloadIcon> {
   }
 
   Future<void> _deleleDonwload() async {
-    await context.read(downloadProvider.notifier).deleteDownload(widget.episode);
+    await context
+        .read(downloadProvider.notifier)
+        .deleteDownload(widget.episode);
     if (mounted) setState(() {});
   }
 
@@ -229,19 +231,18 @@ class _PlayButtonState extends State<PlayButton> {
         onTap: () =>
             context.read(audioState).loadEpisode(widget.episode.enclosureUrl),
         borderRadius: BorderRadius.only(bottomRight: Radius.circular(6)),
+        highlightColor: context.accentColor.withAlpha(70),
         child: Stack(
           alignment: Alignment.center,
           children: [
-            FutureBuilder(
-              future: _isDownloaded(),
-              initialData: false,
-              builder: (context, snapshot) {
-                return Container(
-                    height: 40,
-                    width: 120,
-                    color:
-                        snapshot.data ? context.accentColor : Colors.grey[700]);
-              },
+            Container(
+              height: 40,
+              width: 120,
+              decoration: BoxDecoration(
+                color: context.accentColor,
+                borderRadius:
+                    BorderRadius.only(bottomRight: Radius.circular(6)),
+              ),
             ),
             Consumer(builder: (context, watch, child) {
               final tasks = watch(downloadProvider);

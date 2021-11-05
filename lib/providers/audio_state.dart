@@ -1,14 +1,14 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:dart_vlc/dart_vlc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:desktop_notifications/desktop_notifications.dart';
 
 import '../models/episodebrief.dart';
 import '../storage/key_value_storage.dart';
 import '../storage/sqflite_db.dart';
-
-import 'downloader.dart';
 
 final audioState = ChangeNotifierProvider((ref) => AudioState(ref.read));
 
@@ -27,11 +27,13 @@ class AudioState extends ChangeNotifier {
     _generalStateStream.cancel();
     _playbackStateStream.cancel();
     _postionStateStream.cancel();
+    _notifyClinet?.close();
     super.dispose();
   }
 
   final _dbHelper = DBHelper();
   final _playlistStorage = KeyValueStorage(playlistKey);
+  final _notifyClinet = NotificationsClient();
   final Reader read;
 
   Player _audioPlayer;
@@ -68,11 +70,6 @@ class AudioState extends ChangeNotifier {
   var _noSlide = true;
 
   void loadEpisode(String url) async {
-    // final downloaded = await _dbHelper.isDownloaded(url);
-    // if (!downloaded) {
-    //   final episode = await _dbHelper.getRssItemWithUrl(url);
-    //   await read(downloadProvider.notifier).download(episode);
-    // }
     final episodeNew = await _dbHelper.getRssItemWithUrl(url);
     if (_audioPlayer == null) {
       _audioPlayer = Player(id: 69420);
@@ -101,6 +98,7 @@ class AudioState extends ChangeNotifier {
       }
     });
     _playingEpisode = episodeNew;
+    _notifyEpisode(_playingEpisode);
     notifyListeners();
     _audioPlayer.play();
   }
@@ -173,11 +171,6 @@ class AudioState extends ChangeNotifier {
   void addToPlaylist(String url) async {
     if (!_queue.contains(url)) {
       _queue = [..._queue, url];
-      // final downloaded = await _dbHelper.isDownloaded(url);
-      // if (!downloaded) {
-      //   final episode = await _dbHelper.getRssItemWithUrl(url);
-      //   await read(downloadProvider.notifier).download(episode);
-      // }
       _saveQueue();
     }
   }
@@ -185,6 +178,12 @@ class AudioState extends ChangeNotifier {
   void removeFromPlaylist(String url) {
     _queue = _queue.where((e) => e != url).toList();
     _saveQueue();
+  }
+
+  void _notifyEpisode(EpisodeBrief episode) {
+    if(Platform.isLinux) {
+      _notifyClinet.notify(episode.title, appName: 'Tsacdop', appIcon: 'media-playback-start');
+    }
   }
 }
 

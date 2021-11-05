@@ -412,7 +412,7 @@ class EpisodesGrid extends StatelessWidget {
                   onTap: () =>
                       context.read(openEpisode).state = episodes[index],
                   child: Container(
-                    height: 100,
+                    height: 120,
                     child: _layoutOneCard(context,
                         index: index,
                         isLiked: false,
