@@ -58,6 +58,9 @@ class AudioState extends ChangeNotifier {
   bool _playing = false;
   bool get playing => _playing;
 
+  bool _buffering = false;
+  bool get buffering => _buffering;
+
   List<String> _queue = [];
 
   List<String> get queue => _queue;
@@ -87,7 +90,14 @@ class AudioState extends ChangeNotifier {
     });
     _playbackStateStream = _audioPlayer.playbackStream.listen((event) {
       if (event is PlaybackState) {
+        if (event.isCompleted) {
+          stop();
+        }
+        print(event.toString());
         _playing = event.isPlaying;
+        _buffering = !event.isSeekable;
+        print(_buffering);
+        notifyListeners();
       }
     });
     _postionStateStream = _audioPlayer.positionStream.listen((event) {

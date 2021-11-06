@@ -14,7 +14,7 @@ class PlayerWidget extends ConsumerWidget {
     final audio = watch(audioState);
     if (audio.playerRunning)
       return Container(
-        height: 100,
+        height: 120,
         width: double.infinity,
         color: context.primaryColor,
         child: Material(
@@ -22,8 +22,8 @@ class PlayerWidget extends ConsumerWidget {
           child: Row(
             children: [
               SizedBox(
-                height: 100,
-                width: 100,
+                height: 120,
+                width: 120,
                 child: audio.playingEpisode == null
                     ? Center()
                     : Image.file(File("${audio.playingEpisode.imagePath}")),
@@ -46,8 +46,8 @@ class PlayerWidget extends ConsumerWidget {
               ),
               Expanded(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    SizedBox(height: 10),
                     Material(
                       color: Colors.transparent,
                       child: Row(
@@ -55,28 +55,39 @@ class PlayerWidget extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Expanded(
-                            flex: 2,
+                            flex: 3,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 IconButton(
+                                  padding: EdgeInsets.zero,
                                   splashRadius: 20,
                                   icon: Icon(LineIcons.fast_backward_solid),
                                   onPressed: () async =>
                                       await audio.rewind(Duration(seconds: 15)),
                                 ),
-                                audio.playing
-                                    ? IconButton(
-                                        splashRadius: 20,
-                                        icon: Icon(LineIcons.pause_circle_solid,
-                                            size: 25),
-                                        onPressed: audio.pauseAduio,
+                                audio.buffering
+                                    ? CircularProgressIndicator(
+                                        color: context.accentColor,
                                       )
-                                    : IconButton(
-                                        splashRadius: 20,
-                                        icon: Icon(LineIcons.play_circle_solid,
-                                            size: 25),
-                                        onPressed: audio.play),
+                                    : audio.playing
+                                        ? IconButton(
+                                            padding: EdgeInsets.zero,
+                                            splashRadius: 25,
+                                            icon: Icon(
+                                                LineIcons.pause_circle,
+                                                color: context.accentColor,
+                                                size: 30),
+                                            onPressed: audio.pauseAduio,
+                                          )
+                                        : IconButton(
+                                            padding: EdgeInsets.zero,
+                                            splashRadius: 20,
+                                            icon: Icon(
+                                                LineIcons.play_circle,
+                                                size: 30),
+                                            onPressed: audio.play),
                                 IconButton(
                                   splashRadius: 20,
                                   icon: Icon(LineIcons.fast_forward_solid),
@@ -88,65 +99,71 @@ class PlayerWidget extends ConsumerWidget {
                           ),
                           Expanded(
                             flex: 1,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                IconButton(
-                                  splashRadius: 20,
-                                  onPressed: () => audio.setVolume(0),
-                                  icon: Icon(
-                                    LineIcons.volume_down_solid,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: SliderTheme(
-                                    data: SliderTheme.of(context).copyWith(
-                                      activeTrackColor:
-                                          context.primaryColorDark,
-                                      inactiveTrackColor:
-                                          context.primaryColorDark,
-                                      activeTickMarkColor:
-                                          context.primaryColorDark,
-                                      trackHeight: 2.0,
-                                      thumbColor: context.primaryColorDark,
-                                      thumbShape: RoundSliderThumbShape(
-                                        enabledThumbRadius: 6.0,
-                                        disabledThumbRadius: 6.0,
-                                      ),
-                                      overlayColor: context.primaryColorDark,
-                                      overlayShape: RoundSliderOverlayShape(
-                                          overlayRadius: 4.0),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  IconButton(
+                                    splashRadius: 20,
+                                    onPressed: () => audio.setVolume(0),
+                                    icon: Icon(
+                                      LineIcons.volume_down_solid,
                                     ),
-                                    child: Slider(
-                                        divisions: 10,
-                                        label: audio.volume.toStringAsFixed(2),
-                                        value: audio.volume,
-                                        onChanged: (value) {
-                                          audio.setVolume(value);
-                                        }),
                                   ),
-                                ),
-                              ],
+                                  Expanded(
+                                    child: SliderTheme(
+                                      data: SliderTheme.of(context).copyWith(
+                                        activeTrackColor:
+                                            context.primaryColorDark,
+                                        inactiveTrackColor:
+                                            context.primaryColorDark,
+                                        activeTickMarkColor:
+                                            context.primaryColorDark,
+                                        trackHeight: 2.0,
+                                        thumbColor: context.primaryColorDark,
+                                        thumbShape: RoundSliderThumbShape(
+                                          elevation: 0,
+                                          enabledThumbRadius: 6.0,
+                                          disabledThumbRadius: 6.0,
+                                        ),
+                                        overlayColor: context.primaryColorDark,
+                                        overlayShape: RoundSliderOverlayShape(
+                                            overlayRadius: 4.0),
+                                      ),
+                                      child: Slider(
+                                          divisions: 10,
+                                          label:
+                                              audio.volume.toStringAsFixed(2),
+                                          value: audio.volume,
+                                          onChanged: (value) {
+                                            audio.setVolume(value);
+                                          }),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                          Expanded(
-                            flex: 1,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                IconButton(
-                                  splashRadius: 20,
-                                  icon: Icon(LineIcons.step_forward_solid),
-                                  onPressed: audio.playNext,
-                                ),
-                                IconButton(
-                                  splashRadius: 20,
-                                  icon: Icon(LineIcons.window_close_solid),
-                                  onPressed: audio.stop,
-                                ),
-                              ],
-                            ),
-                          ),
+                          // Expanded(
+                          //   flex: 1,
+                          //   child: Row(
+                          //     mainAxisAlignment: MainAxisAlignment.center,
+                          //     children: [
+                          //       IconButton(
+                          //         splashRadius: 20,
+                          //         icon: Icon(LineIcons.step_forward_solid),
+                          //         onPressed: audio.playNext,
+                          //       ),
+                          //       IconButton(
+                          //         splashRadius: 20,
+                          //         icon: Icon(LineIcons.window_close_solid),
+                          //         onPressed: audio.stop,
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),
