@@ -22,6 +22,7 @@ jobs:
 
       - name: Build .deb executable
         run: |
+          mkdir -p linux/debian/usr/bin
           cp -fr build/linux/x64/release/bundle linux/debian/usr/bin
           dpkg-deb --build --root-owner-group linux/debian
           cp linux/*.deb tsacdop-linux-x86_64.deb
