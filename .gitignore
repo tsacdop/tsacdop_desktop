@@ -35,6 +35,10 @@
 # Web related
 lib/generated_plugin_registrant.dart
 
+# Linux
+linux/*.deb
+linux/debian/usr/bin
+
 # Symbolication related
 app.*.symbols
 

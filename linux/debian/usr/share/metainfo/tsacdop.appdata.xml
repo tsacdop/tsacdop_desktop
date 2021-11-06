@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+	<id>tsacdop</id>
+	<name>Tsacdop</name>
+	<summary>Enjoy podcast with Tsacdop!</summary>
+	<metadata_license>CC0-1.0</metadata_license>
+	<project_license>GPL-3.0</project_license>
+	<recommends>
+		<control>pointing</control>
+		<control>keyboard</control>
+		<control>touch</control>
+	</recommends>
+	<developer_name>Hitesh Kumar Saini</developer_name>
+	<url type="homepage">https://github.com/stonega/tsacdop_desktop</url>
+	<description>
+		<p>Enjoy podcast with Tsacdop!</p>
+	</description>
+	<screenshots>
+		<screenshot>
+		</screenshot>
+	</screenshots>
+	<launchable type="desktop-id">harmonoid.desktop</launchable>
+	<releases>
+		<release version="0.1.7" date="2021-09-22"/>
+	</releases>
+	<content_rating type="oars-1.0" />
+	<update_contact>saini123hitesh@gmail.com</update_contact>
+</component>
