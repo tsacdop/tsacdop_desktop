@@ -32,12 +32,7 @@ dependencies:
   url_launcher: ^6.0.3
   uuid: ^3.0.4
   desktop_notifications: ^0.6.1
-  flutter_gtk:
-    git:
-      url: https://github.com/stonega/flutter_gtk.git
-  line_icons:
-    git:
-      url: https://github.com/galonsos/line_icons.git
+  line_icons: ^2.0.1
   webfeed:
     git:
       url: https://github.com/stonega/webfeed.git

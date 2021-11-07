@@ -95,7 +95,7 @@ class _HomeTabsState extends State<HomeTabs> {
                           )
                         : IconButton(
                             splashRadius: 20,
-                            icon: Icon(LineIcons.redo_alt_solid, size: 18),
+                            icon: Icon(LineIcons.redo, size: 18),
                             onPressed: _refreshAll);
                   },
                 ),
@@ -219,7 +219,7 @@ class _RecentTabState extends State<RecentTab> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Icon(LineIcons.cloud_download_alt_solid,
+                        Icon(LineIcons.alternateCloudDownload,
                             size: 80, color: Colors.grey[500]),
                         Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                         Text(
@@ -440,7 +440,7 @@ class _FavTabState extends State<FavTab> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Icon(LineIcons.cloud_download_alt_solid,
+                        Icon(LineIcons.alternateCloudDownload,
                             size: 80, color: Colors.grey[500]),
                         Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                         Text(
@@ -640,7 +640,7 @@ class _DownloadTabState extends State<DownloadTab> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Icon(LineIcons.cloud_download_alt_solid,
+                        Icon(LineIcons.alternateCloudDownload,
                             size: 80, color: Colors.grey[500]),
                         Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                         Text(

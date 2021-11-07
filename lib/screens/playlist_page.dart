@@ -32,7 +32,7 @@ class PlaylistPage extends StatelessWidget {
                   audio.playerRunning
                       ? IconButton(
                           splashRadius: 20,
-                          icon: Icon(LineIcons.step_forward_solid),
+                          icon: Icon(LineIcons.stepForward),
                           onPressed: audio.playNext,
                         )
                       : IconButton(

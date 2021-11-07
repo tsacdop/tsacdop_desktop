@@ -51,7 +51,7 @@ class _SettingsState extends State<Settings> {
                 });
               },
               leading:
-                  Icon(LineIcons.adjust_solid, color: context.accentColor),
+                  Icon(LineIcons.adjust, color: context.accentColor),
               title: s.settingsAppearance,
               subtitle: s.settingsAppearanceDes,
               selected: _settingsIndex == 0,
@@ -74,7 +74,7 @@ class _SettingsState extends State<Settings> {
                 _settingsIndex = 2;
               }),
               leading:
-                  Icon(LineIcons.language_solid, color: Colors.purpleAccent),
+                  Icon(LineIcons.language, color: Colors.purpleAccent),
               title: s.settingsLanguages,
               subtitle: s.settingsLanguagesDes,
               selected: _settingsIndex == 2,

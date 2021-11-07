@@ -108,7 +108,7 @@ class _HomeState extends State<Home> {
                           SizedBox(height: 20),
                           CustomIconButton(
                             pressed: _selectMenu == 'home',
-                            icon: Icon(LineIcons.home_solid),
+                            icon: Icon(LineIcons.home),
                             onPressed: () {
                               setState(() {
                                 _body = PodcastsPage();
@@ -128,7 +128,7 @@ class _HomeState extends State<Home> {
                           ),
                           CustomIconButton(
                             pressed: _selectMenu == 'search',
-                            icon: Icon(LineIcons.search_solid),
+                            icon: Icon(LineIcons.search),
                             onPressed: () {
                               setState(() {
                                 _body = SearchPage();
@@ -145,7 +145,7 @@ class _HomeState extends State<Home> {
                                 color: _overlayEntry != null
                                     ? context.accentColor
                                     : null,
-                                icon: Icon(LineIcons.bell_solid),
+                                icon: Icon(LineIcons.bell),
                                 onPressed: () {
                                   if (_overlayEntry == null) {
                                     _overlayEntry = _createOverlayEntry();
@@ -175,7 +175,7 @@ class _HomeState extends State<Home> {
                           ),
                           CustomIconButton(
                             pressed: _selectMenu == 'settings',
-                            icon: Icon(LineIcons.cog_solid),
+                            icon: Icon(LineIcons.cog),
                             onPressed: () {
                               setState(() {
                                 _body = Settings();
@@ -185,7 +185,7 @@ class _HomeState extends State<Home> {
                           ),
                           CustomIconButton(
                             pressed: _selectMenu == 'about',
-                            icon: Icon(LineIcons.info_circle_solid),
+                            icon: Icon(LineIcons.info),
                             onPressed: () {
                               setState(() {
                                 _body = About();

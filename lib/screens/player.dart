@@ -63,7 +63,7 @@ class PlayerWidget extends ConsumerWidget {
                                 IconButton(
                                   padding: EdgeInsets.zero,
                                   splashRadius: 20,
-                                  icon: Icon(LineIcons.fast_backward_solid),
+                                  icon: Icon(LineIcons.fastForward),
                                   onPressed: () async =>
                                       await audio.rewind(Duration(seconds: 15)),
                                 ),
@@ -76,7 +76,7 @@ class PlayerWidget extends ConsumerWidget {
                                             padding: EdgeInsets.zero,
                                             splashRadius: 25,
                                             icon: Icon(
-                                                LineIcons.pause_circle,
+                                                LineIcons.pauseCircle,
                                                 color: context.accentColor,
                                                 size: 30),
                                             onPressed: audio.pauseAduio,
@@ -85,12 +85,12 @@ class PlayerWidget extends ConsumerWidget {
                                             padding: EdgeInsets.zero,
                                             splashRadius: 20,
                                             icon: Icon(
-                                                LineIcons.play_circle,
+                                                LineIcons.playCircle,
                                                 size: 30),
                                             onPressed: audio.play),
                                 IconButton(
                                   splashRadius: 20,
-                                  icon: Icon(LineIcons.fast_forward_solid),
+                                  icon: Icon(LineIcons.fastForward),
                                   onPressed: () async => await audio
                                       .fastForward(Duration(seconds: 15)),
                                 ),
@@ -109,7 +109,7 @@ class PlayerWidget extends ConsumerWidget {
                                     splashRadius: 20,
                                     onPressed: () => audio.setVolume(0),
                                     icon: Icon(
-                                      LineIcons.volume_down_solid,
+                                      LineIcons.volumeDown,
                                     ),
                                   ),
                                   Expanded(

@@ -106,7 +106,7 @@ class _PodcastDetailState extends State<PodcastDetail> {
                                 IconButton(
                                   splashRadius: 15,
                                   tooltip: 'Episodes',
-                                  icon: Icon(LineIcons.database_solid,
+                                  icon: Icon(LineIcons.database,
                                       size: 18,
                                       color: _getIconColor(PodcastBody.list)),
                                   onPressed: () {
@@ -118,7 +118,7 @@ class _PodcastDetailState extends State<PodcastDetail> {
                                 ),
                                 IconButton(
                                   splashRadius: 15,
-                                  icon: Icon(LineIcons.cogs_solid,
+                                  icon: Icon(LineIcons.cogs,
                                       size: 18,
                                       color: _getIconColor(PodcastBody.setting)),
                                   onPressed: () {
@@ -130,7 +130,7 @@ class _PodcastDetailState extends State<PodcastDetail> {
                                 ),
                                 IconButton(
                                   splashRadius: 15,
-                                  icon: Icon(LineIcons.scroll_solid,
+                                  icon: Icon(LineIcons.scroll,
                                       size: 18,
                                       color: _getIconColor(PodcastBody.info)),
                                   onPressed: () {
@@ -321,7 +321,7 @@ class __EpisodeListState extends State<_EpisodeList> {
                       Text(s.filter),
                       SizedBox(width: 5),
                       Icon(
-                        LineIcons.filter_solid,
+                        LineIcons.filter,
                         color:
                             _filter != Filter.all ? context.accentColor : null,
                         size: 18,
@@ -402,8 +402,8 @@ class __EpisodeListState extends State<_EpisodeList> {
                   tooltip: s.homeSubMenuSortBy,
                   icon: Icon(
                     _reverse
-                        ? LineIcons.hourglass_start_solid
-                        : LineIcons.hourglass_end_solid,
+                        ? LineIcons.hourglassStart
+                        : LineIcons.hourglassEnd,
                     color: _reverse ? context.accentColor : null,
                   ),
                   iconSize: 18,
@@ -424,7 +424,7 @@ class __EpisodeListState extends State<_EpisodeList> {
                       child: IconButton(
                         padding: EdgeInsets.zero,
                         icon: Icon(
-                          LineIcons.redo_alt_solid,
+                          LineIcons.redo,
                         ),
                         iconSize: 18,
                         onPressed: _refreshPodacst,
