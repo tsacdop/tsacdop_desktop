@@ -31,24 +31,24 @@ jobs:
           alien -r tsacdop-linux-x86_64.deb
           mv tsacdop*.rpm tsacdop-linux-x86_64.rpm
 
-      - name: Build Tarball
-        run: |
-          mkdir -p AppDir/
-          cp -r linux/debian/usr AppDir/
-          ln -sr AppDir/usr/bin/tsacdop AppDir/tsacdop
-          tar czf tsacdop-linux-x86_64.tar.gz -C AppDir/ .
+      # - name: Build Tarball
+      #   run: |
+      #     mkdir -p AppDir/
+      #     cp -r linux/debian/usr AppDir/
+      #     ln -sr AppDir/usr/bin/tsacdop AppDir/tsacdop
+      #     tar czf tsacdop-linux-x86_64.tar.gz -C AppDir/ .
 
-      - name: Build AppImage
-        run: |
-          echo '#!/bin/sh
-          cd "$(dirname "$0")"
-          exec ./tsacdop' > AppDir/AppRun
-          chmod +x AppDir/AppRun
-          ln -sr AppDir/usr/share/icons/hicolor/256x256/apps/tsacdop.png AppDir/tsacdop.png
-          cp AppDir/usr/share/applications/tsacdop.desktop AppDir/tsacdop.desktop
-          curl -L https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -o appimagetool-x86_64.AppImage
-          chmod +x appimagetool-x86_64.AppImage
-          ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir/ tsacdop-linux-x86_64.AppImage
+      # - name: Build AppImage
+      #   run: |
+      #     echo '#!/bin/sh
+      #     cd "$(dirname "$0")"
+      #     exec ./tsacdop' > AppDir/AppRun
+      #     chmod +x AppDir/AppRun
+      #     ln -sr AppDir/usr/share/icons/hicolor/256x256/apps/tsacdop.png AppDir/tsacdop.png
+      #     cp AppDir/usr/share/applications/tsacdop.desktop AppDir/tsacdop.desktop
+      #     curl -L https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -o appimagetool-x86_64.AppImage
+      #     chmod +x appimagetool-x86_64.AppImage
+      #     ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir/ tsacdop-linux-x86_64.AppImage
 
       # - name: Release
       #   uses: softprops/action-gh-release@v1
