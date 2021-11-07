@@ -37,6 +37,7 @@ lib/generated_plugin_registrant.dart
 
 # Linux
 linux/*.deb
+linux/*.rpm
 linux/debian/usr/bin
 
 # Symbolication related
