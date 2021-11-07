@@ -96,7 +96,6 @@ class AudioState extends ChangeNotifier {
         print(event.toString());
         _playing = event.isPlaying;
         _buffering = !event.isSeekable;
-        print(_buffering);
         notifyListeners();
       }
     });
@@ -111,6 +110,11 @@ class AudioState extends ChangeNotifier {
     _notifyEpisode(_playingEpisode);
     notifyListeners();
     _audioPlayer.play();
+  }
+
+  void loadPlaylist() {
+    final url = _queue.first;
+    loadEpisode(url);
   }
 
   void pauseAduio() async {
@@ -148,7 +152,6 @@ class AudioState extends ChangeNotifier {
 
   Future<void> _seekRelative(Duration duration) async {
     var seekPosition = _position + duration;
-    print(seekPosition.inSeconds);
     if (seekPosition < Duration.zero) seekPosition = Duration.zero;
     _audioPlayer.seek(seekPosition);
   }

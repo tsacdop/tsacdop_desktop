@@ -32,12 +32,8 @@ class _DropdownMenuPainter extends CustomPainter {
     this.resize,
     this.getSelectedItemOffset,
   })  : _painter = BoxDecoration(
-          // If you add an image here, you must provide a real
-          // configuration in the paint() function and you must provide some sort
-          // of onChanged callback here.
           color: color,
-          //Change default 2.0 to 10.0
-          borderRadius: BorderRadius.zero,
+          borderRadius: BorderRadius.circular(6),
           boxShadow: kElevationToShadow[elevation],
         ).createBoxPainter(),
         super(repaint: resize);

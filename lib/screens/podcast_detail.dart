@@ -11,11 +11,12 @@ import '../providers/group_state.dart';
 import '../models/episodebrief.dart';
 import '../storage/key_value_storage.dart';
 import '../storage/sqflite_db.dart';
-import '../widgets/custom_paint.dart';
 import '../widgets/episodes_grid.dart';
 import '../widgets/podcast_menu.dart';
 import '../models/podcastlocal.dart';
 import '../utils/extension_helper.dart';
+
+enum PodcastBody { list, setting, info }
 
 class PodcastDetail extends StatefulWidget {
   final PodcastLocal podcastLocal;
@@ -27,10 +28,12 @@ class PodcastDetail extends StatefulWidget {
 
 class _PodcastDetailState extends State<PodcastDetail> {
   Widget _body;
+  PodcastBody _podcastBody;
 
   @override
   void initState() {
     _body = _EpisodeList(widget.podcastLocal);
+    _podcastBody = PodcastBody.list;
     super.initState();
   }
 
@@ -40,6 +43,7 @@ class _PodcastDetailState extends State<PodcastDetail> {
     if (widget.podcastLocal != oldWidget.podcastLocal) {
       setState(() {
         _body = _EpisodeList(widget.podcastLocal);
+        _podcastBody = PodcastBody.list;
       });
     }
   }
@@ -101,31 +105,38 @@ class _PodcastDetailState extends State<PodcastDetail> {
                                 ),
                                 IconButton(
                                   splashRadius: 15,
+                                  tooltip: 'Episodes',
                                   icon: Icon(LineIcons.database_solid,
-                                      size: 18, color: Colors.white),
+                                      size: 18,
+                                      color: _getIconColor(PodcastBody.list)),
                                   onPressed: () {
                                     setState(() {
                                       _body = _EpisodeList(podcast);
+                                      _podcastBody = PodcastBody.list;
                                     });
                                   },
                                 ),
                                 IconButton(
                                   splashRadius: 15,
                                   icon: Icon(LineIcons.cogs_solid,
-                                      size: 18, color: Colors.white),
+                                      size: 18,
+                                      color: _getIconColor(PodcastBody.setting)),
                                   onPressed: () {
                                     setState(() {
                                       _body = _PodcastSettings(podcast);
+                                      _podcastBody = PodcastBody.setting;
                                     });
                                   },
                                 ),
                                 IconButton(
                                   splashRadius: 15,
                                   icon: Icon(LineIcons.scroll_solid,
-                                      size: 18, color: Colors.white),
+                                      size: 18,
+                                      color: _getIconColor(PodcastBody.info)),
                                   onPressed: () {
                                     setState(() {
                                       _body = _PodcastInfo(podcast);
+                                      _podcastBody = PodcastBody.info;
                                     });
                                   },
                                 )
@@ -153,6 +164,10 @@ class _PodcastDetailState extends State<PodcastDetail> {
         ),
       ],
     );
+  }
+
+  Color _getIconColor(PodcastBody type) {
+    return _podcastBody == type ? context.accentColor : Colors.white;
   }
 }
 
@@ -485,9 +500,7 @@ class __EpisodeListState extends State<_EpisodeList> {
                           sliver: EpisodesGrid(
                             episodes: snapshot.data,
                             showFavorite: true,
-                            showNumber: _filter == Filter.all && !_hideListened
-                                ? true
-                                : false,
+                            showNumber: _filter == Filter.all && !_hideListened,
                             layout: _layout,
                             reverse: _reverse,
                             episodeCount: _episodeCount,
@@ -626,7 +639,9 @@ class __PodcastSettingsState extends State<_PodcastSettings> {
                     padding: EdgeInsets.symmetric(horizontal: 5.0),
                     child: FilterChip(
                       key: ValueKey<String>(group.id),
-                      shape: RoundedRectangleBorder(),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4)),
+                      elevation: 0,
                       label: Text(group.name),
                       selected: _selectedGroups.contains(group),
                       onSelected: (value) {
@@ -646,16 +661,19 @@ class __PodcastSettingsState extends State<_PodcastSettings> {
                     height: 30,
                     child: ElevatedButton(
                       child: Text(s.save),
-                      style: OutlinedButton.styleFrom(
+                      style: ElevatedButton.styleFrom(
                         elevation: 0,
-                        backgroundColor: context.accentColor,
-                        shape: RoundedRectangleBorder(),
+                        splashFactory: NoSplash.splashFactory,
+                        shadowColor: Colors.transparent,
+                        primary: context.accentColor,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4)),
                         padding: EdgeInsets.zero,
                         minimumSize: Size(80, 58),
                       ),
                       onPressed: () async {
                         if (_selectedGroups.length > 0) {
-                          await context.read(groupState).changeGroup(
+                          await context.read(groupState.notifier).changeGroup(
                                 widget.podcast.id,
                                 _selectedGroups,
                               );

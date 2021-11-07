@@ -5,6 +5,7 @@ import 'package:linkify/linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:tsacdop_desktop/providers/audio_state.dart';
 
 import 'podcasts_page.dart';
 import '../widgets/episode_menu.dart';
@@ -77,17 +78,38 @@ class EpisodeDetail extends StatelessWidget {
             ),
           ),
           Container(
-            height: 40,
+            height: 60,
             width: double.infinity,
             color: context.scaffoldBackgroundColor,
             child: Material(
               child: Row(
                 children: [
+                  SizedBox(width: 10),
                   FavIcon(episode),
                   DownloadIcon(episode),
                   PlaylistButton(episode),
                   Spacer(),
-                  PlayButton(episode)
+                  ElevatedButton(
+                    child: Text(s.play),
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      splashFactory: NoSplash.splashFactory,
+                      shadowColor: Colors.transparent,
+                      onSurface: Colors.transparent,
+                      primary: context.accentColor,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4)),
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size(100, 40),
+                    ),
+                    onPressed: () {
+                      context
+                          .read(audioState)
+                          .loadEpisode(episode.enclosureUrl);
+                    },
+                  ),
+                  SizedBox(width: 10),
+                  // PlayButton(episode)
                 ],
               ),
             ),

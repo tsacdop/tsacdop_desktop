@@ -33,7 +33,7 @@ class PlayerWidget extends ConsumerWidget {
                     context.read(openEpisode).state = audio.playingEpisode,
                 child: SizedBox(
                   width: 200,
-                  height: 100,
+                  height: 120,
                   child: Center(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),

@@ -117,16 +117,6 @@ class _HomeState extends State<Home> {
                             },
                           ),
                           CustomIconButton(
-                            pressed: _selectMenu == 'search',
-                            icon: Icon(LineIcons.search_solid),
-                            onPressed: () {
-                              setState(() {
-                                _body = SearchPage();
-                                _selectMenu = 'search';
-                              });
-                            },
-                          ),
-                          CustomIconButton(
                             pressed: _selectMenu == 'playlist',
                             icon: Icon(Icons.playlist_play),
                             onPressed: () {
@@ -137,12 +127,12 @@ class _HomeState extends State<Home> {
                             },
                           ),
                           CustomIconButton(
-                            pressed: _selectMenu == 'about',
-                            icon: Icon(LineIcons.info_circle_solid),
+                            pressed: _selectMenu == 'search',
+                            icon: Icon(LineIcons.search_solid),
                             onPressed: () {
                               setState(() {
-                                _body = About();
-                                _selectMenu = 'about';
+                                _body = SearchPage();
+                                _selectMenu = 'search';
                               });
                             },
                           ),
@@ -190,6 +180,16 @@ class _HomeState extends State<Home> {
                               setState(() {
                                 _body = Settings();
                                 _selectMenu = 'settings';
+                              });
+                            },
+                          ),
+                          CustomIconButton(
+                            pressed: _selectMenu == 'about',
+                            icon: Icon(LineIcons.info_circle_solid),
+                            onPressed: () {
+                              setState(() {
+                                _body = About();
+                                _selectMenu = 'about';
                               });
                             },
                           ),

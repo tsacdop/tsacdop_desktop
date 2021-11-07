@@ -93,7 +93,6 @@ class __PodcastGroupState extends State<_PodcastGroup> {
                 ],
               ),
               trailing: IconButton(
-                hoverColor: context.accentColor,
                 splashRadius: 20,
                 icon: Icon(Icons.add),
                 onPressed: () {
@@ -205,7 +204,8 @@ class _AddGroupState extends State<AddGroup> {
           top: 20,
           left: 40,
           child: AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             elevation: 4,
             contentPadding: const EdgeInsets.symmetric(horizontal: 20),
             titlePadding: EdgeInsets.all(20),
@@ -216,7 +216,8 @@ class _AddGroupState extends State<AddGroup> {
                   primary: context.textColor,
                   splashFactory: NoSplash.splashFactory,
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                  shape:
+                      RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                 ),
                 onPressed: () => Navigator.of(context).pop(),
                 child: Text(
@@ -229,17 +230,21 @@ class _AddGroupState extends State<AddGroup> {
                   primary: context.textColor,
                   splashFactory: NoSplash.splashFactory,
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                  shape:
+                      RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                 ),
                 onPressed: () async {
                   if (context.read(groupState.notifier).isExisted(_newGroup)) {
                     setState(() => _error = 1);
                   } else {
-                    context.read(groupState.notifier).addGroup(PodcastGroup(_newGroup));
+                    context
+                        .read(groupState.notifier)
+                        .addGroup(PodcastGroup(_newGroup));
                     Navigator.of(context).pop();
                   }
                 },
-                child: Text(s.confirm, style: TextStyle(color: context.accentColor)),
+                child: Text(s.confirm,
+                    style: TextStyle(color: context.accentColor)),
               )
             ],
             title: SizedBox(child: Text(s.newGroup)),
@@ -253,10 +258,12 @@ class _AddGroupState extends State<AddGroup> {
                     hintStyle: TextStyle(fontSize: 18),
                     filled: true,
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: context.accentColor, width: 2.0),
+                      borderSide:
+                          BorderSide(color: context.accentColor, width: 2.0),
                     ),
                     enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: context.accentColor, width: 2.0),
+                      borderSide:
+                          BorderSide(color: context.accentColor, width: 2.0),
                     ),
                   ),
                   cursorRadius: Radius.circular(2),

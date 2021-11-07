@@ -7,6 +7,7 @@ class CustomListTile extends StatelessWidget {
   final bool selected;
   final Widget child;
   final Widget leading;
+  final Widget trailing;
   final String title;
   final String subtitle;
   final EdgeInsets padding;
@@ -18,6 +19,7 @@ class CustomListTile extends StatelessWidget {
     this.child,
     this.padding,
     this.leading,
+    this.trailing,
     this.title,
     this.subtitle,
   })  : assert(child != null || leading != null),
@@ -63,6 +65,10 @@ class CustomListTile extends StatelessWidget {
             ],
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: trailing ?? Center(),
+        )
       ],
     );
   }

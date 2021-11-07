@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:resizable_widget/resizable_widget.dart';
+import 'package:tsacdop_desktop/widgets/custom_list_tile.dart';
 import '../models/service_api/searchepisodes.dart';
 import '../models/service_api/searchpodcast.dart';
 import '../providers/group_state.dart';
@@ -103,7 +105,6 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                     SizedBox(width: 20),
                     ElevatedButton(
-                      // icon: Icon(Icons.search),
                       child: Text(s.search),
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
@@ -131,20 +132,24 @@ class _SearchPageState extends State<SearchPage> {
         ),
         if (_query != '')
           Expanded(
-              child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(flex: 2, child: _SearchResult(query: _query)),
-              Expanded(
-                flex: 1,
-                child: Consumer(builder: (context, watch, _) {
+            child: ResizableWidget(
+              isHorizontalSeparator: false, // optional
+              isDisabledSmartHide: false, // optional
+              separatorColor: context.primaryColorDark, // optional
+              separatorSize: 1,
+              percentages: [0.6, 0.4],
+              children: [
+                Consumer(builder: (context, watch, _) {
                   final podcast = watch(selectedPodcast).state;
-                  if (podcast == null) return Center();
-                  return _DetailPage(podcast);
+                  return _SearchResult(query: _query, podcast: podcast);
                 }),
-              )
-            ],
-          )),
+                Consumer(builder: (context, watch, _) {
+                  final podcast = watch(selectedPodcast).state;
+                  return podcast != null ? _DetailPage(podcast) : Center();
+                })
+              ],
+            ),
+          ),
         if (_query == '')
           Expanded(
             child: Column(
@@ -240,7 +245,8 @@ class _SearchPageState extends State<SearchPage> {
 
 class _SearchResult extends StatefulWidget {
   final String query;
-  _SearchResult({this.query, Key key}) : super(key: key);
+  final OnlinePodcast podcast;
+  _SearchResult({this.query, this.podcast, Key key}) : super(key: key);
 
   @override
   __SearchResultState createState() => __SearchResultState();
@@ -279,27 +285,6 @@ class __SearchResultState extends State<_SearchResult> {
       });
   }
 
-  Future<List<OnlinePodcast>> _getPodcatsIndexList(String searchText,
-      {int limit}) async {
-    var searchResult;
-    try {
-      searchResult = await _searchEngine.searchPodcasts(
-          searchText: searchText, limit: limit);
-    } catch (e) {
-      log(e.toString());
-      _loadError = true;
-      _loading = false;
-      return [];
-    }
-    var list = searchResult.feeds.cast();
-    _podcastList = <OnlinePodcast>[
-      for (var podcast in list) podcast.toOnlinePodcast
-    ];
-    if (_podcastList.isEmpty) _noResult = true;
-    _loading = false;
-    return _podcastList;
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List>(
@@ -332,8 +317,10 @@ class __SearchResultState extends State<_SearchResult> {
 
         var content = snapshot.data;
         return CustomScrollView(
+          center: ValueKey<String>('sliver-list'),
           slivers: [
             SliverList(
+              key: ValueKey<String>('sliver-list'),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   return SearchResult(onlinePodcast: content[index]);
@@ -388,6 +375,27 @@ class __SearchResultState extends State<_SearchResult> {
       },
     );
   }
+
+  Future<List<OnlinePodcast>> _getPodcatsIndexList(String searchText,
+      {int limit}) async {
+    var searchResult;
+    try {
+      searchResult = await _searchEngine.searchPodcasts(
+          searchText: searchText, limit: limit);
+    } catch (e) {
+      log(e.toString());
+      _loadError = true;
+      _loading = false;
+      return [];
+    }
+    var list = searchResult.feeds.cast();
+    _podcastList = <OnlinePodcast>[
+      for (var podcast in list) podcast.toOnlinePodcast
+    ];
+    if (_podcastList.isEmpty) _noResult = true;
+    _loading = false;
+    return _podcastList;
+  }
 }
 
 class SearchResult extends StatelessWidget {
@@ -400,8 +408,9 @@ class SearchResult extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        ListTile(
-            contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+          child: CustomListTile(
             onTap: () {
               context.read(selectedPodcast).state = onlinePodcast;
             },
@@ -428,13 +437,12 @@ class SearchResult extends StatelessWidget {
                       color: context.primaryColorDark,
                       child: Icon(Icons.error)),
                 )),
-            title: Text(onlinePodcast.title),
-            subtitle: Text(
-              onlinePodcast.publisher ?? '',
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-            trailing: _SubscribeButton(onlinePodcast)),
+            title: onlinePodcast.title,
+            subtitle: onlinePodcast.publisher ?? '',
+            trailing: _SubscribeButton(onlinePodcast),
+            selected: false,
+          ),
+        ),
       ],
     );
   }
@@ -469,6 +477,100 @@ class __DetailPageState extends State<_DetailPage> {
     }
   }
 
+  @override
+  Widget build(BuildContext context) {
+    final podcast = widget.onlinePodcast;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Container(
+          color: context.primaryColorDark,
+          child: ListView(
+            children: [
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(podcast.title,
+                    style: context.textTheme.headline5
+                        .copyWith(fontWeight: FontWeight.bold)),
+              ),
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
+                  '${widget.onlinePodcast.latestPubDate.toDate(context)}',
+                  maxLines: 1,
+                  overflow: TextOverflow.fade,
+                  style: TextStyle(color: context.accentColor),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: SelectableText(podcast.description,
+                    style: TextStyle(height: 2)),
+              ),
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: FutureBuilder<List<OnlineEpisode>>(
+                  future: _searchFuture,
+                  builder: (context, snapshot) {
+                    if (_episodeList.isNotEmpty) {
+                      var content = snapshot.data;
+                      return ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: content.length,
+                        itemBuilder: (context, index) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 4,
+                                    height: 20,
+                                    color: context.accentColor,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(content[index].title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.fade,
+                                        style: context.textTheme.bodyText1),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                  content[index].length == 0
+                                      ? '${content[index].pubDate.toDate(context)}'
+                                      : '${content[index].length.toTime} | '
+                                          '${content[index].pubDate.toDate(context)}',
+                                  style: TextStyle(color: context.accentColor)),
+                              SizedBox(height: 10)
+                            ],
+                          );
+                        },
+                      );
+                    }
+                    return Padding(
+                      padding: EdgeInsets.only(top: 100),
+                      child: Center(
+                        child: SizedBox(
+                            height: 25,
+                            width: 25,
+                            child: CircularProgressIndicator(strokeWidth: 2)),
+                      ),
+                    );
+                  },
+                ),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<List<OnlineEpisode>> _getIndexEpisodes({String id}) async {
     var searchEngine = PodcastsIndexSearch();
     var searchResult = await searchEngine.fetchEpisode(rssUrl: id);
@@ -477,78 +579,6 @@ class __DetailPageState extends State<_DetailPage> {
       _episodeList.add(episode.toOnlineWEpisode);
     }
     return _episodeList;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final podcast = widget.onlinePodcast;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(height: 10),
-                Text(podcast.title, style: context.textTheme.headline6),
-                SizedBox(height: 20),
-                Text(
-                  '${widget.onlinePodcast.latestPubDate.toDate(context)}',
-                  maxLines: 1,
-                  overflow: TextOverflow.fade,
-                  style: TextStyle(color: context.accentColor),
-                ),
-                Text(podcast.description, style: TextStyle(height: 2)),
-                SizedBox(height: 20),
-                FutureBuilder<List<OnlineEpisode>>(
-                    future: _searchFuture,
-                    builder: (context, snapshot) {
-                      if (_episodeList.isNotEmpty) {
-                        var content = snapshot.data;
-                        return ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: content.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              color: context.primaryColor,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(content[index].title,
-                                      style: context.textTheme.bodyText1),
-                                  Text(
-                                      content[index].length == 0
-                                          ? '${content[index].pubDate.toDate(context)}'
-                                          : '${content[index].length.toTime} | '
-                                              '${content[index].pubDate.toDate(context)}',
-                                      style: TextStyle(
-                                          color: context.accentColor)),
-                                  SizedBox(height: 10)
-                                ],
-                              ),
-                            );
-                          },
-                        );
-                      }
-                      return Padding(
-                        padding: EdgeInsets.only(top: 100),
-                        child: Center(
-                          child: SizedBox(
-                              height: 25,
-                              width: 25,
-                              child: CircularProgressIndicator(strokeWidth: 2)),
-                        ),
-                      );
-                    })
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 }
 
@@ -559,14 +589,14 @@ class _SubscribeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = context.s;
-    return OutlinedButton(
+    return ElevatedButton(
       child: Text(s.subscribe),
-      style: OutlinedButton.styleFrom(
-        primary: context.accentColor,
+      style: ElevatedButton.styleFrom(
         splashFactory: NoSplash.splashFactory,
+        primary: context.accentColor,
+        shadowColor: Colors.transparent,
         minimumSize: Size(100, 40),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-        backgroundColor: context.primaryColorDark,
       ),
       onPressed: () =>
           context.read(groupState.notifier).subscribePodcast(podcast),

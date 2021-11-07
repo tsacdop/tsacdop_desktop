@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:tsacdop_desktop/models/episodebrief.dart';
 import 'package:tsacdop_desktop/providers/audio_state.dart';
 
@@ -20,11 +21,29 @@ class PlaylistPage extends StatelessWidget {
           width: double.infinity,
           padding: EdgeInsets.symmetric(horizontal: 40),
           alignment: Alignment.centerLeft,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(s.homeMenuPlaylist, style: context.textTheme.headline5),
-            ],
+          child: Consumer(
+            builder: (context, watch, child) {
+              final audio = watch(audioState);
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  child,
+                  SizedBox(width: 20),
+                  audio.playerRunning
+                      ? IconButton(
+                          splashRadius: 20,
+                          icon: Icon(LineIcons.step_forward_solid),
+                          onPressed: audio.playNext,
+                        )
+                      : IconButton(
+                          splashRadius: 20,
+                          onPressed: context.read(audioState).loadPlaylist,
+                          icon: Icon(Icons.play_arrow),
+                        )
+                ],
+              );
+            },
+            child: Text(s.homeMenuPlaylist, style: context.textTheme.headline5),
           ),
         ),
         Padding(
@@ -46,7 +65,8 @@ class PlaylistPage extends StatelessWidget {
                         : ListView.builder(
                             shrinkWrap: true,
                             itemCount: snapshot.data.length,
-                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 30),
                             itemBuilder: (context, index) {
                               final episode = episodes[index];
                               return ListTile(
@@ -96,25 +116,25 @@ class PlaylistPage extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                trailing: ElevatedButton(
-                                  child: Text(s.play),
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 0,
-                                    splashFactory: NoSplash.splashFactory,
-                                    shadowColor: Colors.transparent,
-                                    onSurface: Colors.transparent,
-                                    primary: context.accentColor,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(4)),
-                                    padding: EdgeInsets.zero,
-                                    minimumSize: Size(100, 40),
-                                  ),
-                                  onPressed: () {
-                                    context
-                                        .read(audioState)
-                                        .loadEpisode(episode.enclosureUrl);
-                                  },
-                                ),
+                                // trailing: ElevatedButton(
+                                //   child: Text(s.play),
+                                //   style: ElevatedButton.styleFrom(
+                                //     elevation: 0,
+                                //     splashFactory: NoSplash.splashFactory,
+                                //     shadowColor: Colors.transparent,
+                                //     onSurface: Colors.transparent,
+                                //     primary: context.accentColor,
+                                //     shape: RoundedRectangleBorder(
+                                //         borderRadius: BorderRadius.circular(4)),
+                                //     padding: EdgeInsets.zero,
+                                //     minimumSize: Size(100, 40),
+                                //   ),
+                                //   onPressed: () {
+                                //     context
+                                //         .read(audioState)
+                                //         .loadEpisode(episode.enclosureUrl);
+                                //   },
+                                // ),
                               );
                             },
                           );
