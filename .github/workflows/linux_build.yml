@@ -31,25 +31,19 @@ jobs:
           alien -r tsacdop-linux-x86_64.deb
           mv tsacdop*.rpm tsacdop-linux-x86_64.rpm
 
-      # - name: Build Tarball
-      #   run: |
-      #     mkdir -p AppDir/
-      #     cp -r linux/debian/usr AppDir/
-      #     ln -sr AppDir/usr/bin/tsacdop AppDir/tsacdop
-      #     tar czf tsacdop-linux-x86_64.tar.gz -C AppDir/ .
+      - name: Build Tarball
+        run: |
+          cp -r linux/debian/usr flatpak/
+          ln -sr flatpak/usr/bin/tsacdop flatpak/tsacdop
+          tar czf tsacdop-linux-x86_64.tar.gz -C flatpak/ .
 
-      # - name: Build AppImage
-      #   run: |
-      #     echo '#!/bin/sh
-      #     cd "$(dirname "$0")"
-      #     exec ./tsacdop' > AppDir/AppRun
-      #     chmod +x AppDir/AppRun
-      #     ln -sr AppDir/usr/share/icons/hicolor/256x256/apps/tsacdop.png AppDir/tsacdop.png
-      #     cp AppDir/usr/share/applications/tsacdop.desktop AppDir/tsacdop.desktop
-      #     curl -L https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -o appimagetool-x86_64.AppImage
-      #     chmod +x appimagetool-x86_64.AppImage
-      #     ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir/ tsacdop-linux-x86_64.AppImage
-
+      - uses: actions/upload-artifact@v2
+        with:
+          name: release-file
+          path: |
+            tsacdop-linux-x86_64.deb
+            tsacdop-linux-x86_64.rpm
+            tsacdop-linux-x86_64.tar.gz
       # - name: Release
       #   uses: softprops/action-gh-release@v1
       #   with:
