@@ -348,6 +348,6 @@ class _RefreshLoadState extends State<RefreshLoad>
   Widget build(BuildContext context) {
     return Transform.rotate(
         angle: math.pi * 2 * _value,
-        child: Icon(LineIcons.redo, size: 18));
+        child: Icon(LineIcons.alternateRedo, size: 18));
   }
 }

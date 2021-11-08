@@ -185,7 +185,7 @@ class _HomeState extends State<Home> {
                           ),
                           CustomIconButton(
                             pressed: _selectMenu == 'about',
-                            icon: Icon(LineIcons.info),
+                            icon: Icon(LineIcons.infoCircle),
                             onPressed: () {
                               setState(() {
                                 _body = About();

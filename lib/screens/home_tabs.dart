@@ -95,7 +95,7 @@ class _HomeTabsState extends State<HomeTabs> {
                           )
                         : IconButton(
                             splashRadius: 20,
-                            icon: Icon(LineIcons.redo, size: 18),
+                            icon: Icon(LineIcons.alternateRedo, size: 18),
                             onPressed: _refreshAll);
                   },
                 ),

@@ -424,7 +424,7 @@ class __EpisodeListState extends State<_EpisodeList> {
                       child: IconButton(
                         padding: EdgeInsets.zero,
                         icon: Icon(
-                          LineIcons.redo,
+                          LineIcons.alternateRedo,
                         ),
                         iconSize: 18,
                         onPressed: _refreshPodacst,
