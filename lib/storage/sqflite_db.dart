@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:webfeed/domain/rss_feed.dart';
@@ -23,7 +22,7 @@ class DBHelper {
 
   initDb() async {
     sqfliteFfiInit();
-    var documentsDirectory = Platform.isLinux ? '/app/share' : Directory.current.path;
+    var documentsDirectory = Directory.current.path;
     var path = join(documentsDirectory, "podcasts.db");
     var databaseFactory = databaseFactoryFfi;
     var theDb = await databaseFactory.openDatabase(

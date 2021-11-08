@@ -43,38 +43,34 @@ class EpisodeDetail extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child:
-                        Text(episode.title, style: context.textTheme.headline5),
+            child: ListView(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child:
+                      Text(episode.title, style: context.textTheme.headline5),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Row(
+                    children: [
+                      Text(
+                        s.published(DateFormat.yMMMd().format(
+                            DateTime.fromMillisecondsSinceEpoch(
+                                episode.pubDate))),
+                        style: TextStyle(color: context.accentColor),
+                      ),
+                      SizedBox(width: 10),
+                      if (episode.explicit == 1)
+                        Text('E',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red))
+                    ],
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: Row(
-                      children: [
-                        Text(
-                          s.published(DateFormat.yMMMd().format(
-                              DateTime.fromMillisecondsSinceEpoch(
-                                  episode.pubDate))),
-                          style: TextStyle(color: context.accentColor),
-                        ),
-                        SizedBox(width: 10),
-                        if (episode.explicit == 1)
-                          Text('E',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.red))
-                      ],
-                    ),
-                  ),
-                  _ShowNote(episode)
-                ],
-              ),
+                ),
+                _ShowNote(episode)
+              ],
             ),
           ),
           Container(

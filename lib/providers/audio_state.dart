@@ -23,10 +23,10 @@ class AudioState extends ChangeNotifier {
 
   @override
   void dispose() {
-    _audioPlayer.dispose();
-    _generalStateStream.cancel();
-    _playbackStateStream.cancel();
-    _postionStateStream.cancel();
+    _audioPlayer?.dispose();
+    _generalStateStream?.cancel();
+    _playbackStateStream?.cancel();
+    _postionStateStream?.cancel();
     _notifyClinet?.close();
     super.dispose();
   }

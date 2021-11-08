@@ -108,6 +108,7 @@ class _HomeTabsState extends State<HomeTabs> {
             child: TabBar(
               isScrollable: true,
               indicatorSize: TabBarIndicatorSize.tab,
+              indicatorColor: context.accentColor,
               indicatorPadding: EdgeInsets.symmetric(horizontal: 20),
               tabs: [
                 Tab(text: s.homeTabMenuRecent),
@@ -257,19 +258,16 @@ class _RecentTabState extends State<RecentTab> {
                                     height: 40,
                                   ),
                                 ),
-                                SliverPadding(
-                                  padding: EdgeInsets.only(left: 20, right: 10),
-                                  sliver: EpisodesGrid(
-                                    width: constraint.maxWidth,
-                                    episodes: snapshot.data,
-                                    layout: _layout,
-                                    initNum: 0,
-                                    multiSelect: _multiSelect,
-                                    selectedList: _selectedEpisodes ?? [],
-                                    onSelect: (value) => setState(() {
-                                      _selectedEpisodes = value;
-                                    }),
-                                  ),
+                                EpisodesGrid(
+                                  width: constraint.maxWidth,
+                                  episodes: snapshot.data,
+                                  layout: _layout,
+                                  initNum: 0,
+                                  multiSelect: _multiSelect,
+                                  selectedList: _selectedEpisodes ?? [],
+                                  onSelect: (value) => setState(() {
+                                    _selectedEpisodes = value;
+                                  }),
                                 ),
                                 SliverList(
                                   delegate: SliverChildBuilderDelegate(
