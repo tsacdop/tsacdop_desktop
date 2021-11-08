@@ -23,7 +23,7 @@ class DBHelper {
 
   initDb() async {
     sqfliteFfiInit();
-    var documentsDirectory = Directory.current.path;
+    var documentsDirectory = Platform.isLinux ? '/app/share' : Directory.current.path;
     var path = join(documentsDirectory, "podcasts.db");
     var databaseFactory = databaseFactoryFfi;
     var theDb = await databaseFactory.openDatabase(
