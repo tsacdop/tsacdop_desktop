@@ -28,7 +28,7 @@ class KeyValueStorage {
     return prefs.setInt(key, setting);
   }
 
-  Future<int> getInt({int defaultValue = 0}) async {
+  Future<int?> getInt({int defaultValue = 0}) async {
     var prefs = await SharedPreferences.getInstance();
     if (prefs.getInt(key) == null) await prefs.setInt(key, defaultValue);
     return prefs.getInt(key);
@@ -39,7 +39,7 @@ class KeyValueStorage {
     return prefs.setStringList(key, playList);
   }
 
-  Future<List<String>> getStringList() async {
+  Future<List<String>?> getStringList() async {
     var prefs = await SharedPreferences.getInstance();
     if (prefs.getStringList(key) == null) {
       await prefs.setStringList(key, []);
@@ -52,7 +52,7 @@ class KeyValueStorage {
     return prefs.setString(key, string);
   }
 
-  Future<String> getString() async {
+  Future<String?> getString() async {
     var prefs = await SharedPreferences.getInstance();
     if (prefs.getString(key) == null) {
       await prefs.setString(key, '');
@@ -60,7 +60,7 @@ class KeyValueStorage {
     return prefs.getString(key);
   }
 
-  Future<bool> getBool({@required bool defaultValue}) async {
+  Future<bool?> getBool({required bool defaultValue}) async {
     var prefs = await SharedPreferences.getInstance();
     if (prefs.getBool(key) == null) {
       await prefs.setBool(key, defaultValue);
@@ -74,7 +74,7 @@ class KeyValueStorage {
     return await prefs.setBool(key, value);
   }
 
-  Future<List<GroupEntity>> getGroups() async {
+  Future<List<GroupEntity>?> getGroups() async {
     var prefs = await SharedPreferences.getInstance();
     if (prefs.getString(key) == null) {
       var home = PodcastGroup('Home');
@@ -85,7 +85,7 @@ class KeyValueStorage {
           }));
     }
     return json
-        .decode(prefs.getString(key))['groups']
+        .decode(prefs.getString(key)!)['groups']
         .cast<Map<String, Object>>()
         .map<GroupEntity>(GroupEntity.fromJson)
         .toList(growable: false);

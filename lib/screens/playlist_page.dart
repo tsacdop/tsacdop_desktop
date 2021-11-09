@@ -8,11 +8,11 @@ import '../utils/extension_helper.dart';
 import '../storage/sqflite_db.dart';
 
 class PlaylistPage extends ConsumerWidget {
-  const PlaylistPage({Key key}) : super(key: key);
+  const PlaylistPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final s = context.s;
+    final s = context.s!;
 
     return Column(
       children: [
@@ -27,7 +27,7 @@ class PlaylistPage extends ConsumerWidget {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  child,
+                  child!,
                   SizedBox(width: 20),
                   audio.playerRunning
                       ? IconButton(
@@ -54,9 +54,9 @@ class PlaylistPage extends ConsumerWidget {
           child: Consumer(
             builder: (context, watch, child) {
               final audio = ref.watch(audioState);
-              if (audio.queue.isNotEmpty)
-                return FutureBuilder<List<EpisodeBrief>>(
-                  future: _getEpisode(audio.queue),
+              if (audio.queue!.isNotEmpty)
+                return FutureBuilder<List<EpisodeBrief?>>(
+                  future: _getEpisode(audio.queue!),
                   initialData: [],
                   builder: (context, snapshot) {
                     var episodes = snapshot.data;
@@ -64,21 +64,21 @@ class PlaylistPage extends ConsumerWidget {
                         ? Center()
                         : ListView.builder(
                             shrinkWrap: true,
-                            itemCount: snapshot.data.length,
+                            itemCount: snapshot.data!.length,
                             padding: EdgeInsets.symmetric(
                                 vertical: 20, horizontal: 30),
                             itemBuilder: (context, index) {
-                              final episode = episodes[index];
+                              final episode = episodes![index]!;
                               return ListTile(
                                 leading: CircleAvatar(
-                                    backgroundColor: episodes[index]
+                                    backgroundColor: episodes[index]!
                                         .backgroudColor(context)
                                         .withOpacity(0.5),
                                     backgroundImage:
-                                        episodes[index].avatarImage),
+                                        episodes[index]!.avatarImage),
                                 title: Text(
-                                  episodes[index].title,
-                                  style: context.textTheme.bodyText1
+                                  episodes[index]!.title!,
+                                  style: context.textTheme.bodyText1!
                                       .copyWith(fontWeight: FontWeight.bold),
                                 ),
                                 subtitle: Container(
@@ -105,13 +105,13 @@ class PlaylistPage extends ConsumerWidget {
                                             episode.duration == 0
                                                 ? ''
                                                 : s.minsCount(
-                                                    episode.duration ~/ 60),
+                                                    episode.duration! ~/ 60),
                                             Colors.cyan[300]),
                                       if (episode.enclosureLength != null)
                                         _episodeTag(
                                             episode.enclosureLength == 0
                                                 ? ''
-                                                : '${(episode.enclosureLength) ~/ 1000000}MB',
+                                                : '${episode.enclosureLength! ~/ 1000000}MB',
                                             Colors.lightBlue[300]),
                                     ],
                                   ),
@@ -148,9 +148,9 @@ class PlaylistPage extends ConsumerWidget {
     );
   }
 
-  Future<List<EpisodeBrief>> _getEpisode(List<String> urls) async {
+  Future<List<EpisodeBrief?>> _getEpisode(List<String> urls) async {
     final dbHelper = DBHelper();
-    List<EpisodeBrief> episodes = [];
+    List<EpisodeBrief?> episodes = [];
     for (var url in urls) {
       final episode = await dbHelper.getRssItemWithUrl(url);
       episodes.add(episode);
@@ -158,7 +158,7 @@ class PlaylistPage extends ConsumerWidget {
     return episodes;
   }
 
-  Widget _episodeTag(String text, Color color) {
+  Widget _episodeTag(String text, Color? color) {
     if (text == '') {
       return Center();
     }

@@ -12,11 +12,11 @@ import 'episode_detail.dart';
 import 'home_tabs.dart';
 import 'podcast_detail.dart';
 
-final openPodcast = StateProvider<PodcastLocal>((ref) => null);
-final openEpisode = StateProvider<EpisodeBrief>((ref) => null);
+final openPodcast = StateProvider<PodcastLocal?>((ref) => null);
+final openEpisode = StateProvider<EpisodeBrief?>((ref) => null);
 
 class PodcastsPage extends ConsumerWidget {
-  PodcastsPage({Key key}) : super(key: key);
+  PodcastsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,14 +48,14 @@ class PodcastsPage extends ConsumerWidget {
 }
 
 class _PodcastGroup extends ConsumerStatefulWidget {
-  const _PodcastGroup({Key key}) : super(key: key);
+  const _PodcastGroup({Key? key}) : super(key: key);
 
   @override
   __PodcastGroupState createState() => __PodcastGroupState();
 }
 
 class __PodcastGroupState extends ConsumerState<_PodcastGroup> {
-  int _groupIndex;
+  int? _groupIndex;
   @override
   void initState() {
     super.initState();
@@ -89,7 +89,7 @@ class __PodcastGroupState extends ConsumerState<_PodcastGroup> {
                   for (var group in groupList)
                     DropdownMenuItem<int>(
                         value: groupList.indexOf(group),
-                        child: Text(group.name))
+                        child: Text(group.name ?? ''))
                 ],
               ),
               trailing: IconButton(
@@ -110,15 +110,15 @@ class __PodcastGroupState extends ConsumerState<_PodcastGroup> {
             ),
           ),
           FutureBuilder<List<PodcastLocal>>(
-            future: groupList[_groupIndex].getPodcasts(),
+            future: groupList[_groupIndex!].getPodcasts(),
             initialData: [],
             builder: (context, snapshot) {
-              if (snapshot.data.isEmpty) return Center();
+              if (snapshot.data!.isEmpty) return Center();
               return Expanded(
                 child: ListView(
                   shrinkWrap: true,
                   children: [
-                    for (var podcast in snapshot.data)
+                    for (var podcast in snapshot.data!)
                       _podcastListTile(context, podcast)
                   ],
                 ),
@@ -154,12 +154,12 @@ class __PodcastGroupState extends ConsumerState<_PodcastGroup> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(podcast.title,
+                      Text(podcast.title!,
                           maxLines: 1,
-                          style: context.textTheme.bodyText1
+                          style: context.textTheme.bodyText1!
                               .copyWith(fontWeight: FontWeight.bold)),
                       Text(
-                        podcast.author,
+                        podcast.author!,
                         maxLines: 1,
                       ),
                     ],
@@ -178,9 +178,9 @@ class AddGroup extends ConsumerStatefulWidget {
 }
 
 class _AddGroupState extends ConsumerState<AddGroup> {
-  TextEditingController _controller;
-  String _newGroup;
-  int _error;
+  TextEditingController? _controller;
+  String? _newGroup;
+  int? _error;
 
   @override
   void initState() {
@@ -191,13 +191,13 @@ class _AddGroupState extends ConsumerState<AddGroup> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final s = context.s;
+    final s = context.s!;
     return Stack(
       children: [
         Positioned(

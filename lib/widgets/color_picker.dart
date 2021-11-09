@@ -3,34 +3,34 @@ import 'package:flutter/material.dart';
 import '../utils/extension_helper.dart';
 
 class ColorPicker extends StatefulWidget {
-  final ValueChanged<Color> onColorChanged;
-  ColorPicker({Key key, this.onColorChanged}) : super(key: key);
+  final ValueChanged<Color>? onColorChanged;
+  ColorPicker({Key? key, this.onColorChanged}) : super(key: key);
   @override
   _ColorPickerState createState() => _ColorPickerState();
 }
 
 class _ColorPickerState extends State<ColorPicker>
     with SingleTickerProviderStateMixin {
-  TabController _controller;
-  int _index;
+  TabController? _controller;
+  int? _index;
   @override
   void initState() {
     super.initState();
     _index = 0;
     _controller = TabController(length: Colors.primaries.length, vsync: this)
       ..addListener(() {
-        setState(() => _index = _controller.index);
+        setState(() => _index = _controller!.index);
       });
   }
 
   Widget _colorCircle(Color color) => Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => widget.onColorChanged(color),
+          onTap: () => widget.onColorChanged!(color),
           child: Container(
             decoration: BoxDecoration(
                 border: color == context.accentColor
-                    ? Border.all(color: Colors.grey[400], width: 4)
+                    ? Border.all(color: Colors.grey[400]!, width: 4)
                     : null,
                 color: color),
           ),
@@ -71,7 +71,7 @@ class _ColorPickerState extends State<ColorPicker>
                           decoration: BoxDecoration(
                               border: Colors.primaries.indexOf(color) == _index
                                   ? Border.all(
-                                      color: Colors.grey[400], width: 2)
+                                      color: Colors.grey[400]!, width: 2)
                                   : null,
                               borderRadius:
                                   BorderRadius.all(Radius.circular(5)),

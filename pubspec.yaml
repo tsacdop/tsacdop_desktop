@@ -1,10 +1,11 @@
 name: tsacdop_desktop
 description: Enjoy podcasts with Tsacdop!
+publish_to: none
 
 version: 0.0.1+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -12,7 +13,9 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   cached_network_image: ^3.1.0
-  color_thief_flutter: ^1.0.2
+  color_thief_flutter:
+    git: 
+      url: https://github.com/Tudutu/color_thief_flutter.git
   cupertino_icons: ^1.0.2
   crypto: ^3.0.1
   convert: ^3.0.0
@@ -26,7 +29,9 @@ dependencies:
   flutter_html: ^2.1.5
   image: ^3.0.1
   path_provider: ^2.0.1
-  http_proxy: ^1.1.0
+  http_proxy:
+    git:
+      url: https://github.com/Tonigt/http_proxy.git
   shared_preferences: ^2.0.5
   sqflite_common_ffi: ^2.0.0
   url_launcher: ^6.0.3
@@ -34,7 +39,7 @@ dependencies:
   desktop_notifications: ^0.6.1
   line_icons: ^2.0.1
   webfeed:
-    git:
+    git: 
       url: https://github.com/stonega/webfeed.git
   resizable_widget: ^1.0.5
   json_annotation: ^4.3.0

@@ -26,7 +26,7 @@ class PlayerWidget extends ConsumerWidget {
                 width: 120,
                 child: audio.playingEpisode == null
                     ? Center()
-                    : Image.file(File("${audio.playingEpisode.imagePath}")),
+                    : Image.file(File("${audio.playingEpisode!.imagePath}")),
               ),
               InkWell(
                 onTap: () =>
@@ -185,8 +185,8 @@ class PlayerWidget extends ConsumerWidget {
                         child: Slider(
                           value: audio.duration == Duration.zero
                               ? 0
-                              : audio.position.inMilliseconds /
-                                  audio.duration.inMilliseconds,
+                              : audio.position!.inMilliseconds /
+                                  audio.duration!.inMilliseconds,
                           onChangeEnd: (value) {
                             audio.slideSeek(value, end: true);
                           },
@@ -199,8 +199,8 @@ class PlayerWidget extends ConsumerWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(audio.position.inSeconds.toTime),
-                          Text(audio.duration.inSeconds.toTime)
+                          Text(audio.position!.inSeconds.toTime),
+                          Text(audio.duration!.inSeconds.toTime)
                         ],
                       ),
                     )

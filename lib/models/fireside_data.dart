@@ -8,10 +8,10 @@ class FiresideData {
   final String id;
   final String link;
 
-  String _background;
-  String get background => _background;
-  List<PodcastHost> _hosts;
-  List<PodcastHost> get hosts => _hosts;
+  String? _background;
+  String? get background => _background;
+  List<PodcastHost>? _hosts;
+  List<PodcastHost>? get hosts => _hosts;
   FiresideData(this.id, this.link);
 
   final DBHelper _dbHelper = DBHelper();
@@ -34,12 +34,12 @@ class FiresideData {
     if (response.statusCode == 200) {
       var doc = parse(response.data);
       var reg = RegExp(r'https(.+)jpg');
-      var backgroundImage = reg.stringMatch(doc.body
+      var backgroundImage = reg.stringMatch(doc.body!
           .getElementsByClassName('hero-background')
           .first
           .attributes
           .toString());
-      var ul = doc.body.getElementsByClassName('episode-hosts').first.children;
+      var ul = doc.body!.getElementsByClassName('episode-hosts').first.children;
       var hosts = <PodcastHost>[];
       for (var element in ul) {
         PodcastHost host;
@@ -53,7 +53,7 @@ class FiresideData {
 
         hosts.add(host);
       }
-      var data = <String>[
+      var data = <String?>[
         id,
         backgroundImage,
         json.encode({'hosts': hosts.map((host) => host.toJson()).toList()})
@@ -67,7 +67,7 @@ class FiresideData {
     _background = data[0];
     if (data[1] != '') {
       _hosts = json
-          .decode(data[1])['hosts']
+          .decode(data[1]!)['hosts']
           .cast<Map<String, Object>>()
           .map<PodcastHost>(PodcastHost.fromJson)
           .toList();
@@ -78,15 +78,15 @@ class FiresideData {
 }
 
 class PodcastHost {
-  final String image;
-  final String name;
+  final String? image;
+  final String? name;
   PodcastHost(this.name, this.image);
 
-  Map<String, Object> toJson() {
+  Map<String, Object?> toJson() {
     return {'name': name, 'image': image};
   }
 
   static PodcastHost fromJson(Map<String, Object> json) {
-    return PodcastHost(json['name'] as String, json['image'] as String);
+    return PodcastHost(json['name'] as String?, json['image'] as String?);
   }
 }

@@ -16,16 +16,16 @@ import '../utils/extension_helper.dart';
 import '../providers/settings_state.dart';
 
 class Home extends ConsumerStatefulWidget {
-  const Home({Key key}) : super(key: key);
+  const Home({Key? key}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends ConsumerState<Home> {
-  Widget _body;
-  String _selectMenu;
-  OverlayEntry _overlayEntry;
+  Widget? _body;
+  String? _selectMenu;
+  OverlayEntry? _overlayEntry;
   @override
   void initState() {
     _body = PodcastsPage();
@@ -34,7 +34,7 @@ class _HomeState extends ConsumerState<Home> {
   }
 
   OverlayEntry _createOverlayEntry() {
-    RenderBox renderBox = context.findRenderObject();
+    RenderBox renderBox = context.findRenderObject() as RenderBox;
     var offset = renderBox.localToGlobal(Offset.zero);
     return OverlayEntry(
       builder: (constext) => Positioned(
@@ -63,15 +63,15 @@ class _HomeState extends ConsumerState<Home> {
                     itemBuilder: (context, index) {
                       final task = tasks[index];
                       return ListTile(
-                        leading: Text(tasks[index].progress),
+                        leading: Text(tasks[index].progress?.toString() ?? ''),
                         title: Text(
-                          task.episode.title,
+                          task.episode.title ?? '',
                           maxLines: 1,
                         ),
                         subtitle: SizedBox(
                           height: 4,
                           child: LinearProgressIndicator(
-                            value: tasks[index].progress / 100,
+                            value: (tasks[index].progress ?? 0) / 100,
                           ),
                         ),
                       );
@@ -149,9 +149,9 @@ class _HomeState extends ConsumerState<Home> {
                                 onPressed: () {
                                   if (_overlayEntry == null) {
                                     _overlayEntry = _createOverlayEntry();
-                                    Overlay.of(context).insert(_overlayEntry);
+                                    Overlay.of(context)!.insert(_overlayEntry!);
                                   } else {
-                                    _overlayEntry.remove();
+                                    _overlayEntry!.remove();
                                     _overlayEntry = null;
                                   }
                                   setState(() {});
@@ -217,12 +217,12 @@ class _HomeState extends ConsumerState<Home> {
 }
 
 class _NotificationBar extends ConsumerWidget {
-  const _NotificationBar({Key key}) : super(key: key);
+  const _NotificationBar({Key? key}) : super(key: key);
   Widget _notifierText(String text, BuildContext context) {
     return Container(
       height: 30,
       decoration: BoxDecoration(
-          color: Colors.grey[600].withOpacity(0.6),
+          color: Colors.grey[600]!.withOpacity(0.6),
           borderRadius: BorderRadius.only(topLeft: Radius.circular(4.0))),
       padding: EdgeInsets.symmetric(horizontal: 10),
       alignment: Alignment.centerRight,
@@ -245,16 +245,17 @@ class _NotificationBar extends ConsumerWidget {
     if (item != null)
       switch (item.subscribeState) {
         case SubscribeState.start:
-          return _notifierText(s.notificationSubscribe(item.title), context);
+          return _notifierText(s!.notificationSubscribe(item.title!), context);
         case SubscribeState.subscribe:
-          return _notifierText(s.notificaitonFatch(item.title), context);
+          return _notifierText(s!.notificaitonFatch(item.title!), context);
         case SubscribeState.fetch:
-          return _notifierText(s.notificationSuccess(item.title), context);
+          return _notifierText(s!.notificationSuccess(item.title!), context);
         case SubscribeState.exist:
           return _notifierText(
-              s.notificationSubscribeExisted(item.title), context);
+              s!.notificationSubscribeExisted(item.title!), context);
         case SubscribeState.error:
-          return _notifierText(s.notificationNetworkError(item.title), context);
+          return _notifierText(
+              s!.notificationNetworkError(item.title!), context);
         default:
           return Center();
       }

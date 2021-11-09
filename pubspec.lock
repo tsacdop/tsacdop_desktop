@@ -102,9 +102,11 @@ packages:
   color_thief_flutter:
     dependency: "direct main"
     description:
-      name: color_thief_flutter
-      url: "https://pub.flutter-io.cn"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: ee666c3f5f43086fa11227d6c0e6efb87803976e
+      url: "https://github.com/Tudutu/color_thief_flutter.git"
+    source: git
     version: "1.0.2"
   convert:
     dependency: "direct main"
@@ -311,9 +313,11 @@ packages:
   http_proxy:
     dependency: "direct main"
     description:
-      name: http_proxy
-      url: "https://pub.flutter-io.cn"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "0c383a2337383a4eef98377918396e89f2bc8c89"
+      url: "https://github.com/Tonigt/http_proxy.git"
+    source: git
     version: "1.1.0"
   image:
     dependency: "direct main"
@@ -355,10 +359,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: c6ddaae538268c9ded12c39827cc1b99763cc4be
+      resolved-ref: "9a09b2d77e375ad13cb54bc0dc2faed08ec5b0de"
       url: "https://github.com/stonega/linkify.git"
     source: git
-    version: "2.1.1"
+    version: "2.1.2"
   matcher:
     dependency: transitive
     description:
@@ -495,9 +499,11 @@ packages:
   quantize_dart:
     dependency: transitive
     description:
-      name: quantize_dart
-      url: "https://pub.flutter-io.cn"
-    source: hosted
+      path: "."
+      ref: e082204
+      resolved-ref: e082204a3ccdb804590b80160e96522f9f95dc73
+      url: "git://github.com/tudutu/quantize_dart.git"
+    source: git
     version: "1.0.3"
   quiver:
     dependency: transitive
@@ -789,10 +795,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: c95e58a07000365403f2c7d7f639065e6522341f
+      resolved-ref: e11168759c83a47e3dc5aa48c281278c68cbb368
       url: "https://github.com/stonega/webfeed.git"
     source: git
-    version: "0.4.3"
+    version: "0.4.4"
   webview_flutter:
     dependency: transitive
     description:

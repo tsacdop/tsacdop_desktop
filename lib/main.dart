@@ -20,7 +20,7 @@ void main() async {
 }
 
 class _HttpOverrides extends HttpOverrides {
-  final String proxy;
+  final String? proxy;
   _HttpOverrides(this.proxy);
   @override
   String findProxyFromEnvironment(_, __) {

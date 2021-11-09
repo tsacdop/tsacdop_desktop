@@ -7,7 +7,7 @@ import '../utils/extension_helper.dart';
 final version = '0.0.1';
 
 class About extends StatelessWidget {
-  const About({Key key}) : super(key: key);
+  const About({Key? key}) : super(key: key);
 
   Widget _listItem(
           BuildContext context, String text, IconData icons, String url) =>
@@ -36,7 +36,7 @@ class About extends StatelessWidget {
         ),
       );
 
-  Widget _translatorInfo(BuildContext context, {String name, String flag}) =>
+  Widget _translatorInfo(BuildContext context, {required String name, String? flag}) =>
       Container(
         height: 50.0,
         padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -76,7 +76,7 @@ class About extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final s = context.s;
+    final s = context.s!;
     return Container(
       height: double.infinity,
       child: SingleChildScrollView(

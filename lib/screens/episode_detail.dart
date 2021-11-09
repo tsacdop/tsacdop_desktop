@@ -15,11 +15,11 @@ import '../utils/extension_helper.dart';
 
 class EpisodeDetail extends ConsumerWidget {
   final EpisodeBrief episode;
-  const EpisodeDetail(this.episode, {Key key}) : super(key: key);
+  const EpisodeDetail(this.episode, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final s = context.s;
+    final s = context.s!;
     return Container(
       color: context.primaryColor,
       child: Column(
@@ -48,7 +48,7 @@ class EpisodeDetail extends ConsumerWidget {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child:
-                      Text(episode.title, style: context.textTheme.headline5),
+                      Text(episode.title!, style: context.textTheme.headline5),
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -57,7 +57,7 @@ class EpisodeDetail extends ConsumerWidget {
                       Text(
                         s.published(DateFormat.yMMMd().format(
                             DateTime.fromMillisecondsSinceEpoch(
-                                episode.pubDate))),
+                                episode.pubDate!))),
                         style: TextStyle(color: context.accentColor),
                       ),
                       SizedBox(width: 10),
@@ -117,26 +117,26 @@ class EpisodeDetail extends ConsumerWidget {
 
 class _ShowNote extends StatelessWidget {
   final EpisodeBrief episode;
-  const _ShowNote(this.episode, {Key key}) : super(key: key);
+  const _ShowNote(this.episode, {Key? key}) : super(key: key);
 
-  int _getTimeStamp(String url) {
+  int? _getTimeStamp(String url) {
     final time = url.substring(3).trim();
     final data = time.split(':');
     var seconds;
     if (data.length == 3) {
-      seconds = int.tryParse(data[0]) * 3600 +
-          int.tryParse(data[1]) * 60 +
-          int.tryParse(data[2]);
+      seconds = int.tryParse(data[0])! * 3600 +
+          int.tryParse(data[1])! * 60 +
+          int.tryParse(data[2])!;
     } else if (data.length == 2) {
-      seconds = int.tryParse(data[0]) * 60 + int.tryParse(data[1]);
+      seconds = int.tryParse(data[0])! * 60 + int.tryParse(data[1])!;
     }
     return seconds;
   }
 
-  Future<String> _getSDescription(String url) async {
+  Future<String?> _getSDescription(String url) async {
     var description;
     var dbHelper = DBHelper();
-    description = (await dbHelper.getDescription(url))
+    description = (await dbHelper.getDescription(url))!
         .replaceAll(RegExp(r'\s?<p>(<br>)?</p>\s?'), '')
         .replaceAll('\r', '')
         .trim();
@@ -163,12 +163,12 @@ class _ShowNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = context.s;
-    return FutureBuilder(
+    return FutureBuilder<String?>(
       future: _getSDescription(episode.enclosureUrl),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           var description = snapshot.data;
-          return description.length > 0
+          return description != null
               ? Html(
                   // padding: EdgeInsets.only(left: 20.0, right: 20, bottom: 50),
                   // defaultTextStyle: GoogleFonts.martel(
@@ -181,7 +181,7 @@ class _ShowNote extends StatelessWidget {
                     // 'textBaseline': TextBaseline.ideographic,
                   },
                   onLinkTap: (url, _, __, ___) {
-                    url.launchUrl;
+                    url!.launchUrl;
                   },
                 )
               : Container(
@@ -195,10 +195,10 @@ class _ShowNote extends StatelessWidget {
                         height: 100.0,
                       ),
                       Padding(padding: EdgeInsets.all(5.0)),
-                      Text(s.noShownote,
+                      Text(s!.noShownote,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: context.textColor.withOpacity(0.5))),
+                              color: context.textColor!.withOpacity(0.5))),
                     ],
                   ),
                 );
