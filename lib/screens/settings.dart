@@ -50,8 +50,7 @@ class _SettingsState extends State<Settings> {
                   _settingsIndex = 0;
                 });
               },
-              leading:
-                  Icon(LineIcons.adjust, color: context.accentColor),
+              leading: Icon(LineIcons.adjust, color: context.accentColor),
               title: s.settingsAppearance,
               subtitle: s.settingsAppearanceDes,
               selected: _settingsIndex == 0,
@@ -73,8 +72,7 @@ class _SettingsState extends State<Settings> {
                 );
                 _settingsIndex = 2;
               }),
-              leading:
-                  Icon(LineIcons.language, color: Colors.purpleAccent),
+              leading: Icon(LineIcons.language, color: Colors.purpleAccent),
               title: s.settingsLanguages,
               subtitle: s.settingsLanguagesDes,
               selected: _settingsIndex == 2,
@@ -105,9 +103,9 @@ class ThemeSettings extends ConsumerWidget {
   const ThemeSettings({Key key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final s = context.s;
-    final currentSetting = watch(settings);
+    final currentSetting = ref.watch(settings);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30.0),
       child: Column(
@@ -131,7 +129,7 @@ class ThemeSettings extends ConsumerWidget {
                   value: ThemeMode.system,
                   groupValue: currentSetting.themeMode,
                   onChanged: (value) {
-                    context.read(settings).setTheme = value;
+                    ref.read(settings).setTheme = value;
                   }),
             ),
           ),
@@ -144,7 +142,7 @@ class ThemeSettings extends ConsumerWidget {
                   value: ThemeMode.dark,
                   groupValue: currentSetting.themeMode,
                   onChanged: (value) {
-                    context.read(settings).setTheme = value;
+                    ref.read(settings).setTheme = value;
                   }),
             ),
           ),
@@ -157,7 +155,7 @@ class ThemeSettings extends ConsumerWidget {
                   value: ThemeMode.light,
                   groupValue: currentSetting.themeMode,
                   onChanged: (value) {
-                    context.read(settings).setTheme = value;
+                    ref.read(settings).setTheme = value;
                   }),
             ),
           ),
@@ -329,14 +327,14 @@ class _LanguageSettingState extends State<LanguageSetting> {
   }
 }
 
-class StorageSetting extends StatefulWidget {
+class StorageSetting extends ConsumerStatefulWidget {
   StorageSetting({Key key}) : super(key: key);
 
   @override
   _StorageSettingState createState() => _StorageSettingState();
 }
 
-class _StorageSettingState extends State<StorageSetting> {
+class _StorageSettingState extends ConsumerState<StorageSetting> {
   OutlineInputBorder _inputBorder(Color color) => OutlineInputBorder(
       borderRadius: BorderRadius.zero, borderSide: BorderSide(color: color));
   FocusNode _focusNode;
@@ -356,7 +354,7 @@ class _StorageSettingState extends State<StorageSetting> {
           child: Text(s.network, style: TextStyle(color: context.accentColor)),
         ),
         Consumer(builder: (context, watch, child) {
-          final currentSetting = watch(settings);
+          final currentSetting = ref.watch(settings);
           return Padding(
             padding: const EdgeInsets.all(20.0),
             child: Text(
@@ -373,8 +371,7 @@ class _StorageSettingState extends State<StorageSetting> {
               Expanded(
                 child: TextField(
                     focusNode: _focusNode,
-                    onSubmitted: (value) =>
-                        context.read(settings).setProxy = value,
+                    onSubmitted: (value) => ref.read(settings).setProxy = value,
                     onChanged: (value) => _query = value,
                     decoration: InputDecoration(
                         isDense: true,
@@ -400,7 +397,7 @@ class _StorageSettingState extends State<StorageSetting> {
                 ),
                 onPressed: () {
                   _focusNode?.unfocus();
-                  context.read(settings).setProxy = _query;
+                  ref.read(settings).setProxy = _query;
                 },
               ),
             ],

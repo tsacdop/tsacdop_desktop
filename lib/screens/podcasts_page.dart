@@ -15,11 +15,11 @@ import 'podcast_detail.dart';
 final openPodcast = StateProvider<PodcastLocal>((ref) => null);
 final openEpisode = StateProvider<EpisodeBrief>((ref) => null);
 
-class PodcastsPage extends StatelessWidget {
+class PodcastsPage extends ConsumerWidget {
   PodcastsPage({Key key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
@@ -33,8 +33,8 @@ class PodcastsPage extends StatelessWidget {
           _PodcastGroup(),
           Consumer(
             builder: (context, watch, _) {
-              final podcast = watch(openPodcast).state;
-              final episode = watch(openEpisode).state;
+              final podcast = ref.watch(openPodcast);
+              final episode = ref.watch(openEpisode);
               if (episode != null)
                 return EpisodeDetail(episode);
               else if (podcast != null) return PodcastDetail(podcast);
@@ -47,14 +47,14 @@ class PodcastsPage extends StatelessWidget {
   }
 }
 
-class _PodcastGroup extends StatefulWidget {
+class _PodcastGroup extends ConsumerStatefulWidget {
   const _PodcastGroup({Key key}) : super(key: key);
 
   @override
   __PodcastGroupState createState() => __PodcastGroupState();
 }
 
-class __PodcastGroupState extends State<_PodcastGroup> {
+class __PodcastGroupState extends ConsumerState<_PodcastGroup> {
   int _groupIndex;
   @override
   void initState() {
@@ -65,7 +65,7 @@ class __PodcastGroupState extends State<_PodcastGroup> {
   @override
   Widget build(BuildContext context) {
     return Consumer(builder: (context, watch, child) {
-      final groupList = watch(groupState);
+      final groupList = ref.watch(groupState);
       if (groupList.isEmpty) {
         return Center();
       }
@@ -132,13 +132,13 @@ class __PodcastGroupState extends State<_PodcastGroup> {
 
   Widget _podcastListTile(BuildContext context, PodcastLocal podcast) =>
       Consumer(
-        builder: (context, watch, _) {
-          final selected = watch(openPodcast).state == podcast;
+        builder: (context, ref, _) {
+          final selected = ref.watch(openPodcast) == podcast;
           return CustomListTile(
             selected: selected,
             onTap: () {
-              context.read(openEpisode).state = null;
-              context.read(openPodcast).state = podcast;
+              ref.watch(openEpisode.notifier).state = null;
+              ref.watch(openPodcast.notifier).state = podcast;
             },
             child: Row(
               children: [
@@ -172,12 +172,12 @@ class __PodcastGroupState extends State<_PodcastGroup> {
       );
 }
 
-class AddGroup extends StatefulWidget {
+class AddGroup extends ConsumerStatefulWidget {
   @override
   _AddGroupState createState() => _AddGroupState();
 }
 
-class _AddGroupState extends State<AddGroup> {
+class _AddGroupState extends ConsumerState<AddGroup> {
   TextEditingController _controller;
   String _newGroup;
   int _error;
@@ -234,11 +234,11 @@ class _AddGroupState extends State<AddGroup> {
                       RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                 ),
                 onPressed: () async {
-                  if (context.read(groupState.notifier).isExisted(_newGroup)) {
+                  if (ref.watch(groupState.notifier).isExisted(_newGroup)) {
                     setState(() => _error = 1);
                   } else {
-                    context
-                        .read(groupState.notifier)
+                    ref
+                        .watch(groupState.notifier)
                         .addGroup(PodcastGroup(_newGroup));
                     Navigator.of(context).pop();
                   }

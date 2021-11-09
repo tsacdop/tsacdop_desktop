@@ -30,8 +30,8 @@ class _HttpOverrides extends HttpOverrides {
 
 class MyApp extends ConsumerWidget {
   @override
-  Widget build(BuildContext contextm, ScopedReader watch) {
-    var theme = watch(settings);
+  Widget build(BuildContext contextm, WidgetRef ref) {
+    var theme = ref.watch(settings);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Tsacdop Desktop',

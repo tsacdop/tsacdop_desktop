@@ -16,14 +16,14 @@ import '../utils/extension_helper.dart';
 
 final refreshNotification = StateProvider<String>((ref) => null);
 
-class HomeTabs extends StatefulWidget {
+class HomeTabs extends ConsumerStatefulWidget {
   const HomeTabs({Key key}) : super(key: key);
 
   @override
   _HomeTabsState createState() => _HomeTabsState();
 }
 
-class _HomeTabsState extends State<HomeTabs> {
+class _HomeTabsState extends ConsumerState<HomeTabs> {
   Future<String> _getRefreshDate(BuildContext context) async {
     int refreshDate;
     var refreshstorage = KeyValueStorage('refreshdate');
@@ -45,16 +45,19 @@ class _HomeTabsState extends State<HomeTabs> {
     var podcastList = await _dbHelper.getPodcastLocalAll(updateOnly: true);
     for (var podcastLocal in podcastList) {
       final notifier = context.s.notificationUpdate(podcastLocal.title);
-      context.read(refreshNotification).state = notifier;
+      ref.watch(refreshNotification.notifier).state = notifier;
       var updateCount = await _dbHelper.updatePodcastRss(podcastLocal);
       developer.log('Refresh ${podcastLocal.title}$updateCount');
     }
-    context.read(refreshNotification).state = null;
+    ref.watch(refreshNotification.notifier).state = null;
   }
 
   @override
   Widget build(BuildContext context) {
     final s = context.s;
+    ref.listen(refreshNotification, (context, refresh) {
+      if (refresh.state != null) setState(() {});
+    });
     return DefaultTabController(
       length: 3,
       child: Column(
@@ -66,27 +69,21 @@ class _HomeTabsState extends State<HomeTabs> {
               children: [
                 Text('My library', style: context.textTheme.headline5),
                 Spacer(),
-                ProviderListener<StateController<String>>(
-                  provider: refreshNotification,
-                  onChange: (context, refresh) {
-                    if (refresh.state != null) setState(() {});
-                  },
-                  child: FutureBuilder<String>(
-                      future: _getRefreshDate(context),
-                      builder: (_, snapshot) {
-                        if (snapshot.hasData) {
-                          return Text(
-                            snapshot.data,
-                          );
-                        } else {
-                          return Center();
-                        }
-                      }),
-                ),
+                FutureBuilder<String>(
+                    future: _getRefreshDate(context),
+                    builder: (_, snapshot) {
+                      if (snapshot.hasData) {
+                        return Text(
+                          snapshot.data,
+                        );
+                      } else {
+                        return Center();
+                      }
+                    }),
                 SizedBox(width: 20),
                 Consumer(
-                  builder: (context, watch, child) {
-                    final refresh = watch(refreshNotification).state != null;
+                  builder: (context, ref, child) {
+                    final refresh = ref.watch(refreshNotification) != null;
                     return refresh
                         ? IconButton(
                             splashRadius: 20,
@@ -583,14 +580,14 @@ class _FavTabState extends State<FavTab> {
   }
 }
 
-class DownloadTab extends StatefulWidget {
+class DownloadTab extends ConsumerStatefulWidget {
   DownloadTab({Key key}) : super(key: key);
 
   @override
   _DownloadTabState createState() => _DownloadTabState();
 }
 
-class _DownloadTabState extends State<DownloadTab> {
+class _DownloadTabState extends ConsumerState<DownloadTab> {
   final _dbHelper = DBHelper();
 
   Layout _layout;
@@ -659,7 +656,7 @@ class _DownloadTabState extends State<DownloadTab> {
                             ),
                           ),
                           Consumer(builder: (context, watch, child) {
-                            var tasks = watch(downloadProvider);
+                            var tasks = ref.watch(downloadProvider);
                             if (tasks.isEmpty)
                               return SliverToBoxAdapter(child: Center());
                             return SliverList(

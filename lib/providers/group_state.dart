@@ -207,7 +207,7 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
   }
 
   void _setSubscribeState(OnlinePodcast podcast, SubscribeState state) {
-    read(currentSubscribeItem).state =
+    read(currentSubscribeItem.notifier).state =
         SubscribeItem(podcast.rss, podcast.title, subscribeState: state);
   }
 

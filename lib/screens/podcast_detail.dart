@@ -18,7 +18,7 @@ import '../utils/extension_helper.dart';
 
 enum PodcastBody { list, setting, info }
 
-class PodcastDetail extends StatefulWidget {
+class PodcastDetail extends ConsumerStatefulWidget {
   final PodcastLocal podcastLocal;
   PodcastDetail(this.podcastLocal, {Key key}) : super(key: key);
 
@@ -26,7 +26,7 @@ class PodcastDetail extends StatefulWidget {
   _PodcastDetailState createState() => _PodcastDetailState();
 }
 
-class _PodcastDetailState extends State<PodcastDetail> {
+class _PodcastDetailState extends ConsumerState<PodcastDetail> {
   Widget _body;
   PodcastBody _podcastBody;
 
@@ -70,7 +70,8 @@ class _PodcastDetailState extends State<PodcastDetail> {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: () => context.read(openPodcast).state = null,
+                            onTap: () =>
+                                ref.read(openPodcast.notifier).state = null,
                             hoverColor:
                                 context.primaryColorDark.withOpacity(0.3),
                             child: Container(
@@ -120,7 +121,8 @@ class _PodcastDetailState extends State<PodcastDetail> {
                                   splashRadius: 15,
                                   icon: Icon(LineIcons.cogs,
                                       size: 18,
-                                      color: _getIconColor(PodcastBody.setting)),
+                                      color:
+                                          _getIconColor(PodcastBody.setting)),
                                   onPressed: () {
                                     setState(() {
                                       _body = _PodcastSettings(podcast);
@@ -595,7 +597,7 @@ class _PodcastInfo extends StatelessWidget {
   }
 }
 
-class _PodcastSettings extends StatefulWidget {
+class _PodcastSettings extends ConsumerStatefulWidget {
   final PodcastLocal podcast;
 
   const _PodcastSettings(this.podcast, {Key key}) : super(key: key);
@@ -604,13 +606,13 @@ class _PodcastSettings extends StatefulWidget {
   __PodcastSettingsState createState() => __PodcastSettingsState();
 }
 
-class __PodcastSettingsState extends State<_PodcastSettings> {
+class __PodcastSettingsState extends ConsumerState<_PodcastSettings> {
   List<PodcastGroup> _selectedGroups;
 
   @override
   void initState() {
     _selectedGroups =
-        context.read(groupState.notifier).getPodcastGroup(widget.podcast.id);
+        ref.read(groupState.notifier).getPodcastGroup(widget.podcast.id);
     super.initState();
   }
 
@@ -627,7 +629,7 @@ class __PodcastSettingsState extends State<_PodcastSettings> {
       ),
       Consumer(
         builder: (context, watch, child) {
-          final groupList = watch(groupState);
+          final groupList = ref.watch(groupState);
 
           return Padding(
             padding: const EdgeInsets.all(20.0),
@@ -673,13 +675,13 @@ class __PodcastSettingsState extends State<_PodcastSettings> {
                       ),
                       onPressed: () async {
                         if (_selectedGroups.length > 0) {
-                          await context.read(groupState.notifier).changeGroup(
+                          await ref.read(groupState.notifier).changeGroup(
                                 widget.podcast.id,
                                 _selectedGroups,
                               );
                           if (mounted)
                             setState(() {
-                              _selectedGroups = context
+                              _selectedGroups = ref
                                   .read(groupState)
                                   .getPodcastGroup(widget.podcast.id);
                             });

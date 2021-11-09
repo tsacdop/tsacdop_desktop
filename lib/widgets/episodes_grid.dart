@@ -13,7 +13,7 @@ import 'episode_menu.dart';
 enum Layout { multi, one }
 final hoverEpisode = StateProvider<EpisodeBrief>((ref) => null);
 
-class EpisodesGrid extends StatelessWidget {
+class EpisodesGrid extends ConsumerWidget {
   final List<EpisodeBrief> episodes;
   final bool showFavorite;
   final bool showDownload;
@@ -153,8 +153,8 @@ class EpisodesGrid extends StatelessWidget {
 
   Widget _hoverMenuBat(int index, {double width}) {
     return Consumer(
-      builder: (context, watch, child) {
-        final episode = watch(hoverEpisode).state;
+      builder: (context, ref, child) {
+        final episode = ref.watch(hoverEpisode);
         if (episode != null && episode == episodes[index])
           return TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: 1),
@@ -165,9 +165,8 @@ class EpisodesGrid extends StatelessWidget {
               return width == null
                   ? Container(
                       decoration: BoxDecoration(
-                        color: context.primaryColorDark,
-                        borderRadius: BorderRadius.circular(6)
-                      ),
+                          color: context.primaryColorDark,
+                          borderRadius: BorderRadius.circular(6)),
                       height: 40 * value,
                       child: SingleChildScrollView(
                         child: SizedBox(
@@ -391,7 +390,7 @@ class EpisodesGrid extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final count = math.max(width ~/ 180, 3);
     return layout == Layout.one
         ? SliverList(
@@ -404,13 +403,13 @@ class EpisodesGrid extends StatelessWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(6),
                   onHover: (value) {
-                    if (value && context.read(hoverEpisode).state == null)
-                      context.read(hoverEpisode).state = episodes[index];
+                    if (value && ref.read(hoverEpisode.notifier).state == null)
+                      ref.read(hoverEpisode.notifier).state = episodes[index];
                     else
-                      context.read(hoverEpisode).state = null;
+                      ref.read(hoverEpisode.notifier).state = null;
                   },
                   onTap: () =>
-                      context.read(openEpisode).state = episodes[index],
+                      ref.read(openEpisode.notifier).state = episodes[index],
                   child: Container(
                     height: 120,
                     child: _layoutOneCard(context,
@@ -437,13 +436,13 @@ class EpisodesGrid extends StatelessWidget {
                 final c = episodes[index].backgroudColor(context);
                 return InkWell(
                   onHover: (value) {
-                    if (value && context.read(hoverEpisode).state == null)
-                      context.read(hoverEpisode).state = episodes[index];
+                    if (value && ref.read(hoverEpisode.notifier).state == null)
+                      ref.read(hoverEpisode.notifier).state = episodes[index];
                     else
-                      context.read(hoverEpisode).state = null;
+                      ref.read(hoverEpisode.notifier).state = null;
                   },
                   onTap: () =>
-                      context.read(openEpisode).state = episodes[index],
+                      ref.read(openEpisode.notifier).state = episodes[index],
                   child: Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.zero,

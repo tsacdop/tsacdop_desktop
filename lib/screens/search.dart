@@ -14,14 +14,14 @@ import '../utils/extension_helper.dart';
 
 final selectedPodcast = StateProvider<OnlinePodcast>((ref) => null);
 
-class SearchPage extends StatefulWidget {
+class SearchPage extends ConsumerStatefulWidget {
   SearchPage({Key key}) : super(key: key);
 
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends ConsumerState<SearchPage> {
   String _query;
   FocusNode _focusNode;
   TextEditingController _controller;
@@ -140,11 +140,11 @@ class _SearchPageState extends State<SearchPage> {
               percentages: [0.6, 0.4],
               children: [
                 Consumer(builder: (context, watch, _) {
-                  final podcast = watch(selectedPodcast).state;
+                  final podcast = ref.watch(selectedPodcast);
                   return _SearchResult(query: _query, podcast: podcast);
                 }),
                 Consumer(builder: (context, watch, _) {
-                  final podcast = watch(selectedPodcast).state;
+                  final podcast = ref.watch(selectedPodcast);
                   return podcast != null ? _DetailPage(podcast) : Center();
                 })
               ],
@@ -219,7 +219,7 @@ class _SearchPageState extends State<SearchPage> {
   void _submitSearch(String result) {
     setState(() => _query = result);
     if (result != '') {
-      context.read(selectedPodcast).state = null;
+      ref.read(selectedPodcast.notifier).state = null;
       _saveHistory(result);
     }
   }
@@ -398,12 +398,12 @@ class __SearchResultState extends State<_SearchResult> {
   }
 }
 
-class SearchResult extends StatelessWidget {
+class SearchResult extends ConsumerWidget {
   final OnlinePodcast onlinePodcast;
   SearchResult({this.onlinePodcast, Key key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -412,7 +412,7 @@ class SearchResult extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
           child: CustomListTile(
             onTap: () {
-              context.read(selectedPodcast).state = onlinePodcast;
+              ref.read(selectedPodcast.notifier).state = onlinePodcast;
             },
             leading: ClipRRect(
                 borderRadius: BorderRadius.circular(25.0),
@@ -582,12 +582,12 @@ class __DetailPageState extends State<_DetailPage> {
   }
 }
 
-class _SubscribeButton extends StatelessWidget {
+class _SubscribeButton extends ConsumerWidget {
   final OnlinePodcast podcast;
   const _SubscribeButton(this.podcast, {Key key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final s = context.s;
     return ElevatedButton(
       child: Text(s.subscribe),
@@ -598,8 +598,7 @@ class _SubscribeButton extends StatelessWidget {
         minimumSize: Size(100, 40),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       ),
-      onPressed: () =>
-          context.read(groupState.notifier).subscribePodcast(podcast),
+      onPressed: () => ref.read(groupState.notifier).subscribePodcast(podcast),
     );
   }
 }

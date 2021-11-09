@@ -15,14 +15,14 @@ import '../widgets/custom_button.dart';
 import '../utils/extension_helper.dart';
 import '../providers/settings_state.dart';
 
-class Home extends StatefulWidget {
+class Home extends ConsumerStatefulWidget {
   const Home({Key key}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends ConsumerState<Home> {
   Widget _body;
   String _selectMenu;
   OverlayEntry _overlayEntry;
@@ -52,7 +52,7 @@ class _HomeState extends State<Home> {
                     borderRadius: BorderRadius.circular(4.0),
                     border: Border.all(color: context.primaryColorDark)),
                 child: Consumer(builder: (context, watch, child) {
-                  var tasks = watch(downloadProvider);
+                  var tasks = ref.watch(downloadProvider);
                   if (tasks.isEmpty)
                     return SizedBox(
                       height: 10,
@@ -138,7 +138,7 @@ class _HomeState extends State<Home> {
                           ),
                           Spacer(),
                           Consumer(builder: (context, watch, child) {
-                            var tasks = watch(downloadProvider);
+                            var tasks = ref.watch(downloadProvider);
                             if (tasks.isNotEmpty)
                               return IconButton(
                                 splashRadius: 20,
@@ -163,13 +163,11 @@ class _HomeState extends State<Home> {
                             splashRadius: 20,
                             icon: Icon(LineIcons.lightbulb),
                             onPressed: () {
-                              if (context.read(settings).themeMode !=
+                              if (ref.read(settings).themeMode !=
                                   ThemeMode.dark)
-                                context.read(settings).setTheme =
-                                    ThemeMode.dark;
+                                ref.read(settings).setTheme = ThemeMode.dark;
                               else {
-                                context.read(settings).setTheme =
-                                    ThemeMode.light;
+                                ref.read(settings).setTheme = ThemeMode.light;
                               }
                             },
                           ),
@@ -233,11 +231,11 @@ class _NotificationBar extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final s = context.s;
-    var refreshNotifier = watch(refreshNotification).state;
-    var item = watch(currentSubscribeItem).state;
-    var downloadNotifier = watch(downloadNotification).state;
+    var refreshNotifier = ref.watch(refreshNotification);
+    var item = ref.watch(currentSubscribeItem);
+    var downloadNotifier = ref.watch(downloadNotification);
     if (downloadNotifier != null) {
       return _notifierText(downloadNotifier, context);
     }

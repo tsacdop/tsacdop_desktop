@@ -94,9 +94,9 @@ class Downloader extends StateNotifier<List<DownloadTask>> {
         var progress = (count * 100) ~/ total;
         _updateTask(downloadTask.copyWith(
             progress: progress, status: DownloadTaskStatus.running));
-        if (read(downloadNotification).state == null ||
-            read(downloadNotification).state.contains(episode.title))
-          read(downloadNotification).state =
+        if (read(downloadNotification.notifier).state == null ||
+            read(downloadNotification.notifier).state.contains(episode.title))
+          read(downloadNotification.notifier).state =
               'Downloading ${episode.title} $progress%';
       }
     }, deleteOnError: true);
@@ -104,13 +104,13 @@ class Downloader extends StateNotifier<List<DownloadTask>> {
       _updateTask(downloadTask.copyWith(
           progress: 100, status: DownloadTaskStatus.complete));
 
-      read(downloadNotification).state = null;
+      read(downloadNotification.notifier).state = null;
       var fileStat = await File(filePath).stat();
       _dbHelper.saveMediaId(
           episode.enclosureUrl, filePath, downloadTask.taskId, fileStat.size);
     } else {
       _updateTask(downloadTask.copyWith(status: DownloadTaskStatus.failed));
-      read(downloadNotification).state = null;
+      read(downloadNotification.notifier).state = null;
     }
   }
 

@@ -7,11 +7,11 @@ import 'package:tsacdop_desktop/providers/audio_state.dart';
 import '../utils/extension_helper.dart';
 import '../storage/sqflite_db.dart';
 
-class PlaylistPage extends StatelessWidget {
+class PlaylistPage extends ConsumerWidget {
   const PlaylistPage({Key key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final s = context.s;
 
     return Column(
@@ -23,7 +23,7 @@ class PlaylistPage extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Consumer(
             builder: (context, watch, child) {
-              final audio = watch(audioState);
+              final audio = ref.watch(audioState);
               return Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -37,7 +37,7 @@ class PlaylistPage extends StatelessWidget {
                         )
                       : IconButton(
                           splashRadius: 20,
-                          onPressed: context.read(audioState).loadPlaylist,
+                          onPressed: ref.read(audioState).loadPlaylist,
                           icon: Icon(Icons.play_arrow),
                         )
                 ],
@@ -53,7 +53,7 @@ class PlaylistPage extends StatelessWidget {
         Expanded(
           child: Consumer(
             builder: (context, watch, child) {
-              final audio = watch(audioState);
+              final audio = ref.watch(audioState);
               if (audio.queue.isNotEmpty)
                 return FutureBuilder<List<EpisodeBrief>>(
                   future: _getEpisode(audio.queue),

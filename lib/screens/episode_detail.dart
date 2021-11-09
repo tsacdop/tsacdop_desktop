@@ -13,12 +13,12 @@ import '../storage/sqflite_db.dart';
 import '../models/episodebrief.dart';
 import '../utils/extension_helper.dart';
 
-class EpisodeDetail extends StatelessWidget {
+class EpisodeDetail extends ConsumerWidget {
   final EpisodeBrief episode;
   const EpisodeDetail(this.episode, {Key key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final s = context.s;
     return Container(
       color: context.primaryColor,
@@ -31,7 +31,7 @@ class EpisodeDetail extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () => context.read(openEpisode).state = null,
+                  onTap: () => ref.watch(openEpisode.notifier).state = null,
                   hoverColor: context.accentColor,
                   child: Container(
                     height: 30,
@@ -64,8 +64,7 @@ class EpisodeDetail extends StatelessWidget {
                       if (episode.explicit == 1)
                         Text('E',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red))
+                                fontWeight: FontWeight.bold, color: Colors.red))
                     ],
                   ),
                 ),
@@ -99,7 +98,7 @@ class EpisodeDetail extends StatelessWidget {
                       minimumSize: Size(100, 40),
                     ),
                     onPressed: () {
-                      context
+                      ref
                           .read(audioState)
                           .loadEpisode(episode.enclosureUrl);
                     },
@@ -171,19 +170,19 @@ class _ShowNote extends StatelessWidget {
           var description = snapshot.data;
           return description.length > 0
               ? Html(
-                  padding: EdgeInsets.only(left: 20.0, right: 20, bottom: 50),
-                  defaultTextStyle: GoogleFonts.martel(
-                      textStyle: TextStyle(
-                    height: 1.8,
-                  )),
+                  // padding: EdgeInsets.only(left: 20.0, right: 20, bottom: 50),
+                  // defaultTextStyle: GoogleFonts.martel(
+                  //     textStyle: TextStyle(
+                  //   height: 1.8,
+                  // )),
                   data: description,
-                  linkStyle: TextStyle(
-                      color: context.accentColor,
-                      textBaseline: TextBaseline.ideographic),
-                  onLinkTap: (url) {
+                  style: {
+                    'a': Style(color: context.accentColor),
+                    // 'textBaseline': TextBaseline.ideographic,
+                  },
+                  onLinkTap: (url, _, __, ___) {
                     url.launchUrl;
                   },
-                  useRichText: true,
                 )
               : Container(
                   height: context.width,
