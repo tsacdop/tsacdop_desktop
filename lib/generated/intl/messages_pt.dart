@@ -95,7 +95,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static m30(version) => "Versão: ${version}";
 
-  final messages = _notInlinedMessages(_notInlinedMessages);
+  final Map<String, dynamic> messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function>{
         "add": MessageLookupByLibrary.simpleMessage("Adicionar"),
         "addEpisodeGroup": m0,

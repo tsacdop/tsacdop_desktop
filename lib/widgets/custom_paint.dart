@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 
 class LayoutPainter extends CustomPainter {
   double scale;
-  Color color;
+  Color? color;
   LayoutPainter(this.scale, this.color);
   @override
   void paint(Canvas canvas, Size size) {
     var _paint = Paint()
-      ..color = color
+      ..color = color!
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
@@ -31,7 +31,7 @@ class LayoutPainter extends CustomPainter {
 /// Multi select button.
 class MultiSelectPainter extends CustomPainter {
   Color color;
-  MultiSelectPainter({@required this.color});
+  MultiSelectPainter({required this.color});
   @override
   void paint(Canvas canvas, Size size) {
     var paint = Paint()
@@ -61,21 +61,21 @@ class MultiSelectPainter extends CustomPainter {
 
 /// Hide listened painter.
 class HideListenedPainter extends CustomPainter {
-  Color color;
-  Color backgroundColor;
-  double fraction;
+  Color? color;
+  Color? backgroundColor;
+  double? fraction;
   double stroke;
   HideListenedPainter(
       {this.color, this.stroke = 1.0, this.backgroundColor, this.fraction});
   @override
   void paint(Canvas canvas, Size size) {
     var _paint = Paint()
-      ..color = color
+      ..color = color!
       ..strokeWidth = stroke
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
     var _linePaint = Paint()
-      ..color = backgroundColor
+      ..color = backgroundColor!
       ..strokeWidth = stroke * 2
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
@@ -93,11 +93,11 @@ class HideListenedPainter extends CustomPainter {
     _path.lineTo(size.width * 2 / 3, size.height * 3 / 4);
 
     canvas.drawPath(_path, _paint);
-    if (fraction > 0) {
+    if (fraction! > 0) {
       canvas.drawLine(
           Offset(size.width, size.height) / 5,
           Offset(size.width, size.height) / 5 +
-              Offset(size.width, size.height) * 3 / 5 * fraction,
+              Offset(size.width, size.height) * 3 / 5 * fraction!,
           _linePaint);
     }
   }
@@ -110,10 +110,10 @@ class HideListenedPainter extends CustomPainter {
 
 ///Download button.
 class DownloadPainter extends CustomPainter {
-  double fraction;
-  Color color;
-  Color progressColor;
-  double progress;
+  double? fraction;
+  Color? color;
+  Color? progressColor;
+  double? progress;
   double pauseProgress;
   double stroke;
   DownloadPainter(
@@ -127,22 +127,22 @@ class DownloadPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     var _paint = Paint()
-      ..color = color
+      ..color = color!
       ..strokeWidth = stroke
       ..strokeCap = StrokeCap.round;
     var _circlePaint = Paint()
-      ..color = color.withAlpha(70)
+      ..color = color!.withAlpha(70)
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke;
     var _progressPaint = Paint()
-      ..color = progressColor
+      ..color = progressColor!
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke;
     var width = size.width;
     var height = size.height;
     var center = Offset(size.width / 2, size.height / 2);
-    if (pauseProgress == 0 && progress < 1) {
+    if (pauseProgress == 0 && progress! < 1) {
       canvas.drawLine(
           Offset(width / 2, 4), Offset(width / 2, height * 4 / 5), _paint);
       canvas.drawLine(Offset(width / 4, height / 2),
@@ -154,11 +154,11 @@ class DownloadPainter extends CustomPainter {
     if (fraction == 0) {
       canvas.drawLine(
           Offset(width / 5, height), Offset(width * 4 / 5, height), _paint);
-    } else if (progress < 1) {
+    } else if (progress! < 1) {
       canvas.drawArc(Rect.fromCircle(center: center, radius: width / 2),
-          math.pi / 2, math.pi * fraction, false, _circlePaint);
+          math.pi / 2, math.pi * fraction!, false, _circlePaint);
       canvas.drawArc(Rect.fromCircle(center: center, radius: width / 2),
-          math.pi / 2, -math.pi * fraction, false, _circlePaint);
+          math.pi / 2, -math.pi * fraction!, false, _circlePaint);
     }
 
     if (progress == 1) {
@@ -170,9 +170,9 @@ class DownloadPainter extends CustomPainter {
           Offset(width * 2 / 5, height * 7 / 10), _progressPaint);
     }
 
-    if (fraction == 1 && progress < 1) {
+    if (fraction == 1 && progress! < 1) {
       canvas.drawArc(Rect.fromCircle(center: center, radius: width / 2),
-          -math.pi / 2, math.pi * 2 * progress, false, _progressPaint);
+          -math.pi / 2, math.pi * 2 * progress!, false, _progressPaint);
     }
 
     if (pauseProgress > 0) {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -12,21 +13,21 @@ import '../service/search_api.dart';
 import '../storage/key_value_storage.dart';
 import '../utils/extension_helper.dart';
 
-final selectedPodcast = StateProvider<OnlinePodcast>((ref) => null);
+final selectedPodcast = StateProvider<OnlinePodcast?>((ref) => null);
 
-class SearchPage extends StatefulWidget {
-  SearchPage({Key key}) : super(key: key);
+class SearchPage extends ConsumerStatefulWidget {
+  SearchPage({Key? key}) : super(key: key);
 
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
-  String _query;
-  FocusNode _focusNode;
-  TextEditingController _controller;
+class _SearchPageState extends ConsumerState<SearchPage> {
+  String? _query;
+  FocusNode? _focusNode;
+  TextEditingController? _controller;
 
-  String get _input => _controller.text;
+  String get _input => _controller!.text;
 
   OutlineInputBorder _inputBorder(Color color) => OutlineInputBorder(
       borderRadius: BorderRadius.circular(4),
@@ -42,14 +43,14 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   void dispose() {
-    _controller.dispose();
-    _focusNode.dispose();
+    _controller!.dispose();
+    _focusNode!.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final s = context.s;
+    final s = context.s!;
     return Column(
       children: [
         Container(
@@ -75,7 +76,7 @@ class _SearchPageState extends State<SearchPage> {
                               decoration: InputDecoration(
                                   focusColor: context.primaryColor,
                                   hoverColor: context.primaryColor,
-                                  hintText: context.s.searchEpisode,
+                                  hintText: context.s!.searchEpisode,
                                   fillColor: context.primaryColor,
                                   filled: true,
                                   border: _inputBorder(context.primaryColorDark
@@ -90,7 +91,7 @@ class _SearchPageState extends State<SearchPage> {
                             child: InkWell(
                               onTap: () {
                                 setState(() {
-                                  _controller.text = '';
+                                  _controller!.text = '';
                                 });
                               },
                               child: Container(
@@ -140,11 +141,11 @@ class _SearchPageState extends State<SearchPage> {
               percentages: [0.6, 0.4],
               children: [
                 Consumer(builder: (context, watch, _) {
-                  final podcast = watch(selectedPodcast).state;
+                  final podcast = ref.watch(selectedPodcast);
                   return _SearchResult(query: _query, podcast: podcast);
                 }),
                 Consumer(builder: (context, watch, _) {
-                  final podcast = watch(selectedPodcast).state;
+                  final podcast = ref.watch(selectedPodcast);
                   return podcast != null ? _DetailPage(podcast) : Center();
                 })
               ],
@@ -194,9 +195,9 @@ class _SearchPageState extends State<SearchPage> {
                   padding: EdgeInsets.fromLTRB(50, 20, 50, 20),
                   child: Center(
                     child: Text(
-                      context.s.searchHelper,
+                      context.s!.searchHelper,
                       textAlign: TextAlign.center,
-                      style: context.textTheme.headline6
+                      style: context.textTheme.headline6!
                           .copyWith(color: Colors.grey[400]),
                     ),
                   ),
@@ -219,7 +220,7 @@ class _SearchPageState extends State<SearchPage> {
   void _submitSearch(String result) {
     setState(() => _query = result);
     if (result != '') {
-      context.read(selectedPodcast).state = null;
+      ref.read(selectedPodcast.notifier).state = null;
       _saveHistory(result);
     }
   }
@@ -232,7 +233,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> _saveHistory(String query) async {
     final storage = KeyValueStorage(searchHistoryKey);
-    final history = await storage.getStringList();
+    final history = await (storage.getStringList() as FutureOr<List<String>>);
     if (!history.contains(query)) {
       if (history.length >= 6) {
         history.removeLast();
@@ -244,20 +245,20 @@ class _SearchPageState extends State<SearchPage> {
 }
 
 class _SearchResult extends StatefulWidget {
-  final String query;
-  final OnlinePodcast podcast;
-  _SearchResult({this.query, this.podcast, Key key}) : super(key: key);
+  final String? query;
+  final OnlinePodcast? podcast;
+  _SearchResult({this.query, this.podcast, Key? key}) : super(key: key);
 
   @override
   __SearchResultState createState() => __SearchResultState();
 }
 
 class __SearchResultState extends State<_SearchResult> {
-  int _limit;
-  bool _loading;
-  bool _loadError;
-  bool _noResult;
-  Future _searchFuture;
+  late int _limit;
+  late bool _loading;
+  late bool _loadError;
+  late bool _noResult;
+  late Future _searchFuture;
   List _podcastList = [];
   final _searchEngine = PodcastsIndexSearch();
 
@@ -268,7 +269,7 @@ class __SearchResultState extends State<_SearchResult> {
     _loadError = false;
     _noResult = false;
     _limit = 10;
-    _searchFuture = _getPodcatsIndexList(widget.query, limit: _limit);
+    _searchFuture = _getPodcatsIndexList(widget.query!, limit: _limit);
   }
 
   @override
@@ -281,21 +282,21 @@ class __SearchResultState extends State<_SearchResult> {
         _limit = 10;
         _noResult = false;
         _podcastList.clear();
-        _searchFuture = _getPodcatsIndexList(widget.query, limit: _limit);
+        _searchFuture = _getPodcatsIndexList(widget.query!, limit: _limit);
       });
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List>(
-      future: _searchFuture,
+      future: _searchFuture.then((value) => value as List<dynamic>),
       builder: (context, snapshot) {
         if (_loadError) {
           return Container(
             padding: EdgeInsets.only(top: 200),
             alignment: Alignment.topCenter,
             child: Text('Network error.',
-                style: context.textTheme.headline6.copyWith(color: Colors.red)),
+                style: context.textTheme.headline6!.copyWith(color: Colors.red)),
           );
         }
         if (_noResult) {
@@ -303,7 +304,7 @@ class __SearchResultState extends State<_SearchResult> {
             padding: EdgeInsets.only(top: 200),
             alignment: Alignment.topCenter,
             child: Text('No result found.',
-                style: context.textTheme.headline6
+                style: context.textTheme.headline6!
                     .copyWith(color: context.accentColor)),
           );
         }
@@ -315,7 +316,7 @@ class __SearchResultState extends State<_SearchResult> {
           );
         }
 
-        var content = snapshot.data;
+        var content = snapshot.data!;
         return CustomScrollView(
           center: ValueKey<String>('sliver-list'),
           slivers: [
@@ -343,7 +344,7 @@ class __SearchResultState extends State<_SearchResult> {
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                               ))
-                          : Text(context.s.loadMore),
+                          : Text(context.s!.loadMore),
                       onPressed: () => _loading
                           ? null
                           : setState(
@@ -351,7 +352,7 @@ class __SearchResultState extends State<_SearchResult> {
                                 _loading = true;
                                 _limit += 10;
                                 _searchFuture = _getPodcatsIndexList(
-                                    widget.query,
+                                    widget.query!,
                                     limit: _limit);
                               },
                             ),
@@ -376,8 +377,8 @@ class __SearchResultState extends State<_SearchResult> {
     );
   }
 
-  Future<List<OnlinePodcast>> _getPodcatsIndexList(String searchText,
-      {int limit}) async {
+  Future<List<OnlinePodcast?>> _getPodcatsIndexList(String searchText,
+      {int? limit}) async {
     var searchResult;
     try {
       searchResult = await _searchEngine.searchPodcasts(
@@ -389,21 +390,21 @@ class __SearchResultState extends State<_SearchResult> {
       return [];
     }
     var list = searchResult.feeds.cast();
-    _podcastList = <OnlinePodcast>[
+    _podcastList = <OnlinePodcast?>[
       for (var podcast in list) podcast.toOnlinePodcast
     ];
     if (_podcastList.isEmpty) _noResult = true;
     _loading = false;
-    return _podcastList;
+    return _podcastList as FutureOr<List<OnlinePodcast?>>;
   }
 }
 
-class SearchResult extends StatelessWidget {
-  final OnlinePodcast onlinePodcast;
-  SearchResult({this.onlinePodcast, Key key}) : super(key: key);
+class SearchResult extends ConsumerWidget {
+  final OnlinePodcast? onlinePodcast;
+  SearchResult({this.onlinePodcast, Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -412,7 +413,7 @@ class SearchResult extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
           child: CustomListTile(
             onTap: () {
-              context.read(selectedPodcast).state = onlinePodcast;
+              ref.read(selectedPodcast.notifier).state = onlinePodcast;
             },
             leading: ClipRRect(
                 borderRadius: BorderRadius.circular(25.0),
@@ -421,7 +422,7 @@ class SearchResult extends StatelessWidget {
                   width: 50.0,
                   fit: BoxFit.fitWidth,
                   alignment: Alignment.center,
-                  image: NetworkImage(onlinePodcast.image, scale: 1),
+                  image: NetworkImage(onlinePodcast!.image!, scale: 1),
                   loadingBuilder: (context, child, loadingProgress) =>
                       Container(
                     height: 50,
@@ -437,8 +438,8 @@ class SearchResult extends StatelessWidget {
                       color: context.primaryColorDark,
                       child: Icon(Icons.error)),
                 )),
-            title: onlinePodcast.title,
-            subtitle: onlinePodcast.publisher ?? '',
+            title: onlinePodcast!.title,
+            subtitle: onlinePodcast!.publisher ?? '',
             trailing: _SubscribeButton(onlinePodcast),
             selected: false,
           ),
@@ -450,15 +451,15 @@ class SearchResult extends StatelessWidget {
 
 class _DetailPage extends StatefulWidget {
   final OnlinePodcast onlinePodcast;
-  _DetailPage(this.onlinePodcast, {Key key}) : super(key: key);
+  _DetailPage(this.onlinePodcast, {Key? key}) : super(key: key);
 
   @override
   __DetailPageState createState() => __DetailPageState();
 }
 
 class __DetailPageState extends State<_DetailPage> {
-  final List<OnlineEpisode> _episodeList = [];
-  Future _searchFuture;
+  final List<OnlineEpisode?> _episodeList = [];
+  late Future _searchFuture;
 
   @override
   void initState() {
@@ -489,15 +490,15 @@ class __DetailPageState extends State<_DetailPage> {
               SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Text(podcast.title,
-                    style: context.textTheme.headline5
+                child: Text(podcast.title!,
+                    style: context.textTheme.headline5!
                         .copyWith(fontWeight: FontWeight.bold)),
               ),
               SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
-                  '${widget.onlinePodcast.latestPubDate.toDate(context)}',
+                  '${widget.onlinePodcast.latestPubDate!.toDate(context)}',
                   maxLines: 1,
                   overflow: TextOverflow.fade,
                   style: TextStyle(color: context.accentColor),
@@ -505,17 +506,17 @@ class __DetailPageState extends State<_DetailPage> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: SelectableText(podcast.description,
+                child: SelectableText(podcast.description!,
                     style: TextStyle(height: 2)),
               ),
               SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: FutureBuilder<List<OnlineEpisode>>(
-                  future: _searchFuture,
+                  future: _searchFuture.then((value) => value as List<OnlineEpisode>),
                   builder: (context, snapshot) {
                     if (_episodeList.isNotEmpty) {
-                      var content = snapshot.data;
+                      var content = snapshot.data!;
                       return ListView.builder(
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
@@ -533,7 +534,7 @@ class __DetailPageState extends State<_DetailPage> {
                                   ),
                                   SizedBox(width: 10),
                                   Expanded(
-                                    child: Text(content[index].title,
+                                    child: Text(content[index].title!,
                                         maxLines: 1,
                                         overflow: TextOverflow.fade,
                                         style: context.textTheme.bodyText1),
@@ -542,9 +543,9 @@ class __DetailPageState extends State<_DetailPage> {
                               ),
                               Text(
                                   content[index].length == 0
-                                      ? '${content[index].pubDate.toDate(context)}'
-                                      : '${content[index].length.toTime} | '
-                                          '${content[index].pubDate.toDate(context)}',
+                                      ? '${content[index].pubDate!.toDate(context)}'
+                                      : '${content[index].length!.toTime} | '
+                                          '${content[index].pubDate!.toDate(context)}',
                                   style: TextStyle(color: context.accentColor)),
                               SizedBox(height: 10)
                             ],
@@ -571,10 +572,10 @@ class __DetailPageState extends State<_DetailPage> {
     );
   }
 
-  Future<List<OnlineEpisode>> _getIndexEpisodes({String id}) async {
+  Future<List<OnlineEpisode?>> _getIndexEpisodes({String? id}) async {
     var searchEngine = PodcastsIndexSearch();
     var searchResult = await searchEngine.fetchEpisode(rssUrl: id);
-    var episodes = searchResult.items.cast();
+    var episodes = searchResult.items!.cast();
     for (var episode in episodes) {
       _episodeList.add(episode.toOnlineWEpisode);
     }
@@ -582,13 +583,13 @@ class __DetailPageState extends State<_DetailPage> {
   }
 }
 
-class _SubscribeButton extends StatelessWidget {
-  final OnlinePodcast podcast;
-  const _SubscribeButton(this.podcast, {Key key}) : super(key: key);
+class _SubscribeButton extends ConsumerWidget {
+  final OnlinePodcast? podcast;
+  const _SubscribeButton(this.podcast, {Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final s = context.s;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = context.s!;
     return ElevatedButton(
       child: Text(s.subscribe),
       style: ElevatedButton.styleFrom(
@@ -598,8 +599,7 @@ class _SubscribeButton extends StatelessWidget {
         minimumSize: Size(100, 40),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       ),
-      onPressed: () =>
-          context.read(groupState.notifier).subscribePodcast(podcast),
+      onPressed: () => ref.read(groupState.notifier).subscribePodcast(podcast!),
     );
   }
 }

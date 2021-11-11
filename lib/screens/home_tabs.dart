@@ -14,18 +14,18 @@ import '../widgets/podcast_menu.dart';
 
 import '../utils/extension_helper.dart';
 
-final refreshNotification = StateProvider<String>((ref) => null);
+final refreshNotification = StateProvider<String?>((ref) => null);
 
-class HomeTabs extends StatefulWidget {
-  const HomeTabs({Key key}) : super(key: key);
+class HomeTabs extends ConsumerStatefulWidget {
+  const HomeTabs({Key? key}) : super(key: key);
 
   @override
   _HomeTabsState createState() => _HomeTabsState();
 }
 
-class _HomeTabsState extends State<HomeTabs> {
+class _HomeTabsState extends ConsumerState<HomeTabs> {
   Future<String> _getRefreshDate(BuildContext context) async {
-    int refreshDate;
+    int? refreshDate;
     var refreshstorage = KeyValueStorage('refreshdate');
     var i = await refreshstorage.getInt();
     if (i == 0) {
@@ -44,17 +44,20 @@ class _HomeTabsState extends State<HomeTabs> {
     await refreshstorage.saveInt(DateTime.now().millisecondsSinceEpoch);
     var podcastList = await _dbHelper.getPodcastLocalAll(updateOnly: true);
     for (var podcastLocal in podcastList) {
-      final notifier = context.s.notificationUpdate(podcastLocal.title);
-      context.read(refreshNotification).state = notifier;
+      final notifier = context.s!.notificationUpdate(podcastLocal.title!);
+      ref.watch(refreshNotification.notifier).state = notifier;
       var updateCount = await _dbHelper.updatePodcastRss(podcastLocal);
       developer.log('Refresh ${podcastLocal.title}$updateCount');
     }
-    context.read(refreshNotification).state = null;
+    ref.watch(refreshNotification.notifier).state = null;
   }
 
   @override
   Widget build(BuildContext context) {
-    final s = context.s;
+    final s = context.s!;
+    ref.listen(refreshNotification, (dynamic context, dynamic refresh) {
+      if (refresh.state != null) setState(() {});
+    });
     return DefaultTabController(
       length: 3,
       child: Column(
@@ -66,27 +69,21 @@ class _HomeTabsState extends State<HomeTabs> {
               children: [
                 Text('My library', style: context.textTheme.headline5),
                 Spacer(),
-                ProviderListener<StateController<String>>(
-                  provider: refreshNotification,
-                  onChange: (context, refresh) {
-                    if (refresh.state != null) setState(() {});
-                  },
-                  child: FutureBuilder<String>(
-                      future: _getRefreshDate(context),
-                      builder: (_, snapshot) {
-                        if (snapshot.hasData) {
-                          return Text(
-                            snapshot.data,
-                          );
-                        } else {
-                          return Center();
-                        }
-                      }),
-                ),
+                FutureBuilder<String>(
+                    future: _getRefreshDate(context),
+                    builder: (_, snapshot) {
+                      if (snapshot.hasData) {
+                        return Text(
+                          snapshot.data!,
+                        );
+                      } else {
+                        return Center();
+                      }
+                    }),
                 SizedBox(width: 20),
                 Consumer(
-                  builder: (context, watch, child) {
-                    final refresh = watch(refreshNotification).state != null;
+                  builder: (context, ref, child) {
+                    final refresh = ref.watch(refreshNotification) != null;
                     return refresh
                         ? IconButton(
                             splashRadius: 20,
@@ -137,7 +134,7 @@ class _HomeTabsState extends State<HomeTabs> {
 }
 
 class RecentTab extends StatefulWidget {
-  RecentTab({Key key}) : super(key: key);
+  RecentTab({Key? key}) : super(key: key);
 
   @override
   _RecentTabState createState() => _RecentTabState();
@@ -150,20 +147,20 @@ class _RecentTabState extends State<RecentTab> {
   int _top = 90;
 
   /// Load more episodes when scroll to bottom.
-  bool _loadMore;
+  late bool _loadMore;
 
   /// For group fliter.
-  String _groupName;
-  List<String> _group;
-  Layout _layout;
-  bool _hideListened;
-  bool _scroll;
+  String? _groupName;
+  late List<String> _group;
+  Layout? _layout;
+  bool? _hideListened;
+  late bool _scroll;
 
   ///Selected episode list.
-  List<EpisodeBrief> _selectedEpisodes;
+  List<EpisodeBrief>? _selectedEpisodes;
 
   ///Toggle for multi-select.
-  bool _multiSelect;
+  bool? _multiSelect;
 
   @override
   void initState() {
@@ -176,7 +173,7 @@ class _RecentTabState extends State<RecentTab> {
   }
 
   Future<List<EpisodeBrief>> _getRssItem(int top, List<String> group,
-      {bool hideListened}) async {
+      {bool? hideListened}) async {
     var storage = KeyValueStorage(recentLayoutKey);
     var hideListenedStorage = KeyValueStorage(hideListenedKey);
     var index = await storage.getInt(defaultValue: 1);
@@ -188,7 +185,7 @@ class _RecentTabState extends State<RecentTab> {
     List<EpisodeBrief> episodes;
     if (group.isEmpty) {
       episodes =
-          await _dbHelper.getRecentRssItem(top, hideListened: _hideListened);
+          await _dbHelper.getRecentRssItem(top, hideListened: _hideListened!);
     } else {
       episodes = await _dbHelper.getGroupRssItem(top, group,
           hideListened: _hideListened);
@@ -214,7 +211,7 @@ class _RecentTabState extends State<RecentTab> {
         future: _getRssItem(_top, _group, hideListened: _hideListened),
         builder: (context, snapshot) {
           if (snapshot.hasData)
-            return snapshot.data.length == 0
+            return snapshot.data!.length == 0
                 ? Padding(
                     padding: EdgeInsets.only(top: 150),
                     child: Column(
@@ -224,7 +221,7 @@ class _RecentTabState extends State<RecentTab> {
                             size: 80, color: Colors.grey[500]),
                         Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                         Text(
-                          s.noEpisodeRecent,
+                          s!.noEpisodeRecent,
                           style: TextStyle(color: Colors.grey[500]),
                         )
                       ],
@@ -239,7 +236,7 @@ class _RecentTabState extends State<RecentTab> {
                       }
                       if (scrollInfo.metrics.pixels ==
                               scrollInfo.metrics.maxScrollExtent &&
-                          snapshot.data.length == _top) {
+                          snapshot.data!.length == _top) {
                         if (!_loadMore) {
                           _loadMoreEpisode();
                         }
@@ -285,7 +282,7 @@ class _RecentTabState extends State<RecentTab> {
                         ),
                         Column(
                           children: [
-                            if (!_multiSelect)
+                            if (!_multiSelect!)
                               Container(
                                   height: 40,
                                   color: context.scaffoldBackgroundColor,
@@ -297,7 +294,7 @@ class _RecentTabState extends State<RecentTab> {
                                         Material(
                                           color: Colors.transparent,
                                           child: IconButton(
-                                            tooltip: s.hideListenedSetting,
+                                            tooltip: s!.hideListenedSetting,
                                             icon: SizedBox(
                                               width: 30,
                                               height: 15,
@@ -308,7 +305,7 @@ class _RecentTabState extends State<RecentTab> {
                                             ),
                                             onPressed: () {
                                               setState(() => _hideListened =
-                                                  !_hideListened);
+                                                  !_hideListened!);
                                             },
                                           ),
                                         ),
@@ -342,7 +339,7 @@ class _RecentTabState extends State<RecentTab> {
                                       ],
                                     ),
                                   )),
-                            if (_multiSelect)
+                            if (_multiSelect!)
                               MultiSelectMenuBar(
                                 selectedList: _selectedEpisodes,
                                 onClose: (value) {
@@ -365,7 +362,7 @@ class _RecentTabState extends State<RecentTab> {
 }
 
 class FavTab extends StatefulWidget {
-  FavTab({Key key}) : super(key: key);
+  FavTab({Key? key}) : super(key: key);
 
   @override
   _FavTabState createState() => _FavTabState();
@@ -378,18 +375,18 @@ class _FavTabState extends State<FavTab> {
   int _top = 90;
 
   /// Load more episodes when scroll to bottom.
-  bool _loadMore;
+  late bool _loadMore;
 
-  Layout _layout;
-  bool _hideListened;
-  bool _scroll;
-  int _sortBy;
+  Layout? _layout;
+  bool? _hideListened;
+  late bool _scroll;
+  int? _sortBy;
 
   ///Selected episode list.
-  List<EpisodeBrief> _selectedEpisodes;
+  List<EpisodeBrief>? _selectedEpisodes;
 
   ///Toggle for multi-select.
-  bool _multiSelect;
+  bool? _multiSelect;
 
   @override
   void initState() {
@@ -400,8 +397,8 @@ class _FavTabState extends State<FavTab> {
     _multiSelect = false;
   }
 
-  Future<List<EpisodeBrief>> _getLikedRssItem(int top, int sortBy,
-      {bool hideListened}) async {
+  Future<List<EpisodeBrief>> _getLikedRssItem(int top, int? sortBy,
+      {bool? hideListened}) async {
     var storage = KeyValueStorage(favLayoutKey);
     var index = await storage.getInt(defaultValue: 1);
     var hideListenedStorage = KeyValueStorage(hideListenedKey);
@@ -410,7 +407,7 @@ class _FavTabState extends State<FavTab> {
       _hideListened = await hideListenedStorage.getBool(defaultValue: false);
     }
     var episodes = await _dbHelper.getLikedRssItem(top, sortBy,
-        hideListened: _hideListened);
+        hideListened: _hideListened!);
     return episodes;
   }
 
@@ -432,7 +429,7 @@ class _FavTabState extends State<FavTab> {
         future: _getLikedRssItem(_top, _sortBy, hideListened: _hideListened),
         builder: (context, snapshot) {
           if (snapshot.hasData)
-            return snapshot.data.length == 0
+            return snapshot.data!.length == 0
                 ? Padding(
                     padding: EdgeInsets.only(top: 150),
                     child: Column(
@@ -442,7 +439,7 @@ class _FavTabState extends State<FavTab> {
                             size: 80, color: Colors.grey[500]),
                         Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                         Text(
-                          s.noEpisodeRecent,
+                          s!.noEpisodeRecent,
                           style: TextStyle(color: Colors.grey[500]),
                         )
                       ],
@@ -457,7 +454,7 @@ class _FavTabState extends State<FavTab> {
                       }
                       if (scrollInfo.metrics.pixels ==
                               scrollInfo.metrics.maxScrollExtent &&
-                          snapshot.data.length == _top) {
+                          snapshot.data!.length == _top) {
                         if (!_loadMore) {
                           _loadMoreEpisode();
                         }
@@ -504,7 +501,7 @@ class _FavTabState extends State<FavTab> {
                         ),
                         Column(
                           children: [
-                            if (!_multiSelect)
+                            if (!_multiSelect!)
                               Container(
                                   height: 40,
                                   color: context.scaffoldBackgroundColor,
@@ -516,7 +513,7 @@ class _FavTabState extends State<FavTab> {
                                         Material(
                                           color: Colors.transparent,
                                           child: IconButton(
-                                            tooltip: s.hideListenedSetting,
+                                            tooltip: s!.hideListenedSetting,
                                             icon: SizedBox(
                                               width: 30,
                                               height: 15,
@@ -527,7 +524,7 @@ class _FavTabState extends State<FavTab> {
                                             ),
                                             onPressed: () {
                                               setState(() => _hideListened =
-                                                  !_hideListened);
+                                                  !_hideListened!);
                                             },
                                           ),
                                         ),
@@ -561,7 +558,7 @@ class _FavTabState extends State<FavTab> {
                                       ],
                                     ),
                                   )),
-                            if (_multiSelect)
+                            if (_multiSelect!)
                               MultiSelectMenuBar(
                                 selectedList: _selectedEpisodes,
                                 onClose: (value) {
@@ -583,25 +580,25 @@ class _FavTabState extends State<FavTab> {
   }
 }
 
-class DownloadTab extends StatefulWidget {
-  DownloadTab({Key key}) : super(key: key);
+class DownloadTab extends ConsumerStatefulWidget {
+  DownloadTab({Key? key}) : super(key: key);
 
   @override
   _DownloadTabState createState() => _DownloadTabState();
 }
 
-class _DownloadTabState extends State<DownloadTab> {
+class _DownloadTabState extends ConsumerState<DownloadTab> {
   final _dbHelper = DBHelper();
 
-  Layout _layout;
-  bool _hideListened;
-  int _sortBy;
+  Layout? _layout;
+  bool? _hideListened;
+  int? _sortBy;
 
   ///Selected episode list.
-  List<EpisodeBrief> _selectedEpisodes;
+  List<EpisodeBrief>? _selectedEpisodes;
 
   ///Toggle for multi-select.
-  bool _multiSelect;
+  bool? _multiSelect;
 
   @override
   void initState() {
@@ -610,8 +607,8 @@ class _DownloadTabState extends State<DownloadTab> {
     _multiSelect = false;
   }
 
-  Future<List<EpisodeBrief>> _getDownloadedEpisodes(int sortBy,
-      {bool hideListened}) async {
+  Future<List<EpisodeBrief>> _getDownloadedEpisodes(int? sortBy,
+      {bool? hideListened}) async {
     var storage = KeyValueStorage(downloadLayoutKey);
     var index = await storage.getInt(defaultValue: 1);
     var hideListenedStorage = KeyValueStorage(hideListenedKey);
@@ -621,7 +618,7 @@ class _DownloadTabState extends State<DownloadTab> {
     }
 
     var episodes = await _dbHelper.getDownloadedEpisode(sortBy,
-        hideListened: _hideListened);
+        hideListened: _hideListened!);
     return episodes;
   }
 
@@ -632,7 +629,7 @@ class _DownloadTabState extends State<DownloadTab> {
         future: _getDownloadedEpisodes(_sortBy, hideListened: _hideListened),
         builder: (context, snapshot) {
           if (snapshot.hasData)
-            return snapshot.data.length == 0
+            return snapshot.data!.length == 0
                 ? Padding(
                     padding: EdgeInsets.only(top: 150),
                     child: Column(
@@ -642,7 +639,7 @@ class _DownloadTabState extends State<DownloadTab> {
                             size: 80, color: Colors.grey[500]),
                         Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                         Text(
-                          s.noEpisodeRecent,
+                          s!.noEpisodeRecent,
                           style: TextStyle(color: Colors.grey[500]),
                         )
                       ],
@@ -659,7 +656,8 @@ class _DownloadTabState extends State<DownloadTab> {
                             ),
                           ),
                           Consumer(builder: (context, watch, child) {
-                            var tasks = watch(downloadProvider);
+                            var tasks =
+                                ref.watch(downloadProvider);
                             if (tasks.isEmpty)
                               return SliverToBoxAdapter(child: Center());
                             return SliverList(
@@ -670,13 +668,13 @@ class _DownloadTabState extends State<DownloadTab> {
                                 return Center();
                               return ListTile(
                                 title: Text(
-                                  task.episode.title,
+                                  task.episode.title ?? '',
                                   maxLines: 1,
                                 ),
                                 subtitle: SizedBox(
                                   height: 2,
                                   child: LinearProgressIndicator(
-                                    value: tasks[index].progress / 100,
+                                    value: (tasks[index].progress ?? 0) / 100,
                                   ),
                                 ),
                               );
@@ -700,7 +698,7 @@ class _DownloadTabState extends State<DownloadTab> {
                       ),
                       Column(
                         children: [
-                          if (!_multiSelect)
+                          if (!_multiSelect!)
                             Container(
                                 height: 40,
                                 color: context.scaffoldBackgroundColor,
@@ -712,7 +710,7 @@ class _DownloadTabState extends State<DownloadTab> {
                                       Material(
                                         color: Colors.transparent,
                                         child: IconButton(
-                                          tooltip: s.hideListenedSetting,
+                                          tooltip: s!.hideListenedSetting,
                                           icon: SizedBox(
                                             width: 30,
                                             height: 15,
@@ -722,8 +720,8 @@ class _DownloadTabState extends State<DownloadTab> {
                                             ),
                                           ),
                                           onPressed: () {
-                                            setState(() =>
-                                                _hideListened = !_hideListened);
+                                            setState(() => _hideListened =
+                                                !_hideListened!);
                                           },
                                         ),
                                       ),
@@ -757,7 +755,7 @@ class _DownloadTabState extends State<DownloadTab> {
                                     ],
                                   ),
                                 )),
-                          if (_multiSelect)
+                          if (_multiSelect!)
                             MultiSelectMenuBar(
                               selectedList: _selectedEpisodes,
                               onClose: (value) {

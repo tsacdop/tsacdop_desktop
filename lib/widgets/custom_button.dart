@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import '../utils/extension_helper.dart';
 
 class CustomIconButton extends StatelessWidget {
-  final Widget icon;
+  final Widget? icon;
   final Size size;
-  final Function() onPressed;
+  final Function()? onPressed;
   final bool pressed;
   CustomIconButton(
-      {this.icon, this.onPressed, Size size, this.pressed, Key key})
+      {this.icon, this.onPressed, Size? size, required this.pressed, Key? key})
       : assert(pressed != null),
         this.size = size ?? Size(50, 50),
         super(key: key);
@@ -32,7 +32,7 @@ class CustomIconButton extends StatelessWidget {
                         color: pressed
                             ? context.accentColor
                             : context.textColor),
-                    child: icon),
+                    child: icon!),
               ),
             ),
           ),

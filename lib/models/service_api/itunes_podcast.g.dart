@@ -7,30 +7,30 @@ part of 'itunes_podcast.dart';
 // **************************************************************************
 
 ItunesSearchResult<P> _$ItunesSearchResultFromJson<P>(
-    Map<String, dynamic> json) {
-  return ItunesSearchResult<P>(
-    resultCount: json['resultCount'] as int,
-    results: (json['results'] as List)?.map(_ConvertP<P>().fromJson)?.toList(),
-  );
-}
+        Map<String, dynamic> json) =>
+    ItunesSearchResult<P>(
+      resultCount: json['resultCount'] as int?,
+      results: (json['results'] as List<dynamic>?)
+          ?.map(_ConvertP<P>().fromJson)
+          .toList(),
+    );
 
 Map<String, dynamic> _$ItunesSearchResultToJson<P>(
         ItunesSearchResult<P> instance) =>
     <String, dynamic>{
-      'results': instance.results?.map(_ConvertP<P>().toJson)?.toList(),
+      'results': instance.results?.map(_ConvertP<P>().toJson).toList(),
       'resultCount': instance.resultCount,
     };
 
-ItunesPodcast _$ItunesPodcastFromJson(Map<String, dynamic> json) {
-  return ItunesPodcast(
-    artistName: json['artistName'] as String,
-    collectionName: json['collectionName'] as String,
-    feedUrl: json['feedUrl'] as String,
-    artworkUrl600: json['artworkUrl600'] as String,
-    releaseDate: json['releaseDate'] as String,
-    collectionId: json['collectionId'] as int,
-  );
-}
+ItunesPodcast _$ItunesPodcastFromJson(Map<String, dynamic> json) =>
+    ItunesPodcast(
+      artistName: json['artistName'] as String?,
+      collectionName: json['collectionName'] as String?,
+      feedUrl: json['feedUrl'] as String?,
+      artworkUrl600: json['artworkUrl600'] as String?,
+      releaseDate: json['releaseDate'] as String?,
+      collectionId: json['collectionId'] as int?,
+    );
 
 Map<String, dynamic> _$ItunesPodcastToJson(ItunesPodcast instance) =>
     <String, dynamic>{

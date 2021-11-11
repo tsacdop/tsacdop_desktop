@@ -20,9 +20,10 @@ enum DownloadTaskStatus {
   paused
 }
 
-final downloadNotification = StateProvider<String>((ref) => null);
+final downloadNotification = StateProvider<String?>((ref) => null);
 
-final downloadProvider = StateNotifierProvider((ref) => Downloader(ref.read));
+final downloadProvider = StateNotifierProvider<Downloader, List<DownloadTask>>(
+    (ref) => Downloader(ref.read));
 
 class Downloader extends StateNotifier<List<DownloadTask>> {
   Downloader(this.read) : super([]);
@@ -51,7 +52,7 @@ class Downloader extends StateNotifier<List<DownloadTask>> {
   }
 
   Future<void> download(EpisodeBrief episode) async {
-    final dir = await getDownloadsDirectory();
+    final dir = await (getDownloadsDirectory() as FutureOr<Directory>);
     var localPath = path.join(dir.path, 'Tsacdop');
     final saveDir = Directory(localPath);
     var hasExisted = await saveDir.exists();
@@ -59,7 +60,7 @@ class Downloader extends StateNotifier<List<DownloadTask>> {
       saveDir.create();
     }
     var feedTile =
-        episode.feedTitle.replaceAll(' ', '_').replaceAll(_pathInvilid, '');
+        episode.feedTitle!.replaceAll(' ', '_').replaceAll(_pathInvilid, '');
     var savePath = path.join(localPath, Uri.encodeComponent(feedTile));
     final podcastDir = Directory(savePath);
     var dirExisted = await podcastDir.exists();
@@ -71,7 +72,8 @@ class Downloader extends StateNotifier<List<DownloadTask>> {
         now.month.toString() +
         now.day.toString() +
         now.second.toString();
-    var title = episode.title.replaceAll(' ', '_').replaceAll(_pathInvilid, '');
+    var title =
+        episode.title!.replaceAll(' ', '_').replaceAll(_pathInvilid, '');
     var fileName =
         '$title$datePlus.${episode.enclosureUrl.split('/').last.split('.').last}';
     fileName = Uri.encodeComponent(fileName);
@@ -94,9 +96,9 @@ class Downloader extends StateNotifier<List<DownloadTask>> {
         var progress = (count * 100) ~/ total;
         _updateTask(downloadTask.copyWith(
             progress: progress, status: DownloadTaskStatus.running));
-        if (read(downloadNotification).state == null ||
-            read(downloadNotification).state.contains(episode.title))
-          read(downloadNotification).state =
+        if (read(downloadNotification.notifier).state == null ||
+            read(downloadNotification.notifier).state!.contains(episode.title!))
+          read(downloadNotification.notifier).state =
               'Downloading ${episode.title} $progress%';
       }
     }, deleteOnError: true);
@@ -104,13 +106,13 @@ class Downloader extends StateNotifier<List<DownloadTask>> {
       _updateTask(downloadTask.copyWith(
           progress: 100, status: DownloadTaskStatus.complete));
 
-      read(downloadNotification).state = null;
+      read(downloadNotification.notifier).state = null;
       var fileStat = await File(filePath).stat();
       _dbHelper.saveMediaId(
           episode.enclosureUrl, filePath, downloadTask.taskId, fileStat.size);
     } else {
       _updateTask(downloadTask.copyWith(status: DownloadTaskStatus.failed));
-      read(downloadNotification).state = null;
+      read(downloadNotification.notifier).state = null;
     }
   }
 
@@ -121,8 +123,9 @@ class Downloader extends StateNotifier<List<DownloadTask>> {
   }
 
   Future<void> deleteDownload(EpisodeBrief episode) async {
-    final episodeNew = await _dbHelper.getRssItemWithUrl(episode.enclosureUrl);
-    var file = File(episodeNew.mediaId);
+    final episodeNew = await (_dbHelper.getRssItemWithUrl(episode.enclosureUrl)
+        as FutureOr<EpisodeBrief>);
+    var file = File(episodeNew.mediaId!);
     if (file.existsSync()) {
       await file.delete();
     }
@@ -134,14 +137,14 @@ class Downloader extends StateNotifier<List<DownloadTask>> {
 class DownloadTask extends Equatable {
   final EpisodeBrief episode;
   final String taskId;
-  final String filename;
-  final String savedDir;
-  final int timeCreated;
-  final int progress;
-  final DownloadTaskStatus status;
-  final CancelToken cancelToken;
+  final String? filename;
+  final String? savedDir;
+  final int? timeCreated;
+  final int? progress;
+  final DownloadTaskStatus? status;
+  final CancelToken? cancelToken;
   DownloadTask(this.episode,
-      {String taskId,
+      {String? taskId,
       this.filename,
       this.savedDir,
       this.timeCreated,
@@ -150,7 +153,7 @@ class DownloadTask extends Equatable {
       this.cancelToken})
       : taskId = taskId ?? Uuid().v4();
 
-  DownloadTask copyWith({int progress, DownloadTaskStatus status}) {
+  DownloadTask copyWith({int? progress, DownloadTaskStatus? status}) {
     return DownloadTask(episode,
         filename: filename,
         savedDir: savedDir,

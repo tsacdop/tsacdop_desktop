@@ -10,8 +10,8 @@ import 'podcasts_page.dart';
 
 class PlayerWidget extends ConsumerWidget {
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final audio = watch(audioState);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final audio = ref.watch(audioState);
     if (audio.playerRunning)
       return Container(
         height: 120,
@@ -26,18 +26,18 @@ class PlayerWidget extends ConsumerWidget {
                 width: 120,
                 child: audio.playingEpisode == null
                     ? Center()
-                    : Image.file(File("${audio.playingEpisode.imagePath}")),
+                    : Image.file(File("${audio.playingEpisode!.imagePath}")),
               ),
               InkWell(
                 onTap: () =>
-                    context.read(openEpisode).state = audio.playingEpisode,
+                    ref.read(openEpisode.notifier).state = audio.playingEpisode,
                 child: SizedBox(
                   width: 200,
                   height: 120,
                   child: Center(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(audio?.playingEpisode?.title ?? '',
+                      child: Text(audio.playingEpisode?.title ?? '',
                           maxLines: 2,
                           style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
@@ -75,8 +75,7 @@ class PlayerWidget extends ConsumerWidget {
                                         ? IconButton(
                                             padding: EdgeInsets.zero,
                                             splashRadius: 25,
-                                            icon: Icon(
-                                                LineIcons.pauseCircle,
+                                            icon: Icon(LineIcons.pauseCircle,
                                                 color: context.accentColor,
                                                 size: 30),
                                             onPressed: audio.pauseAduio,
@@ -84,8 +83,7 @@ class PlayerWidget extends ConsumerWidget {
                                         : IconButton(
                                             padding: EdgeInsets.zero,
                                             splashRadius: 20,
-                                            icon: Icon(
-                                                LineIcons.playCircle,
+                                            icon: Icon(LineIcons.playCircle,
                                                 size: 30),
                                             onPressed: audio.play),
                                 IconButton(
@@ -187,8 +185,8 @@ class PlayerWidget extends ConsumerWidget {
                         child: Slider(
                           value: audio.duration == Duration.zero
                               ? 0
-                              : audio.position.inMilliseconds /
-                                  audio.duration.inMilliseconds,
+                              : audio.position!.inMilliseconds /
+                                  audio.duration!.inMilliseconds,
                           onChangeEnd: (value) {
                             audio.slideSeek(value, end: true);
                           },
@@ -201,8 +199,8 @@ class PlayerWidget extends ConsumerWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(audio.position.inSeconds.toTime),
-                          Text(audio.duration.inSeconds.toTime)
+                          Text(audio.position!.inSeconds.toTime),
+                          Text(audio.duration!.inSeconds.toTime)
                         ],
                       ),
                     )

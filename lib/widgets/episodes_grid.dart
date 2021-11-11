@@ -11,27 +11,27 @@ import '../utils/extension_helper.dart';
 import 'episode_menu.dart';
 
 enum Layout { multi, one }
-final hoverEpisode = StateProvider<EpisodeBrief>((ref) => null);
+final hoverEpisode = StateProvider<EpisodeBrief?>((ref) => null);
 
-class EpisodesGrid extends StatelessWidget {
-  final List<EpisodeBrief> episodes;
+class EpisodesGrid extends ConsumerWidget {
+  final List<EpisodeBrief>? episodes;
   final bool showFavorite;
   final bool showDownload;
   final bool showNumber;
-  final int episodeCount;
-  final Layout layout;
-  final bool reverse;
-  final bool multiSelect;
-  final double width;
-  final ValueChanged<List<EpisodeBrief>> onSelect;
-  final List<EpisodeBrief> selectedList;
+  final int? episodeCount;
+  final Layout? layout;
+  final bool? reverse;
+  final bool? multiSelect;
+  final double? width;
+  final ValueChanged<List<EpisodeBrief>>? onSelect;
+  final List<EpisodeBrief>? selectedList;
 
   /// Count of animation items.
   final int initNum;
 
   EpisodesGrid(
-      {Key key,
-      @required this.episodes,
+      {Key? key,
+      required this.episodes,
       this.initNum = 12,
       this.showDownload = false,
       this.showFavorite = false,
@@ -53,30 +53,30 @@ class EpisodesGrid extends StatelessWidget {
             layout == Layout.one ? Alignment.centerLeft : Alignment.topLeft,
         padding: EdgeInsets.only(top: 2.0),
         child: Text(
-          episode.title,
+          episode.title!,
           maxLines: layout == Layout.one ? 1 : 3,
           overflow:
               layout == Layout.one ? TextOverflow.ellipsis : TextOverflow.fade,
         ),
       );
 
-  Widget _pubDate(BuildContext context, {EpisodeBrief episode, Color color}) =>
+  Widget _pubDate(BuildContext context, {required EpisodeBrief episode, Color? color}) =>
       Text(
-        episode.pubDate.toDate(context),
+        episode.pubDate!.toDate(context),
         overflow: TextOverflow.visible,
         textAlign: TextAlign.center,
         style: TextStyle(color: color, fontStyle: FontStyle.italic),
       );
 
   /// Count indicator widget.
-  Widget _numberIndicater(BuildContext context, {int index, Color color}) =>
+  Widget _numberIndicater(BuildContext context, {int? index, Color? color}) =>
       showNumber
           ? Container(
               alignment: Alignment.center,
               child: Text(
-                reverse
-                    ? (index + 1).toString()
-                    : (episodeCount - index).toString(),
+                reverse!
+                    ? (index! + 1).toString()
+                    : (episodeCount! - index!).toString(),
                 style: GoogleFonts.teko(
                   textStyle: TextStyle(
                     fontSize: 30,
@@ -89,23 +89,23 @@ class EpisodesGrid extends StatelessWidget {
 
   /// Circel avatar widget.
   Widget _circleImage(BuildContext context,
-          {EpisodeBrief episode,
-          Color color,
-          bool hideAvatar,
-          double radius,
-          bool showNum,
-          int index}) =>
+          {EpisodeBrief? episode,
+          Color? color,
+          required bool hideAvatar,
+          double? radius,
+          bool? showNum,
+          int? index}) =>
       Container(
         height: radius,
         width: radius,
         child: hideAvatar
             ? Center()
             : CircleAvatar(
-                backgroundColor: color.withOpacity(0.8),
-                backgroundImage: showNum ? null : episode.avatarImage,
+                backgroundColor: color!.withOpacity(0.8),
+                backgroundImage: showNum! ? null : episode!.avatarImage,
                 child: showNum
                     ? ClipRRect(
-                        borderRadius: BorderRadius.circular(radius),
+                        borderRadius: BorderRadius.circular(radius!),
                         child: _numberIndicater(context,
                             index: index, color: Colors.white),
                       )
@@ -126,49 +126,48 @@ class EpisodesGrid extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          if (episodes[index].duration != 0)
+          if (episodes![index].duration != 0)
             Align(
               alignment: Alignment.center,
               child: Text(
-                episodes[index].duration.toTime,
+                episodes![index].duration!.toTime,
               ),
             ),
-          if (episodes[index].duration != 0 &&
-              episodes[index].enclosureLength != null &&
-              episodes[index].enclosureLength != 0)
+          if (episodes![index].duration != 0 &&
+              episodes![index].enclosureLength != null &&
+              episodes![index].enclosureLength != 0)
             Text(
               '|',
               style: TextStyle(),
             ),
-          if (episodes[index].enclosureLength != null &&
-              episodes[index].enclosureLength != 0)
+          if (episodes![index].enclosureLength != null &&
+              episodes![index].enclosureLength != 0)
             Align(
               alignment: Alignment.center,
               child: Text(
-                '${(episodes[index].enclosureLength) ~/ 1000000}MB',
+                '${episodes![index].enclosureLength! ~/ 1000000}MB',
               ),
             ),
         ]);
   }
 
-  Widget _hoverMenuBat(int index, {double width}) {
+  Widget _hoverMenuBat(int index, {double? width}) {
     return Consumer(
-      builder: (context, watch, child) {
-        final episode = watch(hoverEpisode).state;
-        if (episode != null && episode == episodes[index])
+      builder: (context, ref, child) {
+        final episode = ref.watch(hoverEpisode);
+        if (episode != null && episode == episodes![index])
           return TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: 1),
             duration: Duration(milliseconds: 500),
             curve: Curves.easeOutCubic,
-            builder: (context, value, child) {
-              final episode = episodes[index];
+            builder: (context, dynamic value, child) {
+              final episode = episodes![index];
               return width == null
                   ? Container(
                       decoration: BoxDecoration(
-                        color: context.primaryColorDark,
-                        borderRadius: BorderRadius.circular(6)
-                      ),
-                      height: 40 * value,
+                          color: context.primaryColorDark,
+                          borderRadius: BorderRadius.circular(6)),
+                      height: 40 * value as double?,
                       child: SingleChildScrollView(
                         child: SizedBox(
                           height: 40,
@@ -187,7 +186,7 @@ class EpisodesGrid extends StatelessWidget {
                     )
                   : Container(
                       color: context.primaryColorDark,
-                      height: 40 * value,
+                      height: 40 * value as double?,
                       width: width,
                       child: SingleChildScrollView(
                         child: SizedBox(
@@ -213,12 +212,12 @@ class EpisodesGrid extends StatelessWidget {
   }
 
   Widget _layoutOneCard(BuildContext context,
-      {int index,
-      Color color,
-      bool isLiked,
-      bool showNum,
-      bool isDownloaded,
-      bool hideAvatar}) {
+      {required int index,
+      Color? color,
+      required bool isLiked,
+      bool? showNum,
+      bool? isDownloaded,
+      required bool hideAvatar}) {
     return Stack(
       alignment: Alignment.bottomRight,
       children: [
@@ -233,7 +232,7 @@ class EpisodesGrid extends StatelessWidget {
                 width: 100,
                 child: Center(
                   child: _circleImage(context,
-                      episode: episodes[index],
+                      episode: episodes![index],
                       color: color,
                       hideAvatar: hideAvatar,
                       showNum: showNumber,
@@ -253,12 +252,12 @@ class EpisodesGrid extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Expanded(
-                            child: Text(episodes[index].feedTitle,
+                            child: Text(episodes![index].feedTitle!,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(fontWeight: FontWeight.bold)),
                           ),
-                          _isNewIndicator(episodes[index]),
+                          _isNewIndicator(episodes![index]),
                           // _downloadIndicater(context,
                           //     episode: episodes[index], isDownloaded: isDownloaded),
                         ],
@@ -268,33 +267,33 @@ class EpisodesGrid extends StatelessWidget {
                         flex: 2,
                         child: Align(
                             alignment: Alignment.topLeft,
-                            child: _title(episodes[index]))),
+                            child: _title(episodes![index]))),
                     Expanded(
                       flex: 1,
                       child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            if (episodes[index].duration != 0)
+                            if (episodes![index].duration != 0)
                               Align(
                                 alignment: Alignment.center,
                                 child: Text(
-                                  episodes[index].duration.toTime,
+                                  episodes![index].duration!.toTime,
                                 ),
                               ),
-                            if (episodes[index].duration != 0 &&
-                                episodes[index].enclosureLength != null &&
-                                episodes[index].enclosureLength != 0)
+                            if (episodes![index].duration != 0 &&
+                                episodes![index].enclosureLength != null &&
+                                episodes![index].enclosureLength != 0)
                               Text(
                                 '|',
                                 style: TextStyle(),
                               ),
-                            if (episodes[index].enclosureLength != null &&
-                                episodes[index].enclosureLength != 0)
+                            if (episodes![index].enclosureLength != null &&
+                                episodes![index].enclosureLength != 0)
                               Align(
                                 alignment: Alignment.center,
                                 child: Text(
-                                  '${(episodes[index].enclosureLength) ~/ 1000000}MB',
+                                  '${episodes![index].enclosureLength! ~/ 1000000}MB',
                                 ),
                               ),
                             SizedBox(width: 4),
@@ -305,7 +304,7 @@ class EpisodesGrid extends StatelessWidget {
                               ),
                             Spacer(),
                             _pubDate(context,
-                                episode: episodes[index],
+                                episode: episodes![index],
                                 color: context.textColor)
                           ]),
                     )
@@ -322,12 +321,12 @@ class EpisodesGrid extends StatelessWidget {
   }
 
   Widget _episodeCard(BuildContext context,
-      {int index,
-      Color color,
-      bool isLiked,
-      bool isDownloaded,
-      bool showNum,
-      bool hideAvatar}) {
+      {required int index,
+      Color? color,
+      required bool isLiked,
+      bool? isDownloaded,
+      bool? showNum,
+      required bool hideAvatar}) {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -343,7 +342,7 @@ class EpisodesGrid extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     _circleImage(context,
-                        episode: episodes[index],
+                        episode: episodes![index],
                         color: color,
                         radius: 40,
                         showNum: false,
@@ -361,7 +360,7 @@ class EpisodesGrid extends StatelessWidget {
                   child: Column(
                     children: [
                       _infoWidget(index),
-                      _title(episodes[index]),
+                      _title(episodes![index]),
                     ],
                   )),
               Expanded(
@@ -370,7 +369,7 @@ class EpisodesGrid extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    _pubDate(context, episode: episodes[index], color: color),
+                    _pubDate(context, episode: episodes![index], color: color),
                     Padding(
                       padding: EdgeInsets.all(1),
                     ),
@@ -391,26 +390,26 @@ class EpisodesGrid extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final count = math.max(width ~/ 180, 3);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final count = math.max(width! ~/ 180, 3);
     return layout == Layout.one
         ? SliverList(
             delegate:
                 SliverChildBuilderDelegate((BuildContext context, int index) {
-              final c = episodes[index].backgroudColor(context);
+              final c = episodes![index].backgroudColor(context);
               return Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(6),
                   onHover: (value) {
-                    if (value && context.read(hoverEpisode).state == null)
-                      context.read(hoverEpisode).state = episodes[index];
+                    if (value && ref.read(hoverEpisode.notifier).state == null)
+                      ref.read(hoverEpisode.notifier).state = episodes![index];
                     else
-                      context.read(hoverEpisode).state = null;
+                      ref.read(hoverEpisode.notifier).state = null;
                   },
                   onTap: () =>
-                      context.read(openEpisode).state = episodes[index],
+                      ref.read(openEpisode.notifier).state = episodes![index],
                   child: Container(
                     height: 120,
                     child: _layoutOneCard(context,
@@ -423,7 +422,7 @@ class EpisodesGrid extends StatelessWidget {
                   ),
                 ),
               );
-            }, childCount: episodes.length),
+            }, childCount: episodes!.length),
           )
         : SliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -434,16 +433,16 @@ class EpisodesGrid extends StatelessWidget {
             ),
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                final c = episodes[index].backgroudColor(context);
+                final c = episodes![index].backgroudColor(context);
                 return InkWell(
                   onHover: (value) {
-                    if (value && context.read(hoverEpisode).state == null)
-                      context.read(hoverEpisode).state = episodes[index];
+                    if (value && ref.read(hoverEpisode.notifier).state == null)
+                      ref.read(hoverEpisode.notifier).state = episodes![index];
                     else
-                      context.read(hoverEpisode).state = null;
+                      ref.read(hoverEpisode.notifier).state = null;
                   },
                   onTap: () =>
-                      context.read(openEpisode).state = episodes[index],
+                      ref.read(openEpisode.notifier).state = episodes![index],
                   child: Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.zero,
@@ -458,7 +457,7 @@ class EpisodesGrid extends StatelessWidget {
                   ),
                 );
               },
-              childCount: episodes.length,
+              childCount: episodes!.length,
             ),
           );
   }

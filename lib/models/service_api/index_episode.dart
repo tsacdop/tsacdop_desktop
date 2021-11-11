@@ -6,35 +6,35 @@ part 'index_episode.g.dart';
 @JsonSerializable()
 class IndexEpisodeResult<P> {
   @_ConvertP()
-  final List<P> items;
-  final String status;
-  final int count;
+  final List<P>? items;
+  final String? status;
+  final int? count;
   IndexEpisodeResult({this.items, this.status, this.count});
   factory IndexEpisodeResult.fromJson(Map<String, dynamic> json) =>
       _$IndexEpisodeResultFromJson<P>(json);
   Map<String, dynamic> toJson() => _$IndexEpisodeResultToJson(this);
 }
 
-class _ConvertP<P> implements JsonConverter<P, Object> {
+class _ConvertP<P> implements JsonConverter<P, Object?> {
   const _ConvertP();
   @override
-  P fromJson(Object json) {
-    return IndexEpisode.fromJson(json) as P;
+  P fromJson(Object? json) {
+    return IndexEpisode.fromJson(json as Map<String, dynamic>) as P;
   }
 
   @override
-  Object toJson(P object) {
+  Object? toJson(P object) {
     return object;
   }
 }
 
 @JsonSerializable()
 class IndexEpisode {
-  final String title;
-  final String description;
-  final int datePublished;
-  final String enclosureUrl;
-  final int enclosureLength;
+  final String? title;
+  final String? description;
+  final int? datePublished;
+  final String? enclosureUrl;
+  final int? enclosureLength;
   IndexEpisode(
       {this.title,
       this.description,
@@ -47,5 +47,5 @@ class IndexEpisode {
   Map<String, dynamic> toJson() => _$IndexEpisodeToJson(this);
 
   OnlineEpisode get toOnlineWEpisode =>
-      OnlineEpisode(title: title, pubDate: datePublished * 1000, length: 0);
+      OnlineEpisode(title: title, pubDate: datePublished! * 1000, length: 0);
 }

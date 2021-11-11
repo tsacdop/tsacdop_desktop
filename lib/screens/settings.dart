@@ -13,14 +13,14 @@ import '../utils/extension_helper.dart';
 import '../widgets/color_picker.dart';
 
 class Settings extends StatefulWidget {
-  Settings({Key key}) : super(key: key);
+  Settings({Key? key}) : super(key: key);
 
   @override
   _SettingsState createState() => _SettingsState();
 }
 
 class _SettingsState extends State<Settings> {
-  Widget _settings;
+  Widget? _settings;
   int _settingsIndex = 0;
 
   @override
@@ -31,7 +31,7 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    final s = context.s;
+    final s = context.s!;
     return ResizableWidget(
       key: UniqueKey(),
       isHorizontalSeparator: false, // optional
@@ -50,8 +50,7 @@ class _SettingsState extends State<Settings> {
                   _settingsIndex = 0;
                 });
               },
-              leading:
-                  Icon(LineIcons.adjust, color: context.accentColor),
+              leading: Icon(LineIcons.adjust, color: context.accentColor),
               title: s.settingsAppearance,
               subtitle: s.settingsAppearanceDes,
               selected: _settingsIndex == 0,
@@ -73,8 +72,7 @@ class _SettingsState extends State<Settings> {
                 );
                 _settingsIndex = 2;
               }),
-              leading:
-                  Icon(LineIcons.language, color: Colors.purpleAccent),
+              leading: Icon(LineIcons.language, color: Colors.purpleAccent),
               title: s.settingsLanguages,
               subtitle: s.settingsLanguagesDes,
               selected: _settingsIndex == 2,
@@ -102,12 +100,12 @@ class _SettingsState extends State<Settings> {
 }
 
 class ThemeSettings extends ConsumerWidget {
-  const ThemeSettings({Key key}) : super(key: key);
+  const ThemeSettings({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final s = context.s;
-    final currentSetting = watch(settings);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = context.s!;
+    final currentSetting = ref.watch(settings);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30.0),
       child: Column(
@@ -130,8 +128,8 @@ class ThemeSettings extends ConsumerWidget {
                   title: Text(s.systemDefault),
                   value: ThemeMode.system,
                   groupValue: currentSetting.themeMode,
-                  onChanged: (value) {
-                    context.read(settings).setTheme = value;
+                  onChanged: (dynamic value) {
+                    ref.read(settings).setTheme = value;
                   }),
             ),
           ),
@@ -143,8 +141,8 @@ class ThemeSettings extends ConsumerWidget {
                   title: Text(s.darkMode),
                   value: ThemeMode.dark,
                   groupValue: currentSetting.themeMode,
-                  onChanged: (value) {
-                    context.read(settings).setTheme = value;
+                  onChanged: (dynamic value) {
+                    ref.read(settings).setTheme = value;
                   }),
             ),
           ),
@@ -156,8 +154,8 @@ class ThemeSettings extends ConsumerWidget {
                   title: Text(s.lightMode),
                   value: ThemeMode.light,
                   groupValue: currentSetting.themeMode,
-                  onChanged: (value) {
-                    context.read(settings).setTheme = value;
+                  onChanged: (dynamic value) {
+                    ref.read(settings).setTheme = value;
                   }),
             ),
           ),
@@ -184,15 +182,15 @@ class ThemeSettings extends ConsumerWidget {
 }
 
 class LanguageSetting extends StatefulWidget {
-  final Function() onChange;
-  const LanguageSetting({this.onChange, Key key}) : super(key: key);
+  final Function()? onChange;
+  const LanguageSetting({this.onChange, Key? key}) : super(key: key);
 
   @override
   _LanguageSettingState createState() => _LanguageSettingState();
 }
 
 class _LanguageSettingState extends State<LanguageSetting> {
-  Future<void> _setLocale(Locale locale, {bool systemDefault = false}) async {
+  Future<void> _setLocale(Locale? locale, {bool systemDefault = false}) async {
     var localeStorage = KeyValueStorage(localeKey);
     if (systemDefault) {
       await localeStorage.saveStringList([]);
@@ -209,15 +207,15 @@ class _LanguageSettingState extends State<LanguageSetting> {
       await S.load(Locale(systemLanCode));
       if (mounted) {
         setState(() {});
-        widget.onChange();
+        widget.onChange!();
       }
     } else {
       await localeStorage
-          .saveStringList([locale.languageCode, locale.countryCode]);
+          .saveStringList([locale!.languageCode, locale.countryCode!]);
       await S.load(locale);
       if (mounted) {
         setState(() {});
-        widget.onChange();
+        widget.onChange!();
       }
     }
   }
@@ -230,7 +228,7 @@ class _LanguageSettingState extends State<LanguageSetting> {
 
   @override
   Widget build(BuildContext context) {
-    final s = context.s;
+    final s = context.s!;
     return Padding(
       padding: const EdgeInsets.all(30),
       child: Column(
@@ -329,22 +327,22 @@ class _LanguageSettingState extends State<LanguageSetting> {
   }
 }
 
-class StorageSetting extends StatefulWidget {
-  StorageSetting({Key key}) : super(key: key);
+class StorageSetting extends ConsumerStatefulWidget {
+  StorageSetting({Key? key}) : super(key: key);
 
   @override
   _StorageSettingState createState() => _StorageSettingState();
 }
 
-class _StorageSettingState extends State<StorageSetting> {
+class _StorageSettingState extends ConsumerState<StorageSetting> {
   OutlineInputBorder _inputBorder(Color color) => OutlineInputBorder(
       borderRadius: BorderRadius.zero, borderSide: BorderSide(color: color));
-  FocusNode _focusNode;
-  String _query;
+  FocusNode? _focusNode;
+  String? _query;
 
   @override
   Widget build(BuildContext context) {
-    final s = context.s;
+    final s = context.s!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -356,7 +354,7 @@ class _StorageSettingState extends State<StorageSetting> {
           child: Text(s.network, style: TextStyle(color: context.accentColor)),
         ),
         Consumer(builder: (context, watch, child) {
-          final currentSetting = watch(settings);
+          final currentSetting = ref.watch(settings);
           return Padding(
             padding: const EdgeInsets.all(20.0),
             child: Text(
@@ -373,8 +371,7 @@ class _StorageSettingState extends State<StorageSetting> {
               Expanded(
                 child: TextField(
                     focusNode: _focusNode,
-                    onSubmitted: (value) =>
-                        context.read(settings).setProxy = value,
+                    onSubmitted: (value) => ref.read(settings).setProxy = value,
                     onChanged: (value) => _query = value,
                     decoration: InputDecoration(
                         isDense: true,
@@ -400,7 +397,7 @@ class _StorageSettingState extends State<StorageSetting> {
                 ),
                 onPressed: () {
                   _focusNode?.unfocus();
-                  context.read(settings).setProxy = _query;
+                  ref.read(settings).setProxy = _query;
                 },
               ),
             ],

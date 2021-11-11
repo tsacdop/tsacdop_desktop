@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -23,19 +25,19 @@ class SettingsState extends ChangeNotifier {
     await _getLocale();
   }
 
-  Color _accentSetColor;
-  ThemeMode _themeMode;
-  bool _realDark;
-  String _proxy;
-  Locale _locale;
-  String get proxy => _proxy;
+  Color? _accentSetColor;
+  ThemeMode? _themeMode;
+  bool? _realDark;
+  String? _proxy;
+  late Locale _locale;
+  String? get proxy => _proxy;
 
-  ThemeMode get themeMode => _themeMode;
+  ThemeMode? get themeMode => _themeMode;
 
   ThemeData get lightTheme => ThemeData(
       colorScheme: ColorScheme.light(
-        primary: Colors.grey[100],
-        secondary: _accentSetColor,
+        primary: Colors.grey[100]!,
+        secondary: _accentSetColor!,
       ),
       splashColor: Colors.transparent,
       primaryColor: Colors.grey[100],
@@ -65,23 +67,23 @@ class SettingsState extends ChangeNotifier {
       toggleableActiveColor: _accentSetColor,
       buttonTheme: ButtonThemeData(
           height: 32,
-          hoverColor: _accentSetColor.withAlpha(70),
-          splashColor: _accentSetColor.withAlpha(70)));
+          hoverColor: _accentSetColor!.withAlpha(70),
+          splashColor: _accentSetColor!.withAlpha(70)));
 
   ThemeData get darkTheme => ThemeData.dark().copyWith(
         colorScheme: ColorScheme.dark(
-          secondary: _accentSetColor,
-          primary: Colors.grey[100],
+          secondary: _accentSetColor!,
+          primary: Colors.grey[100]!,
         ),
         splashFactory: NoSplash.splashFactory,
         primaryColorDark: Colors.grey[800],
-        scaffoldBackgroundColor: _realDark ? Colors.black87 : Color(0XFF212121),
-        primaryColor: _realDark ? Colors.black : Color(0XFF1B1B1B),
+        scaffoldBackgroundColor: _realDark! ? Colors.black87 : Color(0XFF212121),
+        primaryColor: _realDark! ? Colors.black : Color(0XFF1B1B1B),
         popupMenuTheme: PopupMenuThemeData()
-            .copyWith(color: _realDark ? Colors.grey[900] : null),
+            .copyWith(color: _realDark! ? Colors.grey[900] : null),
         appBarTheme: AppBarTheme(elevation: 0),
         buttonTheme: ButtonThemeData(height: 32),
-        dialogBackgroundColor: _realDark ? Colors.grey[900] : null,
+        dialogBackgroundColor: _realDark! ? Colors.grey[900] : null,
         textTheme: TextTheme(
           bodyText2: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
           bodyText1: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
@@ -102,13 +104,13 @@ class SettingsState extends ChangeNotifier {
     notifyListeners();
   }
 
-  set setTheme(ThemeMode mode) {
+  set setTheme(ThemeMode? mode) {
     _themeMode = mode;
     _saveTheme();
     notifyListeners();
   }
 
-  set setProxy(String proxy) {
+  set setProxy(String? proxy) {
     _proxy = proxy;
     _saveProxy();
     notifyListeners();
@@ -121,7 +123,7 @@ class SettingsState extends ChangeNotifier {
 
   Future _getAccentSetColor() async {
     var colorString = await _accentStorage.getString();
-    if (colorString.isNotEmpty) {
+    if (colorString!.isNotEmpty) {
       var color = int.parse('FF${colorString.toUpperCase()}', radix: 16);
       _accentSetColor = Color(color).withOpacity(1.0);
     } else {
@@ -164,7 +166,7 @@ class SettingsState extends ChangeNotifier {
   }
 
   Future<void> _saveTheme() async {
-    await _themeStorage.saveInt(_themeMode.index);
+    await _themeStorage.saveInt(_themeMode!.index);
   }
 
   Future<void> _setRealDark() async {
@@ -172,6 +174,6 @@ class SettingsState extends ChangeNotifier {
   }
 
   Future<void> _saveProxy() async {
-    await _proxyStorage.saveString(_proxy);
+    await _proxyStorage.saveString(_proxy!);
   }
 }

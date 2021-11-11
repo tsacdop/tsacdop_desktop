@@ -5,17 +5,17 @@ import '../utils/extension_helper.dart';
 class CustomListTile extends StatelessWidget {
   final VoidCallback onTap;
   final bool selected;
-  final Widget child;
-  final Widget leading;
-  final Widget trailing;
-  final String title;
-  final String subtitle;
-  final EdgeInsets padding;
+  final Widget? child;
+  final Widget? leading;
+  final Widget? trailing;
+  final String? title;
+  final String? subtitle;
+  final EdgeInsets? padding;
 
   const CustomListTile({
-    Key key,
-    @required this.onTap,
-    @required this.selected,
+    Key? key,
+    required this.onTap,
+    required this.selected,
     this.child,
     this.padding,
     this.leading,
@@ -37,14 +37,14 @@ class CustomListTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(6),
             color: selected ? context.accentColor : Colors.transparent,
           ),
-          child: child ?? _listItem(context, leading, title, subtitle),
+          child: child ?? _listItem(context, leading, title!, subtitle!),
         ),
       ),
     );
   }
 
   Widget _listItem(
-      BuildContext context, Widget leading, String title, String subtitle) {
+      BuildContext context, Widget? leading, String title, String subtitle) {
     return Row(
       children: [
         Padding(
@@ -56,7 +56,7 @@ class CustomListTile extends StatelessWidget {
             children: [
               Text(title,
                   maxLines: 1,
-                  style: context.textTheme.bodyText1
+                  style: context.textTheme.bodyText1!
                       .copyWith(fontWeight: FontWeight.bold)),
               Text(
                 subtitle,

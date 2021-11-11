@@ -15,17 +15,17 @@ import '../widgets/custom_button.dart';
 import '../utils/extension_helper.dart';
 import '../providers/settings_state.dart';
 
-class Home extends StatefulWidget {
-  const Home({Key key}) : super(key: key);
+class Home extends ConsumerStatefulWidget {
+  const Home({Key? key}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
-  Widget _body;
-  String _selectMenu;
-  OverlayEntry _overlayEntry;
+class _HomeState extends ConsumerState<Home> {
+  Widget? _body;
+  String? _selectMenu;
+  OverlayEntry? _overlayEntry;
   @override
   void initState() {
     _body = PodcastsPage();
@@ -34,7 +34,7 @@ class _HomeState extends State<Home> {
   }
 
   OverlayEntry _createOverlayEntry() {
-    RenderBox renderBox = context.findRenderObject();
+    RenderBox renderBox = context.findRenderObject() as RenderBox;
     var offset = renderBox.localToGlobal(Offset.zero);
     return OverlayEntry(
       builder: (constext) => Positioned(
@@ -52,7 +52,7 @@ class _HomeState extends State<Home> {
                     borderRadius: BorderRadius.circular(4.0),
                     border: Border.all(color: context.primaryColorDark)),
                 child: Consumer(builder: (context, watch, child) {
-                  var tasks = watch(downloadProvider);
+                  var tasks = ref.watch(downloadProvider);
                   if (tasks.isEmpty)
                     return SizedBox(
                       height: 10,
@@ -63,15 +63,15 @@ class _HomeState extends State<Home> {
                     itemBuilder: (context, index) {
                       final task = tasks[index];
                       return ListTile(
-                        leading: Text(tasks[index].progress),
+                        leading: Text(tasks[index].progress?.toString() ?? ''),
                         title: Text(
-                          task.episode.title,
+                          task.episode.title ?? '',
                           maxLines: 1,
                         ),
                         subtitle: SizedBox(
                           height: 4,
                           child: LinearProgressIndicator(
-                            value: tasks[index].progress / 100,
+                            value: (tasks[index].progress ?? 0) / 100,
                           ),
                         ),
                       );
@@ -138,7 +138,7 @@ class _HomeState extends State<Home> {
                           ),
                           Spacer(),
                           Consumer(builder: (context, watch, child) {
-                            var tasks = watch(downloadProvider);
+                            var tasks = ref.watch(downloadProvider);
                             if (tasks.isNotEmpty)
                               return IconButton(
                                 splashRadius: 20,
@@ -149,9 +149,9 @@ class _HomeState extends State<Home> {
                                 onPressed: () {
                                   if (_overlayEntry == null) {
                                     _overlayEntry = _createOverlayEntry();
-                                    Overlay.of(context).insert(_overlayEntry);
+                                    Overlay.of(context)!.insert(_overlayEntry!);
                                   } else {
-                                    _overlayEntry.remove();
+                                    _overlayEntry!.remove();
                                     _overlayEntry = null;
                                   }
                                   setState(() {});
@@ -163,13 +163,11 @@ class _HomeState extends State<Home> {
                             splashRadius: 20,
                             icon: Icon(LineIcons.lightbulb),
                             onPressed: () {
-                              if (context.read(settings).themeMode !=
+                              if (ref.read(settings).themeMode !=
                                   ThemeMode.dark)
-                                context.read(settings).setTheme =
-                                    ThemeMode.dark;
+                                ref.read(settings).setTheme = ThemeMode.dark;
                               else {
-                                context.read(settings).setTheme =
-                                    ThemeMode.light;
+                                ref.read(settings).setTheme = ThemeMode.light;
                               }
                             },
                           ),
@@ -219,12 +217,12 @@ class _HomeState extends State<Home> {
 }
 
 class _NotificationBar extends ConsumerWidget {
-  const _NotificationBar({Key key}) : super(key: key);
+  const _NotificationBar({Key? key}) : super(key: key);
   Widget _notifierText(String text, BuildContext context) {
     return Container(
       height: 30,
       decoration: BoxDecoration(
-          color: Colors.grey[600].withOpacity(0.6),
+          color: Colors.grey[600]!.withOpacity(0.6),
           borderRadius: BorderRadius.only(topLeft: Radius.circular(4.0))),
       padding: EdgeInsets.symmetric(horizontal: 10),
       alignment: Alignment.centerRight,
@@ -233,11 +231,11 @@ class _NotificationBar extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final s = context.s;
-    var refreshNotifier = watch(refreshNotification).state;
-    var item = watch(currentSubscribeItem).state;
-    var downloadNotifier = watch(downloadNotification).state;
+    var refreshNotifier = ref.watch(refreshNotification);
+    var item = ref.watch(currentSubscribeItem);
+    var downloadNotifier = ref.watch(downloadNotification);
     if (downloadNotifier != null) {
       return _notifierText(downloadNotifier, context);
     }
@@ -247,16 +245,17 @@ class _NotificationBar extends ConsumerWidget {
     if (item != null)
       switch (item.subscribeState) {
         case SubscribeState.start:
-          return _notifierText(s.notificationSubscribe(item.title), context);
+          return _notifierText(s!.notificationSubscribe(item.title!), context);
         case SubscribeState.subscribe:
-          return _notifierText(s.notificaitonFatch(item.title), context);
+          return _notifierText(s!.notificaitonFatch(item.title!), context);
         case SubscribeState.fetch:
-          return _notifierText(s.notificationSuccess(item.title), context);
+          return _notifierText(s!.notificationSuccess(item.title!), context);
         case SubscribeState.exist:
           return _notifierText(
-              s.notificationSubscribeExisted(item.title), context);
+              s!.notificationSubscribeExisted(item.title!), context);
         case SubscribeState.error:
-          return _notifierText(s.notificationNetworkError(item.title), context);
+          return _notifierText(
+              s!.notificationNetworkError(item.title!), context);
         default:
           return Center();
       }

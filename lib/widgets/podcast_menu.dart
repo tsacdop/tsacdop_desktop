@@ -10,18 +10,18 @@ import 'custom_paint.dart';
 import '../utils/extension_helper.dart';
 
 class LayoutButton extends StatelessWidget {
-  const LayoutButton({this.layout, this.onPressed, Key key}) : super(key: key);
-  final Layout layout;
-  final ValueChanged<Layout> onPressed;
+  const LayoutButton({this.layout, this.onPressed, Key? key}) : super(key: key);
+  final Layout? layout;
+  final ValueChanged<Layout>? onPressed;
   @override
   Widget build(BuildContext context) {
     return IconButton(
       padding: EdgeInsets.zero,
       onPressed: () {
         if (layout == Layout.multi) {
-          onPressed(Layout.one);
+          onPressed!(Layout.one);
         } else {
-          onPressed(Layout.multi);
+          onPressed!(Layout.multi);
         }
       },
       icon: layout == Layout.multi
@@ -36,7 +36,7 @@ class LayoutButton extends StatelessWidget {
               height: 10,
               width: 30,
               child: CustomPaint(
-                painter: LayoutPainter(4, context.textTheme.bodyText1.color),
+                painter: LayoutPainter(4, context.textTheme.bodyText1!.color),
               ),
             ),
     );
@@ -44,8 +44,8 @@ class LayoutButton extends StatelessWidget {
 }
 
 class HideListened extends StatefulWidget {
-  final bool hideListened;
-  HideListened({this.hideListened, Key key}) : super(key: key);
+  final bool? hideListened;
+  HideListened({this.hideListened, Key? key}) : super(key: key);
   @override
   _HideListenedState createState() => _HideListenedState();
 }
@@ -53,8 +53,8 @@ class HideListened extends StatefulWidget {
 class _HideListenedState extends State<HideListened>
     with SingleTickerProviderStateMixin {
   double _fraction = 0.0;
-  Animation animation;
-  AnimationController _controller;
+  late Animation animation;
+  late AnimationController _controller;
   @override
   void initState() {
     super.initState();
@@ -68,13 +68,13 @@ class _HideListenedState extends State<HideListened>
           });
         }
       });
-    if (widget.hideListened) _controller.forward();
+    if (widget.hideListened!) _controller.forward();
   }
 
   @override
   void didUpdateWidget(HideListened oldWidget) {
     if (oldWidget.hideListened != widget.hideListened) {
-      if (widget.hideListened) {
+      if (widget.hideListened!) {
         _controller.forward();
       } else {
         _controller.reverse();
@@ -104,19 +104,19 @@ class MultiSelectMenuBar extends StatefulWidget {
       {this.selectedList,
       this.selectAll,
       this.onSelectAll,
-      this.onClose,
+      required this.onClose,
       this.onSelectAfter,
       this.onSelectBefore,
       this.hideFavorite = false,
-      Key key})
+      Key? key})
       : assert(onClose != null),
         super(key: key);
-  final List<EpisodeBrief> selectedList;
-  final bool selectAll;
-  final ValueChanged<bool> onSelectAll;
+  final List<EpisodeBrief>? selectedList;
+  final bool? selectAll;
+  final ValueChanged<bool>? onSelectAll;
   final ValueChanged<bool> onClose;
-  final ValueChanged<bool> onSelectBefore;
-  final ValueChanged<bool> onSelectAfter;
+  final ValueChanged<bool>? onSelectBefore;
+  final ValueChanged<bool>? onSelectAfter;
   final bool hideFavorite;
 
   @override
@@ -125,10 +125,10 @@ class MultiSelectMenuBar extends StatefulWidget {
 
 ///Multi select menu bar.
 class _MultiSelectMenuBarState extends State<MultiSelectMenuBar> {
-  bool _liked;
-  bool _marked;
-  bool _inPlaylist;
-  bool _downloaded;
+  bool? _liked;
+  bool? _marked;
+  bool? _inPlaylist;
+  bool? _downloaded;
   final _dbHelper = DBHelper();
 
   @override
@@ -153,7 +153,7 @@ class _MultiSelectMenuBarState extends State<MultiSelectMenuBar> {
     }
   }
 
-  Widget _buttonOnMenu({Widget child, VoidCallback onTap}) => Material(
+  Widget _buttonOnMenu({Widget? child, VoidCallback? onTap}) => Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
@@ -171,7 +171,7 @@ class _MultiSelectMenuBarState extends State<MultiSelectMenuBar> {
     return TweenAnimationBuilder(
       tween: Tween<double>(begin: 0, end: 1),
       duration: Duration(milliseconds: 500),
-      builder: (context, value, child) => Container(
+      builder: (context, dynamic value, child) => Container(
         height: widget.selectAll == null ? 40 : 90.0 * value,
         decoration: BoxDecoration(color: context.primaryColor),
         child: SingleChildScrollView(
@@ -188,13 +188,13 @@ class _MultiSelectMenuBarState extends State<MultiSelectMenuBar> {
                         child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 20.0),
                             child: Text(
-                                '${widget.selectedList.length} selected',
-                                style: context.textTheme.headline6
+                                '${widget.selectedList!.length} selected',
+                                style: context.textTheme.headline6!
                                     .copyWith(color: context.accentColor))),
                       ),
                     ),
                     Spacer(),
-                    if (widget.selectedList.length == 1)
+                    if (widget.selectedList!.length == 1)
                       SizedBox(
                         height: 25,
                         child: Padding(
@@ -207,12 +207,12 @@ class _MultiSelectMenuBarState extends State<MultiSelectMenuBar> {
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(100)))),
                               onPressed: () {
-                                widget.onSelectBefore(true);
+                                widget.onSelectBefore!(true);
                               },
                               child: Text('Before')),
                         ),
                       ),
-                    if (widget.selectedList.length == 1)
+                    if (widget.selectedList!.length == 1)
                       SizedBox(
                         height: 25,
                         child: Padding(
@@ -225,7 +225,7 @@ class _MultiSelectMenuBarState extends State<MultiSelectMenuBar> {
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(100)))),
                               onPressed: () {
-                                widget.onSelectAfter(true);
+                                widget.onSelectAfter!(true);
                               },
                               child: Text('After')),
                         ),
@@ -237,17 +237,17 @@ class _MultiSelectMenuBarState extends State<MultiSelectMenuBar> {
                         child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
                                 side: BorderSide(color: context.accentColor),
-                                backgroundColor: widget.selectAll
+                                backgroundColor: widget.selectAll!
                                     ? context.accentColor
                                     : null,
-                                primary: widget.selectAll
+                                primary: widget.selectAll!
                                     ? Colors.white
                                     : context.textColor,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.all(
                                         Radius.circular(100)))),
                             onPressed: () {
-                              widget.onSelectAll(!widget.selectAll);
+                              widget.onSelectAll!(!widget.selectAll!);
                             },
                             child: Text('All')),
                       ),
@@ -264,8 +264,8 @@ class _MultiSelectMenuBarState extends State<MultiSelectMenuBar> {
                         child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 10.0),
                             child: Text(
-                                '${widget.selectedList.length} selected',
-                                style: context.textTheme.headline6
+                                '${widget.selectedList!.length} selected',
+                                style: context.textTheme.headline6!
                                     .copyWith(color: context.accentColor))),
                       ),
                     ),
@@ -283,10 +283,10 @@ class _MultiSelectMenuBarState extends State<MultiSelectMenuBar> {
 }
 
 class DotIndicator extends StatelessWidget {
-  DotIndicator({this.radius = 8, this.color, Key key})
+  DotIndicator({this.radius = 8, this.color, Key? key})
       : assert(radius > 0),
         super(key: key);
-  final Color color;
+  final Color? color;
   final double radius;
 
   @override
@@ -300,7 +300,7 @@ class DotIndicator extends StatelessWidget {
 }
 
 class RefreshLoad extends StatefulWidget {
-  RefreshLoad({Key key}) : super(key: key);
+  RefreshLoad({Key? key}) : super(key: key);
 
   @override
   _RefreshLoadState createState() => _RefreshLoadState();
@@ -308,9 +308,9 @@ class RefreshLoad extends StatefulWidget {
 
 class _RefreshLoadState extends State<RefreshLoad>
     with SingleTickerProviderStateMixin {
-  Animation _animation;
-  AnimationController _controller;
-  double _value;
+  late Animation _animation;
+  late AnimationController _controller;
+  late double _value;
   @override
   void initState() {
     super.initState();

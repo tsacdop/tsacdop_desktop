@@ -18,17 +18,17 @@ import '../utils/extension_helper.dart';
 
 enum PodcastBody { list, setting, info }
 
-class PodcastDetail extends StatefulWidget {
+class PodcastDetail extends ConsumerStatefulWidget {
   final PodcastLocal podcastLocal;
-  PodcastDetail(this.podcastLocal, {Key key}) : super(key: key);
+  PodcastDetail(this.podcastLocal, {Key? key}) : super(key: key);
 
   @override
   _PodcastDetailState createState() => _PodcastDetailState();
 }
 
-class _PodcastDetailState extends State<PodcastDetail> {
-  Widget _body;
-  PodcastBody _podcastBody;
+class _PodcastDetailState extends ConsumerState<PodcastDetail> {
+  Widget? _body;
+  PodcastBody? _podcastBody;
 
   @override
   void initState() {
@@ -54,7 +54,7 @@ class _PodcastDetailState extends State<PodcastDetail> {
     return Column(
       children: [
         Container(
-          color: podcast.primaryColor.colorizedark(),
+          color: podcast.primaryColor!.colorizedark(),
           height: 120,
           width: double.infinity,
           child: Row(
@@ -70,7 +70,8 @@ class _PodcastDetailState extends State<PodcastDetail> {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: () => context.read(openPodcast).state = null,
+                            onTap: () =>
+                                ref.read(openPodcast.notifier).state = null,
                             hoverColor:
                                 context.primaryColorDark.withOpacity(0.3),
                             child: Container(
@@ -89,16 +90,16 @@ class _PodcastDetailState extends State<PodcastDetail> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(podcast.title,
+                          Text(podcast.title!,
                               maxLines: 1,
-                              style: context.textTheme.headline6
+                              style: context.textTheme.headline6!
                                   .copyWith(color: Colors.white)),
                           Material(
                             color: Colors.transparent,
                             child: Row(
                               children: [
                                 Expanded(
-                                  child: Text(podcast.author,
+                                  child: Text(podcast.author!,
                                       maxLines: 1,
                                       style:
                                           TextStyle(color: Colors.grey[300])),
@@ -120,7 +121,8 @@ class _PodcastDetailState extends State<PodcastDetail> {
                                   splashRadius: 15,
                                   icon: Icon(LineIcons.cogs,
                                       size: 18,
-                                      color: _getIconColor(PodcastBody.setting)),
+                                      color:
+                                          _getIconColor(PodcastBody.setting)),
                                   onPressed: () {
                                     setState(() {
                                       _body = _PodcastSettings(podcast);
@@ -173,7 +175,7 @@ class _PodcastDetailState extends State<PodcastDetail> {
 
 class _EpisodeList extends StatefulWidget {
   final PodcastLocal podcastLocal;
-  const _EpisodeList(this.podcastLocal, {Key key}) : super(key: key);
+  const _EpisodeList(this.podcastLocal, {Key? key}) : super(key: key);
 
   @override
   __EpisodeListState createState() => __EpisodeListState();
@@ -183,10 +185,10 @@ class __EpisodeListState extends State<_EpisodeList> {
   final _dbHelper = DBHelper();
 
   /// Episodes total count.
-  int _episodeCount;
+  int? _episodeCount;
 
   /// Default layout.
-  Layout _layout;
+  Layout? _layout;
 
   int _dataCount = 0;
 
@@ -200,20 +202,20 @@ class __EpisodeListState extends State<_EpisodeList> {
   String _query = '';
 
   ///Hide listened.
-  bool _hideListened;
+  bool? _hideListened;
 
   ///Selected episode list.
-  List<EpisodeBrief> _selectedEpisodes;
+  List<EpisodeBrief>? _selectedEpisodes;
 
   ///Toggle for multi-select.
-  bool _multiSelect;
-  bool _selectAll;
-  bool _selectBefore;
-  bool _selectAfter;
+  bool? _multiSelect;
+  bool? _selectAll;
+  bool? _selectBefore;
+  bool? _selectAfter;
 
-  ScrollController _controller;
+  ScrollController? _controller;
 
-  bool _refresh;
+  late bool _refresh;
 
   @override
   void initState() {
@@ -229,7 +231,7 @@ class __EpisodeListState extends State<_EpisodeList> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
     super.dispose();
   }
 
@@ -238,12 +240,12 @@ class __EpisodeListState extends State<_EpisodeList> {
     super.didUpdateWidget(oldWidget);
     if (widget.podcastLocal != oldWidget.podcastLocal) {
       setState(() {});
-      _controller.jumpTo(0);
+      _controller!.jumpTo(0);
     }
   }
 
   Future<List<EpisodeBrief>> _getRssItem(PodcastLocal podcastLocal,
-      {int count, bool reverse, Filter filter, String query}) async {
+      {int? count, bool? reverse, Filter? filter, String? query}) async {
     var episodes = <EpisodeBrief>[];
     _episodeCount = await _dbHelper.getPodcastCounts(podcastLocal.id);
     final layoutStorage = KeyValueStorage(podcastLayoutKey);
@@ -257,7 +259,7 @@ class __EpisodeListState extends State<_EpisodeList> {
         reverse: reverse,
         filter: filter,
         query: query,
-        hideListened: _hideListened);
+        hideListened: _hideListened!);
     _dataCount = episodes.length;
     return episodes;
   }
@@ -273,17 +275,17 @@ class __EpisodeListState extends State<_EpisodeList> {
       });
   }
 
-  Future<int> _getLayout() async {
+  Future<int?> _getLayout() async {
     var storage = KeyValueStorage(podcastLayoutKey);
     var index = await storage.getInt(defaultValue: 1);
     return index;
   }
 
   Widget _customPopupMenu(
-          {Widget child,
-          String tooltip,
-          List<PopupMenuEntry<int>> itemBuilder,
-          Function(int) onSelected,
+          {Widget? child,
+          String? tooltip,
+          List<PopupMenuEntry<int>>? itemBuilder,
+          Function(int)? onSelected,
           bool clip = true}) =>
       Material(
         key: UniqueKey(),
@@ -295,13 +297,13 @@ class __EpisodeListState extends State<_EpisodeList> {
           elevation: 1,
           tooltip: tooltip,
           child: child,
-          itemBuilder: (context) => itemBuilder,
-          onSelected: (value) => onSelected(value),
+          itemBuilder: (context) => itemBuilder!,
+          onSelected: (value) => onSelected!(value),
         ),
       );
 
   Widget _actionBar(BuildContext context) {
-    final s = context.s;
+    final s = context.s!;
     return Container(
         height: 30,
         child: Row(
@@ -500,7 +502,8 @@ class __EpisodeListState extends State<_EpisodeList> {
                           sliver: EpisodesGrid(
                             episodes: snapshot.data,
                             showFavorite: true,
-                            showNumber: _filter == Filter.all && !_hideListened,
+                            showNumber:
+                                _filter == Filter.all && !_hideListened!,
                             layout: _layout,
                             reverse: _reverse,
                             episodeCount: _episodeCount,
@@ -531,9 +534,9 @@ class __EpisodeListState extends State<_EpisodeList> {
 
 class _PodcastInfo extends StatelessWidget {
   final PodcastLocal podcast;
-  const _PodcastInfo(this.podcast, {Key key}) : super(key: key);
+  const _PodcastInfo(this.podcast, {Key? key}) : super(key: key);
 
-  Future<String> _getDescription() async {
+  Future<String?> _getDescription() async {
     var dbHelper = DBHelper();
     var description = await dbHelper.getFeedDescription(podcast.id);
     if (description == null || description.isEmpty) {
@@ -541,7 +544,7 @@ class _PodcastInfo extends StatelessWidget {
       return description;
     } else {
       var doc = parse(description);
-      description = parse(doc.body.text).documentElement.text;
+      description = parse(doc.body!.text).documentElement!.text;
       return description;
     }
   }
@@ -554,13 +557,13 @@ class _PodcastInfo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('About',
-              style: context.textTheme.headline6
+              style: context.textTheme.headline6!
                   .copyWith(color: context.accentColor)),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: Linkify(
               onOpen: (link) {
-                link.url.launchUrl;
+                link.url!.launchUrl;
               },
               text: 'Rss link: ${podcast.rssUrl}',
               linkStyle: TextStyle(
@@ -571,15 +574,15 @@ class _PodcastInfo extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: FutureBuilder(
+            child: FutureBuilder<String?>(
               future: _getDescription(),
               initialData: '',
               builder: (context, snapshot) {
                 return Linkify(
                   onOpen: (link) {
-                    link.url.launchUrl;
+                    link.url!.launchUrl;
                   },
-                  text: snapshot.data,
+                  text: snapshot.data ?? '',
                   linkStyle: TextStyle(
                       color: context.accentColor,
                       height: 2,
@@ -595,28 +598,28 @@ class _PodcastInfo extends StatelessWidget {
   }
 }
 
-class _PodcastSettings extends StatefulWidget {
+class _PodcastSettings extends ConsumerStatefulWidget {
   final PodcastLocal podcast;
 
-  const _PodcastSettings(this.podcast, {Key key}) : super(key: key);
+  const _PodcastSettings(this.podcast, {Key? key}) : super(key: key);
 
   @override
   __PodcastSettingsState createState() => __PodcastSettingsState();
 }
 
-class __PodcastSettingsState extends State<_PodcastSettings> {
-  List<PodcastGroup> _selectedGroups;
+class __PodcastSettingsState extends ConsumerState<_PodcastSettings> {
+  List<PodcastGroup?>? _selectedGroups;
 
   @override
   void initState() {
     _selectedGroups =
-        context.read(groupState.notifier).getPodcastGroup(widget.podcast.id);
+        ref.read(groupState.notifier).getPodcastGroup(widget.podcast.id);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final s = context.s;
+    final s = context.s!;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       SizedBox(height: 30),
       Container(
@@ -627,7 +630,7 @@ class __PodcastSettingsState extends State<_PodcastSettings> {
       ),
       Consumer(
         builder: (context, watch, child) {
-          final groupList = watch(groupState);
+          final groupList = ref.watch(groupState);
 
           return Padding(
             padding: const EdgeInsets.all(20.0),
@@ -638,18 +641,18 @@ class __PodcastSettingsState extends State<_PodcastSettings> {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 5.0),
                     child: FilterChip(
-                      key: ValueKey<String>(group.id),
+                      key: ValueKey<String?>(group.id),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4)),
                       elevation: 0,
-                      label: Text(group.name),
-                      selected: _selectedGroups.contains(group),
+                      label: Text(group.name ?? ''),
+                      selected: _selectedGroups!.contains(group),
                       onSelected: (value) {
                         setState(() {
                           if (!value) {
-                            _selectedGroups.remove(group);
+                            _selectedGroups!.remove(group);
                           } else {
-                            _selectedGroups.add(group);
+                            _selectedGroups!.add(group);
                           }
                         });
                       },
@@ -672,15 +675,15 @@ class __PodcastSettingsState extends State<_PodcastSettings> {
                         minimumSize: Size(80, 58),
                       ),
                       onPressed: () async {
-                        if (_selectedGroups.length > 0) {
-                          await context.read(groupState.notifier).changeGroup(
+                        if (_selectedGroups!.length > 0) {
+                          await ref.read(groupState.notifier).changeGroup(
                                 widget.podcast.id,
                                 _selectedGroups,
                               );
                           if (mounted)
                             setState(() {
-                              _selectedGroups = context
-                                  .read(groupState)
+                              _selectedGroups = ref
+                                  .read(groupState.notifier)
                                   .getPodcastGroup(widget.podcast.id);
                             });
                         }

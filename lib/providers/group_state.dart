@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:io';
 import 'dart:math' as math;
@@ -19,9 +20,10 @@ import '../storage/sqflite_db.dart';
 
 enum SubscribeState { none, start, subscribe, fetch, stop, exist, error }
 
-final groupState = StateNotifierProvider((ref) => GroupList(ref.read));
+final groupState = StateNotifierProvider<GroupList, List<PodcastGroup>>(
+    (ref) => GroupList(ref.read));
 
-final currentSubscribeItem = StateProvider<SubscribeItem>((ref) => null);
+final currentSubscribeItem = StateProvider<SubscribeItem?>((ref) => null);
 
 class GroupList extends StateNotifier<List<PodcastGroup>> {
   GroupList(this.read) : super([]) {
@@ -34,7 +36,8 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
 
   /// Load groups from storage at start.
   Future<void> _loadGroup() async {
-    final loadgroups = await _groupStorage.getGroups();
+    final loadgroups =
+        await _groupStorage.getGroups();
     state = loadgroups.map(PodcastGroup.fromEntity).toList();
   }
 
@@ -44,7 +47,7 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
     await _saveGroup();
   }
 
-  bool isExisted(String name) {
+  bool isExisted(String? name) {
     for (var group in state) {
       if (group.name == name) {
         return true;
@@ -64,8 +67,8 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
     await _saveGroup();
   }
 
-  List<PodcastGroup> getPodcastGroup(String id) {
-    var result = <PodcastGroup>[];
+  List<PodcastGroup?> getPodcastGroup(String? id) {
+    var result = <PodcastGroup?>[];
     for (var group in state) {
       if (group.podcastList.contains(id)) {
         result.add(group);
@@ -75,13 +78,13 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
   }
 
   //Change podcast groups
-  Future<void> changeGroup(String id, List<PodcastGroup> list) async {
+  Future<void> changeGroup(String? id, List<PodcastGroup?>? list) async {
     for (var group in state) {
       if (group.podcastList.contains(id)) {
-        if (!list.contains(group))
+        if (!list!.contains(group))
           group.podcastList.removeWhere((groupId) => groupId == id);
       } else {
-        if (list.contains(group)) group.podcastList.insert(0, id);
+        if (list!.contains(group)) group.podcastList.insert(0, id);
       }
     }
     state = [...state];
@@ -93,7 +96,7 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
   }
 
   Future<void> subscribePodcast(OnlinePodcast podcast) async {
-    var rss = podcast.rss;
+    var rss = podcast.rss!;
     var options = BaseOptions(
       connectTimeout: 30000,
       receiveTimeout: 90000,
@@ -107,7 +110,7 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
     _setSubscribeState(podcast, SubscribeState.start);
     try {
       var response = await Dio(options).get(rss);
-      RssFeed p;
+      late RssFeed p;
       try {
         p = RssFeed.parse(response.data);
       } catch (e) {
@@ -126,27 +129,27 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
           response.redirects.isEmpty ? rss : response.realUri.toString();
       var checkUrl = await _dbHelper.checkPodcast(realUrl);
       if (checkUrl == '') {
-        String imageUrl;
-        img.Image thumbnail;
+        String? imageUrl;
+        img.Image? thumbnail;
         try {
-          var imageResponse = await Dio().get<List<int>>(p.itunes.image.href,
+          var imageResponse = await Dio().get<List<int>>(p.itunes!.image!.href!,
               options: Options(
                 responseType: ResponseType.bytes,
                 receiveTimeout: 90000,
               ));
-          imageUrl = p.itunes.image.href;
-          var image = img.decodeImage(imageResponse.data);
+          imageUrl = p.itunes!.image!.href;
+          var image = img.decodeImage(imageResponse.data!)!;
           thumbnail = img.copyResize(image, width: 300);
         } catch (e) {
           developer.log(e.toString(), name: 'Download image error');
           try {
-            var imageResponse = await Dio().get<List<int>>(podcast.image,
+            var imageResponse = await Dio().get<List<int>>(podcast.image!,
                 options: Options(
                   responseType: ResponseType.bytes,
                   receiveTimeout: 90000,
                 ));
             imageUrl = podcast.image;
-            var image = img.decodeImage(imageResponse.data);
+            var image = img.decodeImage(imageResponse.data!)!;
             thumbnail = img.copyResize(image, width: 300);
           } catch (e) {
             developer.log(e.toString(), name: 'Download image error');
@@ -158,7 +161,7 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
                   options: Options(responseType: ResponseType.bytes));
               imageUrl = "https://ui-avatars.com/api/?size=300&background="
                   "${listColor[index]}&color=fff&name=${podcast.title}&length=2&bold=true";
-              thumbnail = img.decodeImage(imageResponse.data);
+              thumbnail = img.decodeImage(imageResponse.data!);
             } catch (e) {
               developer.log(e.toString(), name: 'Donwload image error');
               _setSubscribeState(podcast, SubscribeState.error);
@@ -169,9 +172,9 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
         }
         var uuid = Uuid().v4();
         var imagePath = join(saveDir.path, '$uuid.png');
-        File(imagePath)..writeAsBytesSync(img.encodePng(thumbnail));
+        File(imagePath)..writeAsBytesSync(img.encodePng(thumbnail!));
         var primaryColor = await _getColor(thumbnail);
-        var author = p.itunes.author ?? p.author ?? '';
+        var author = p.itunes!.author ?? p.author ?? '';
         var provider = p.generator ?? '';
         var link = p.link ?? '';
         var podcastLocal = PodcastLocal(p.title, imageUrl, realUrl,
@@ -207,13 +210,13 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
   }
 
   void _setSubscribeState(OnlinePodcast podcast, SubscribeState state) {
-    read(currentSubscribeItem).state =
+    read(currentSubscribeItem.notifier).state =
         SubscribeItem(podcast.rss, podcast.title, subscribeState: state);
   }
 
   /// Subscribe podcast from OPML.
   Future<bool> _subscribeNewPodcast(
-      {String id, String groupName = 'Home'}) async {
+      {String? id, String groupName = 'Home'}) async {
     for (var group in state) {
       if (group.name == groupName) {
         if (group.podcastList.contains(id)) {
@@ -241,39 +244,39 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
 }
 
 class GroupEntity {
-  final String name;
-  final String id;
-  final String color;
-  final List<String> podcastList;
+  final String? name;
+  final String? id;
+  final String? color;
+  final List<String?> podcastList;
 
   GroupEntity(this.name, this.id, this.color, this.podcastList);
 
-  Map<String, Object> toJson() {
+  Map<String, Object?> toJson() {
     return {'name': name, 'id': id, 'color': color, 'podcastList': podcastList};
   }
 
-  static GroupEntity fromJson(Map<String, Object> json) {
-    var list = List<String>.from(json['podcastList']);
-    return GroupEntity(json['name'] as String, json['id'] as String,
-        json['color'] as String, list);
+  static GroupEntity fromJson(Map<String, dynamic> json) {
+    var list = List<String>.from(json['podcastList'] as Iterable<dynamic>);
+    return GroupEntity(json['name'] as String?, json['id'] as String?,
+        json['color'] as String?, list);
   }
 }
 
 class PodcastGroup extends Equatable {
   /// Group name.
-  final String name;
+  final String? name;
 
   /// Group id.
   final String id;
 
   /// Group theme color, not used.
-  final String color;
+  final String? color;
 
   /// Id lists of podcasts in group.
-  final List<String> podcastList;
+  final List<String?> podcastList;
 
   PodcastGroup(this.name,
-      {this.color = '#000000', String id, List<String> podcastList})
+      {this.color = '#000000', String? id, List<String?>? podcastList})
       : id = id ?? Uuid().v4(),
         podcastList = podcastList ?? [];
 
@@ -295,9 +298,9 @@ class PodcastGroup extends Equatable {
     return podcasts;
   }
 
-  Color getColor() {
+  Color? getColor() {
     if (color != '#000000') {
-      var colorInt = int.parse('FF${color.toUpperCase()}', radix: 16);
+      var colorInt = int.parse('FF${color!.toUpperCase()}', radix: 16);
       return Color(colorInt).withOpacity(1.0);
     } else {
       return Colors.blue[400];
@@ -318,15 +321,15 @@ class PodcastGroup extends Equatable {
   }
 
   @override
-  List<Object> get props => [id, name];
+  List<Object?> get props => [id, name];
 }
 
 class SubscribeItem {
   ///Rss url.
-  String url;
+  String? url;
 
   ///Rss title.
-  String title;
+  String? title;
 
   /// Subscribe status.
   SubscribeState subscribeState;
