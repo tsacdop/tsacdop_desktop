@@ -10,7 +10,7 @@ import '../models/episodebrief.dart';
 import '../storage/key_value_storage.dart';
 import '../storage/sqflite_db.dart';
 
-final audioState = ChangeNotifierProvider((ref) => AudioState(ref.read as T Function<T>(ProviderBase<T>)));
+final audioState = ChangeNotifierProvider((ref) => AudioState(ref.read));
 
 class AudioState extends ChangeNotifier {
   AudioState(this.read);
@@ -27,7 +27,7 @@ class AudioState extends ChangeNotifier {
     _generalStateStream?.cancel();
     _playbackStateStream?.cancel();
     _postionStateStream?.cancel();
-    _notifyClinet?.close();
+    _notifyClinet.close();
     super.dispose();
   }
 

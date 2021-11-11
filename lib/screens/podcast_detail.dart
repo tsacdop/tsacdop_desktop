@@ -251,7 +251,7 @@ class __EpisodeListState extends State<_EpisodeList> {
     final layoutStorage = KeyValueStorage(podcastLayoutKey);
     final hideListenedStorage = KeyValueStorage(hideListenedKey);
     final index = await layoutStorage.getInt(defaultValue: 1);
-    if (_layout == null) _layout = Layout.values[index!];
+    if (_layout == null) _layout = Layout.values[index];
     if (_hideListened == null) {
       _hideListened = await hideListenedStorage.getBool(defaultValue: false);
     }

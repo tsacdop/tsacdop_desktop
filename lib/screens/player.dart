@@ -37,7 +37,7 @@ class PlayerWidget extends ConsumerWidget {
                   child: Center(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(audio?.playingEpisode?.title ?? '',
+                      child: Text(audio.playingEpisode?.title ?? '',
                           maxLines: 2,
                           style: TextStyle(fontWeight: FontWeight.bold)),
                     ),

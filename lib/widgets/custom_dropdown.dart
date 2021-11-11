@@ -54,7 +54,8 @@ class _DropdownMenuPainter extends CustomPainter {
     );
 
     final bottom = Tween<double>(
-      begin: (top.begin! + _kMenuItemHeight).clamp(_kMenuItemHeight, size.height),
+      begin:
+          (top.begin! + _kMenuItemHeight).clamp(_kMenuItemHeight, size.height),
       end: size.height,
     );
 
@@ -139,7 +140,8 @@ class _DropdownMenuItemButtonState<T>
   }
 
   void _handleOnTap() {
-    final DropdownMenuItem<T> dropdownMenuItem = widget.route!.items[widget.itemIndex]!.item;
+    final DropdownMenuItem<T> dropdownMenuItem =
+        widget.route!.items[widget.itemIndex]!.item;
 
     if (dropdownMenuItem.onTap != null) {
       dropdownMenuItem.onTap!();
@@ -159,8 +161,7 @@ class _DropdownMenuItemButtonState<T>
       opacity = CurvedAnimation(
           parent: widget.route!.animation!, curve: const Threshold(0.0));
     } else {
-      final start =
-          (0.5 + (widget.itemIndex + 1) * unit).clamp(0.0, 1.0);
+      final start = (0.5 + (widget.itemIndex + 1) * unit).clamp(0.0, 1.0);
       final end = (start + 1.5 * unit).clamp(0.0, 1.0);
       opacity = CurvedAnimation(
           parent: widget.route!.animation!, curve: Interval(start, end));
@@ -340,12 +341,10 @@ class _DropdownMenuRouteLayout<T> extends SingleChildLayoutDelegate {
     late double left;
     switch (textDirection) {
       case TextDirection.rtl:
-        left = buttonRect!.right.clamp(0.0, size.width) -
-            childSize.width;
+        left = buttonRect!.right.clamp(0.0, size.width) - childSize.width;
         break;
       case TextDirection.ltr:
-        left =
-            buttonRect!.left.clamp(0.0, size.width - childSize.width);
+        left = buttonRect!.left.clamp(0.0, size.width - childSize.width);
         break;
     }
 
@@ -454,7 +453,7 @@ class _DropdownRoute<T> extends PopupRoute<_DropdownRouteResult<T>> {
   double getItemOffset(int? index) {
     var offset = kMaterialListPadding.top;
     if (items.isNotEmpty && index! > 0) {
-      assert(items.length == itemHeights?.length);
+      assert(items.length == itemHeights.length);
       if (displayItemCount == null) {
         offset += itemHeights
             .sublist(0, index)
@@ -570,8 +569,8 @@ class _DropdownRoutePage<T> extends StatelessWidget {
     // Otherwise the initialScrollOffset is just a rough approximation based on
     // treating the items as if their heights were all equal to kMinInteractveDimension.
     if (route!.scrollController == null) {
-      final menuLimits =
-          route!.getMenuLimits(buttonRect!, constraints!.maxHeight, selectedIndex);
+      final menuLimits = route!
+          .getMenuLimits(buttonRect!, constraints!.maxHeight, selectedIndex);
       route!.scrollController =
           ScrollController(initialScrollOffset: menuLimits.scrollOffset);
     }
@@ -1212,7 +1211,8 @@ class _MyDropdownButtonState<T> extends State<MyDropdownButton<T>>
         ? _kAlignedMenuMargin
         : _kUnalignedMenuMargin;
 
-    final menuItems = List<_MenuItem<T>?>.filled(widget.items.length, null, growable: false);
+    final menuItems =
+        List<_MenuItem<T>?>.filled(widget.items.length, null, growable: false);
     for (var index = 0; index < widget.items.length; index += 1) {
       menuItems[index] = _MenuItem<T>(
         item: widget.items[index],
@@ -1272,8 +1272,8 @@ class _MyDropdownButtonState<T> extends State<MyDropdownButton<T>>
   // Similarly, we don't reduce the height of the button so much that its icon
   // would be clipped.
   double get _denseButtonHeight {
-    final fontSize =
-        _textStyle!.fontSize ?? Theme.of(context).textTheme.subtitle1!.fontSize!;
+    final fontSize = _textStyle!.fontSize ??
+        Theme.of(context).textTheme.subtitle1!.fontSize!;
     return math.max(fontSize, math.max(widget.iconSize, _kDenseButtonHeight));
   }
 
@@ -1309,7 +1309,7 @@ class _MyDropdownButtonState<T> extends State<MyDropdownButton<T>>
       widget.onChanged != null;
 
   Orientation _getOrientation(BuildContext context) {
-    var result = MediaQuery.of(context)?.orientation;
+    var result = MediaQuery.of(context).orientation;
     if (result == null) {
       // If there's no MediaQuery, then use the window aspect to determine
       // orientation.
@@ -1327,8 +1327,9 @@ class _MyDropdownButtonState<T> extends State<MyDropdownButton<T>>
         return false;
       case FocusHighlightMode.traditional:
         return _hasPrimaryFocus;
+      default:
+        return null;
     }
-    return null;
   }
 
   @override

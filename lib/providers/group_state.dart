@@ -37,7 +37,7 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
   /// Load groups from storage at start.
   Future<void> _loadGroup() async {
     final loadgroups =
-        await (_groupStorage.getGroups() as FutureOr<List<GroupEntity>>);
+        await _groupStorage.getGroups();
     state = loadgroups.map(PodcastGroup.fromEntity).toList();
   }
 
@@ -255,7 +255,7 @@ class GroupEntity {
     return {'name': name, 'id': id, 'color': color, 'podcastList': podcastList};
   }
 
-  static GroupEntity fromJson(Map<String, Object> json) {
+  static GroupEntity fromJson(Map<String, dynamic> json) {
     var list = List<String>.from(json['podcastList'] as Iterable<dynamic>);
     return GroupEntity(json['name'] as String?, json['id'] as String?,
         json['color'] as String?, list);

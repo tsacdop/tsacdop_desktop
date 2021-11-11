@@ -59,7 +59,7 @@ class FavIconState extends State<FavIcon> {
       future: _isLiked(widget.episode),
       initialData: false,
       builder: (context, snapshot) {
-        return snapshot.data!
+        return snapshot.data ?? false
             ? MenuButton(
                 onTap: () => _setUnliked(widget.episode),
                 child: Icon(Icons.favorite, color: Colors.red, size: 20),
@@ -102,7 +102,7 @@ class _DownloadIconState extends ConsumerState<DownloadIcon> {
       future: _isDownloaded(),
       initialData: false,
       builder: (context, snapshot) {
-        if (snapshot.data!)
+        if (snapshot.data ?? false)
           return MenuButton(
             onTap: _deleleDonwload,
             child: SizedBox(

@@ -20,6 +20,8 @@ class PodcastsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final podcast = ref.watch(openPodcast);
+    final episode = ref.watch(openEpisode);
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
@@ -31,16 +33,12 @@ class PodcastsPage extends ConsumerWidget {
         percentages: [0.3, 0.7],
         children: [
           _PodcastGroup(),
-          Consumer(
-            builder: (context, watch, _) {
-              final podcast = ref.watch(openPodcast);
-              final episode = ref.watch(openEpisode);
-              if (episode != null)
-                return EpisodeDetail(episode);
-              else if (podcast != null) return PodcastDetail(podcast);
-              return HomeTabs();
-            },
-          ),
+          if (episode != null)
+            EpisodeDetail(episode)
+          else if (podcast != null)
+            PodcastDetail(podcast)
+          else
+            HomeTabs()
         ],
       ),
     );
@@ -62,6 +60,11 @@ class __PodcastGroupState extends ConsumerState<_PodcastGroup> {
     _groupIndex = 0;
   }
 
+  @override
+  void didUpdateWidget(covariant _PodcastGroup oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+  }
   @override
   Widget build(BuildContext context) {
     return Consumer(builder: (context, watch, child) {

@@ -35,7 +35,7 @@ class _HomeTabsState extends ConsumerState<HomeTabs> {
     } else {
       refreshDate = i;
     }
-    return refreshDate!.toDate(context);
+    return refreshDate.toDate(context);
   }
 
   Future<void> _refreshAll() async {
@@ -177,7 +177,7 @@ class _RecentTabState extends State<RecentTab> {
     var storage = KeyValueStorage(recentLayoutKey);
     var hideListenedStorage = KeyValueStorage(hideListenedKey);
     var index = await storage.getInt(defaultValue: 1);
-    if (_layout == null) _layout = Layout.values[index!];
+    if (_layout == null) _layout = Layout.values[index];
     if (_hideListened == null) {
       _hideListened = await hideListenedStorage.getBool(defaultValue: false);
     }
@@ -402,7 +402,7 @@ class _FavTabState extends State<FavTab> {
     var storage = KeyValueStorage(favLayoutKey);
     var index = await storage.getInt(defaultValue: 1);
     var hideListenedStorage = KeyValueStorage(hideListenedKey);
-    if (_layout == null) _layout = Layout.values[index!];
+    if (_layout == null) _layout = Layout.values[index];
     if (_hideListened == null) {
       _hideListened = await hideListenedStorage.getBool(defaultValue: false);
     }
@@ -612,7 +612,7 @@ class _DownloadTabState extends ConsumerState<DownloadTab> {
     var storage = KeyValueStorage(downloadLayoutKey);
     var index = await storage.getInt(defaultValue: 1);
     var hideListenedStorage = KeyValueStorage(hideListenedKey);
-    if (_layout == null) _layout = Layout.values[index!];
+    if (_layout == null) _layout = Layout.values[index];
     if (_hideListened == null) {
       _hideListened = await hideListenedStorage.getBool(defaultValue: false);
     }

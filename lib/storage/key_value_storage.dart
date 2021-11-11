@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tsacdop_desktop/providers/group_state.dart';
 
@@ -28,10 +27,10 @@ class KeyValueStorage {
     return prefs.setInt(key, setting);
   }
 
-  Future<int?> getInt({int defaultValue = 0}) async {
+  Future<int> getInt({int defaultValue = 0}) async {
     var prefs = await SharedPreferences.getInstance();
     if (prefs.getInt(key) == null) await prefs.setInt(key, defaultValue);
-    return prefs.getInt(key);
+    return prefs.getInt(key) ?? defaultValue;
   }
 
   Future<bool> saveStringList(List<String> playList) async {
@@ -39,12 +38,12 @@ class KeyValueStorage {
     return prefs.setStringList(key, playList);
   }
 
-  Future<List<String>?> getStringList() async {
+  Future<List<String>> getStringList() async {
     var prefs = await SharedPreferences.getInstance();
     if (prefs.getStringList(key) == null) {
       await prefs.setStringList(key, []);
     }
-    return prefs.getStringList(key);
+    return prefs.getStringList(key) ?? [];
   }
 
   Future<bool> saveString(String string) async {
@@ -74,7 +73,7 @@ class KeyValueStorage {
     return await prefs.setBool(key, value);
   }
 
-  Future<List<GroupEntity>?> getGroups() async {
+  Future<List<GroupEntity>> getGroups() async {
     var prefs = await SharedPreferences.getInstance();
     if (prefs.getString(key) == null) {
       var home = PodcastGroup('Home');
@@ -84,9 +83,10 @@ class KeyValueStorage {
             'groups': [home.toEntity().toJson()]
           }));
     }
+
     return json
         .decode(prefs.getString(key)!)['groups']
-        .cast<Map<String, Object>>()
+        .cast<Map<String, dynamic>>()
         .map<GroupEntity>(GroupEntity.fromJson)
         .toList(growable: false);
   }

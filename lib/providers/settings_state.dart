@@ -117,13 +117,13 @@ class SettingsState extends ChangeNotifier {
   }
 
   Future _getTheme() async {
-    var mode = await (_themeStorage.getInt() as FutureOr<int>);
+    var mode = await _themeStorage.getInt();
     _themeMode = ThemeMode.values[mode];
   }
 
   Future _getAccentSetColor() async {
-    var colorString = await (_accentStorage.getString() as FutureOr<String>);
-    if (colorString.isNotEmpty) {
+    var colorString = await _accentStorage.getString();
+    if (colorString!.isNotEmpty) {
       var color = int.parse('FF${colorString.toUpperCase()}', radix: 16);
       _accentSetColor = Color(color).withOpacity(1.0);
     } else {
@@ -141,7 +141,7 @@ class SettingsState extends ChangeNotifier {
   }
 
   Future _getLocale() async {
-    var localeString = await (KeyValueStorage(localeKey).getStringList() as FutureOr<List<String>>);
+    var localeString = await KeyValueStorage(localeKey).getStringList();
     if (localeString.isEmpty) {
       await findSystemLocale();
       var systemLanCode;
