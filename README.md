@@ -4,12 +4,10 @@ Enjoy podcasts with Tsacdop!
 Tsacdop is a podcast player developed with Flutter, a clean, simply beautiful and friendly app, which is also free and open source.
 This repo is windows version of Tsacdop, this is still on early stage.
 
-Credit to [flutter audio desktop](https://github.com/alexmercerind/flutter_audio_desktop) plugin.
-
+Release soon.
 ## Preview
 
-![][Homepage ScreenShot] 
-![][Dark Mode]
+![](preview/linux_home.png)
 
 ## Build
 
@@ -18,7 +16,7 @@ Credit to [flutter audio desktop](https://github.com/alexmercerind/flutter_audio
    You need to upgrade to dev channel to build windows app. visit [https://flutter.dev/desktop](https://flutter.dev/desktop) for more info.
 
 ``` 
-flutter channel dev
+flutter channel beta
 flutter upgrade
 flutter config --enable-windows-desktop
 ```
@@ -26,7 +24,7 @@ flutter config --enable-windows-desktop
 1. Fetch latest sorce code from master branch.
 
 ``` 
-git clone https://github.com/stonega/tsacdop_desktop.git
+git clone https://github.com/tsacdop/tsacdop_desktop.git
 ```
 
 3. Add api search api configure file.  
@@ -55,7 +53,7 @@ flutter run
   + sqflite
   + shared_preferences
 * Audio
-  + flutter_audio_desktop
+  + dart_vlc
 * State management
   + riverpod
 * Download
@@ -67,20 +65,15 @@ You can reach out to me directly at [tsacdop.app@gmail.com](mailto:<tsacdop.app@
 
 Or you can join our [Telegram Group](https://t.me/joinchat/Bk3LkRpTHy40QYC78PK7Qg)
 
-## Getting Started
+## Credit
 
-This project is a starting point for a Flutter application.
+[Alexmercerind](https://github.com/alexmercerind/) 
 
-A few resources to get you started if this is your first Flutter project:
+Thanks for the plugin and I also learned a lot from Harmonoid.
 
-* [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-* [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
 
-[Homepage Screenshot]: https://raw.githubusercontent.com/stonega/tsacdop_desktop/master/preview/podcast.png
+[Homepage Screenshot]: https://raw.githubusercontent.com/stonega/tsacdop_desktop/master/preview/linux_home.png
 [Dark Mode]: https://raw.githubusercontent.com/stonega/tsacdop_desktop/master/preview/homepage.png
 [github release]: https://img.shields.io/github/v/release/stonega/tsacdop_desktop
 [github release - recent]: https://github.com/stonega/tsacdop_desktop/releases
