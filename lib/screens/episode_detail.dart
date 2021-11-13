@@ -84,21 +84,8 @@ class EpisodeDetail extends ConsumerWidget {
                   Spacer(),
                   ElevatedButton(
                     child: Text(s.play),
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      splashFactory: NoSplash.splashFactory,
-                      shadowColor: Colors.transparent,
-                      onSurface: Colors.transparent,
-                      primary: context.accentColor,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4)),
-                      padding: EdgeInsets.zero,
-                      minimumSize: Size(100, 40),
-                    ),
                     onPressed: () {
-                      ref
-                          .read(audioState)
-                          .loadEpisode(episode.enclosureUrl);
+                      ref.read(audioState).loadEpisode(episode.enclosureUrl);
                     },
                   ),
                   SizedBox(width: 10),

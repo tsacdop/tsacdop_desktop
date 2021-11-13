@@ -345,7 +345,12 @@ class __SearchResultState extends State<_SearchResult> {
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                               ))
-                          : Text(context.s!.loadMore),
+                          : Text(
+                              context.s!.loadMore,
+                              style: TextStyle(
+                                  color: context.accentColor,
+                                  fontWeight: FontWeight.bold),
+                            ),
                       onPressed: () => _loading
                           ? null
                           : setState(
@@ -485,7 +490,7 @@ class __DetailPageState extends State<_DetailPage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Container(
-          color: context.primaryColorDark,
+          color: context.primaryColor,
           child: ListView(
             children: [
               SizedBox(height: 10),

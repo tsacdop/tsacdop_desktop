@@ -336,9 +336,11 @@ class StorageSetting extends ConsumerStatefulWidget {
 
 class _StorageSettingState extends ConsumerState<StorageSetting> {
   OutlineInputBorder _inputBorder(Color color) => OutlineInputBorder(
-      borderRadius: BorderRadius.zero, borderSide: BorderSide(color: color));
+      borderRadius: BorderRadius.circular(4),
+      borderSide: BorderSide(color: color));
   FocusNode? _focusNode;
   String? _query;
+  int? _port;
 
   @override
   Widget build(BuildContext context) {
@@ -364,33 +366,32 @@ class _StorageSettingState extends ConsumerState<StorageSetting> {
         }),
         Container(
           height: 30,
-          width: 400,
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
+              SizedBox(
+                width: 200,
                 child: TextField(
-                    focusNode: _focusNode,
-                    onSubmitted: (value) => ref.read(settings).setProxy = value,
-                    onChanged: (value) => _query = value,
-                    decoration: InputDecoration(
-                        isDense: true,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                        focusColor: context.primaryColor,
-                        hoverColor: context.primaryColor,
-                        hintText: '127.0.0.1:8080',
-                        fillColor: context.primaryColor,
-                        filled: true,
-                        border: _inputBorder(context.primaryColorDark),
-                        focusedBorder: _inputBorder(context.accentColor))),
+                  focusNode: _focusNode,
+                  onChanged: (value) => _query = value,
+                  decoration: _inputDecoration('127.0.0.1'),
+                ),
+              ),
+              SizedBox(width: 10),
+              SizedBox(
+                width: 100,
+                child: TextField(
+                  onChanged: (value) => _port = int.tryParse(value),
+                  decoration: _inputDecoration('port'),
+                ),
               ),
               SizedBox(width: 20),
               ElevatedButton(
                 child: Text(s.save),
                 onPressed: () {
                   _focusNode?.unfocus();
-                  ref.read(settings).setProxy = _query;
+                  ref.read(settings).setProxy = '$_query:${_port.toString()}';
                 },
               ),
             ],
@@ -398,5 +399,18 @@ class _StorageSettingState extends ConsumerState<StorageSetting> {
         ),
       ],
     );
+  }
+
+  InputDecoration _inputDecoration(String hintText) {
+    return InputDecoration(
+        isDense: true,
+        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        focusColor: context.primaryColor,
+        hoverColor: context.primaryColor,
+        hintText: hintText,
+        fillColor: context.primaryColor,
+        filled: true,
+        border: _inputBorder(context.primaryColorDark),
+        focusedBorder: _inputBorder(context.accentColor));
   }
 }
