@@ -10,8 +10,8 @@
 		<control>keyboard</control>
 		<control>touch</control>
 	</recommends>
-	<developer_name>Hitesh Kumar Saini</developer_name>
-	<url type="homepage">https://github.com/stonega/tsacdop_desktop</url>
+	<developer_name>Stone</developer_name>
+	<url type="homepage">https://github.com/tsacdop/tsacdop_desktop</url>
 	<description>
 		<p>Enjoy podcast with Tsacdop!</p>
 	</description>
@@ -19,10 +19,7 @@
 		<screenshot>
 		</screenshot>
 	</screenshots>
-	<launchable type="desktop-id">harmonoid.desktop</launchable>
-	<releases>
-		<release version="0.1.7" date="2021-09-22"/>
-	</releases>
+	<launchable type="desktop-id">tsacdop.desktop</launchable>
 	<content_rating type="oars-1.0" />
-	<update_contact>saini123hitesh@gmail.com</update_contact>
+	<update_contact>tsacdop.app@gmail.com</update_contact>
 </component>

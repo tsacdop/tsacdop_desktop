@@ -15,8 +15,8 @@ void main() async {
   if (settingsState.proxy != '') {
     HttpOverrides.global = _HttpOverrides(settingsState.proxy);
   }
-  DartVLC.initialize();
   runApp(ProviderScope(child: MyApp()));
+  DartVLC.initialize();
 }
 
 class _HttpOverrides extends HttpOverrides {
