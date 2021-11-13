@@ -22,12 +22,12 @@ class AudioState extends ChangeNotifier {
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     _audioPlayer?.dispose();
-    _generalStateStream?.cancel();
-    _playbackStateStream?.cancel();
-    _postionStateStream?.cancel();
-    _notifyClinet.close();
+    await _generalStateStream?.cancel();
+    await _playbackStateStream?.cancel();
+    await _postionStateStream?.cancel();
+    await _notifyClinet.close();
     super.dispose();
   }
 
@@ -73,38 +73,32 @@ class AudioState extends ChangeNotifier {
   var _noSlide = true;
 
   void loadEpisode(String url) async {
-    final episodeNew = await (_dbHelper.getRssItemWithUrl(url) as FutureOr<EpisodeBrief>);
+    final episodeNew = await _dbHelper.getRssItemWithUrl(url);
     if (_audioPlayer == null) {
       _audioPlayer = Player(id: 69420);
       _playerRunning = true;
       notifyListeners();
     }
     _audioPlayer?.stop();
-    _playlist = Playlist(medias: [Media.network(episodeNew.enclosureUrl)]);
+    _playlist = Playlist(medias: [Media.network(episodeNew!.enclosureUrl)]);
     _audioPlayer!.open(_playlist);
     _generalStateStream = _audioPlayer!.generalStream.listen((event) {
-      if (event is GeneralState) {
-        _volume = event.volume;
-        notifyListeners();
-      }
+      _volume = event.volume;
+      notifyListeners();
     });
     _playbackStateStream = _audioPlayer!.playbackStream.listen((event) {
-      if (event is PlaybackState) {
-        if (event.isCompleted) {
-          stop();
-        }
-        print(event.toString());
-        _playing = event.isPlaying;
-        _buffering = !event.isSeekable;
-        notifyListeners();
+      if (event.isCompleted) {
+        stop();
       }
+      print(event.toString());
+      _playing = event.isPlaying;
+      _buffering = !event.isSeekable;
+      notifyListeners();
     });
     _postionStateStream = _audioPlayer!.positionStream.listen((event) {
-      if (event is PositionState) {
-        _duration = event.duration;
-        if (_noSlide) _position = event.position;
-        notifyListeners();
-      }
+      _duration = event.duration;
+      if (_noSlide) _position = event.position;
+      notifyListeners();
     });
     _playingEpisode = episodeNew;
     _notifyEpisode(_playingEpisode);
@@ -194,8 +188,9 @@ class AudioState extends ChangeNotifier {
   }
 
   void _notifyEpisode(EpisodeBrief? episode) {
-    if(Platform.isLinux) {
-      _notifyClinet.notify(episode!.title!, appName: 'Tsacdop', appIcon: 'media-playback-start');
+    if (Platform.isLinux) {
+      _notifyClinet.notify(episode!.title!,
+          appName: 'Tsacdop', appIcon: 'media-playback-start');
     }
   }
 }

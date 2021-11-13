@@ -60,12 +60,17 @@ class PlayerWidget extends ConsumerWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                IconButton(
-                                  padding: EdgeInsets.zero,
-                                  splashRadius: 20,
-                                  icon: Icon(LineIcons.fastForward),
-                                  onPressed: () async =>
-                                      await audio.rewind(Duration(seconds: 15)),
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      padding: EdgeInsets.zero,
+                                      splashRadius: 20,
+                                      icon: Icon(LineIcons.fastBackward),
+                                      onPressed: () async =>
+                                          await audio.rewind(Duration(seconds: 15)),
+                                    ),
+                                    Text('15s')
+                                  ],
                                 ),
                                 audio.buffering
                                     ? CircularProgressIndicator(
@@ -86,11 +91,16 @@ class PlayerWidget extends ConsumerWidget {
                                             icon: Icon(LineIcons.playCircle,
                                                 size: 30),
                                             onPressed: audio.play),
-                                IconButton(
-                                  splashRadius: 20,
-                                  icon: Icon(LineIcons.fastForward),
-                                  onPressed: () async => await audio
-                                      .fastForward(Duration(seconds: 15)),
+                                Row(
+                                  children: [
+                                    Text('15s'),
+                                    IconButton(
+                                      splashRadius: 20,
+                                      icon: Icon(LineIcons.fastForward),
+                                      onPressed: () async => await audio
+                                          .fastForward(Duration(seconds: 15)),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),

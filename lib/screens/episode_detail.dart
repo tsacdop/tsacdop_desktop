@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:linkify/linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:tsacdop_desktop/providers/audio_state.dart';
 
@@ -173,7 +171,7 @@ class _ShowNote extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: SelectableHtml(
-                      data: description as String,
+                      data: description,
                       style: {
                         'a': Style(color: context.accentColor),
                         'p': Style(lineHeight: LineHeight.rem(1.5)),
