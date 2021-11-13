@@ -41,7 +41,9 @@ dependencies:
   webfeed:
     git: 
       url: https://github.com/stonega/webfeed.git
-  resizable_widget: ^1.0.5
+  resizable_widget:
+    git:
+      url: https://github.com/tsacdop/resizable_widget.git
   json_annotation: ^4.3.0
 
 dependency_overrides:
