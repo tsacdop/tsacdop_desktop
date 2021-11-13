@@ -169,20 +169,22 @@ class _ShowNote extends StatelessWidget {
         if (snapshot.hasData) {
           var description = snapshot.data;
           return description != null
-              ? Html(
-                  // padding: EdgeInsets.only(left: 20.0, right: 20, bottom: 50),
-                  // defaultTextStyle: GoogleFonts.martel(
-                  //     textStyle: TextStyle(
-                  //   height: 1.8,
-                  // )),
-                  data: description,
-                  style: {
-                    'a': Style(color: context.accentColor),
-                    // 'textBaseline': TextBaseline.ideographic,
-                  },
-                  onLinkTap: (url, _, __, ___) {
-                    url!.launchUrl;
-                  },
+              ? SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: SelectableHtml(
+                      data: description as String,
+                      style: {
+                        'a': Style(color: context.accentColor),
+                        'p': Style(lineHeight: LineHeight.rem(1.5)),
+                        'h2': Style(lineHeight: LineHeight.rem(2)),
+                        'h3': Style(lineHeight: LineHeight.rem(2)),
+                      },
+                      onLinkTap: (url, _, __, ___) {
+                        url!.launchUrl;
+                      },
+                    ),
+                  ),
                 )
               : Container(
                   height: context.width,
