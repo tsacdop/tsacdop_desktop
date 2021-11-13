@@ -52,7 +52,8 @@ class SettingsState extends ChangeNotifier {
       ),
       textTheme: TextTheme(
         bodyText2: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
-        bodyText1: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+        bodyText1: TextStyle(
+            fontSize: 18.0, fontWeight: FontWeight.w500, color: Colors.black),
         subtitle1: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
         subtitle2: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
       ),
@@ -65,6 +66,18 @@ class SettingsState extends ChangeNotifier {
         selectionColor: _accentSetColor,
       ),
       toggleableActiveColor: _accentSetColor,
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          splashFactory: NoSplash.splashFactory,
+          shadowColor: Colors.transparent,
+          onSurface: Colors.transparent,
+          primary: _accentSetColor,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+          padding: EdgeInsets.zero,
+          minimumSize: Size(100, 40),
+        ),
+      ),
       buttonTheme: ButtonThemeData(
           height: 32,
           hoverColor: _accentSetColor!.withAlpha(70),
@@ -77,7 +90,8 @@ class SettingsState extends ChangeNotifier {
         ),
         splashFactory: NoSplash.splashFactory,
         primaryColorDark: Colors.grey[800],
-        scaffoldBackgroundColor: _realDark! ? Colors.black87 : Color(0XFF212121),
+        scaffoldBackgroundColor:
+            _realDark! ? Colors.black87 : Color(0XFF212121),
         primaryColor: _realDark! ? Colors.black : Color(0XFF1B1B1B),
         popupMenuTheme: PopupMenuThemeData()
             .copyWith(color: _realDark! ? Colors.grey[900] : null),
@@ -86,9 +100,23 @@ class SettingsState extends ChangeNotifier {
         dialogBackgroundColor: _realDark! ? Colors.grey[900] : null,
         textTheme: TextTheme(
           bodyText2: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
-          bodyText1: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+          bodyText1: TextStyle(
+              fontSize: 18.0, fontWeight: FontWeight.w500, color: Colors.white),
           subtitle1: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
           subtitle2: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            elevation: 0,
+            splashFactory: NoSplash.splashFactory,
+            shadowColor: Colors.transparent,
+            onSurface: Colors.transparent,
+            primary: _accentSetColor,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+            padding: EdgeInsets.zero,
+            minimumSize: Size(100, 40),
+          ),
         ),
       );
 

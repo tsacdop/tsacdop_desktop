@@ -23,7 +23,6 @@ extension ContextExtension on BuildContext {
 
 extension IntExtension on int {
   String toDate(BuildContext context) {
-    if (this == null) return '';
     final s = context.s;
     var date = DateTime.fromMillisecondsSinceEpoch(this, isUtc: true);
     var difference = DateTime.now().toUtc().difference(date);
@@ -45,7 +44,7 @@ extension IntExtension on int {
       '${(this ~/ 60).toString().padLeft(2, '0')}:${(truncate() % 60).toString().padLeft(2, '0')}';
 
   String toInterval(BuildContext context) {
-    if (this == null || isNegative) return '';
+    if (isNegative) return '';
     final s = context.s;
     var interval = Duration(milliseconds: this);
     if (interval.inHours <= 48) {

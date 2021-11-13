@@ -108,7 +108,10 @@ class _HomeState extends ConsumerState<Home> {
                           SizedBox(height: 20),
                           CustomIconButton(
                             pressed: _selectMenu == 'home',
-                            icon: Icon(LineIcons.home),
+                            icon: Icon(
+                              LineIcons.home,
+                              color: context.textColor,
+                            ),
                             onPressed: () {
                               setState(() {
                                 _body = PodcastsPage();
@@ -118,7 +121,10 @@ class _HomeState extends ConsumerState<Home> {
                           ),
                           CustomIconButton(
                             pressed: _selectMenu == 'playlist',
-                            icon: Icon(Icons.playlist_play),
+                            icon: Icon(
+                              Icons.playlist_play,
+                              color: context.textColor,
+                            ),
                             onPressed: () {
                               setState(() {
                                 _body = PlaylistPage();
@@ -128,7 +134,10 @@ class _HomeState extends ConsumerState<Home> {
                           ),
                           CustomIconButton(
                             pressed: _selectMenu == 'search',
-                            icon: Icon(LineIcons.search),
+                            icon: Icon(
+                              LineIcons.search,
+                              color: context.textColor,
+                            ),
                             onPressed: () {
                               setState(() {
                                 _body = SearchPage();

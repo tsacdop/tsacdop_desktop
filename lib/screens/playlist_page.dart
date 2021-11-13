@@ -55,7 +55,7 @@ class PlaylistPage extends ConsumerWidget {
             builder: (context, watch, child) {
               final audio = ref.watch(audioState);
               if (audio.queue!.isNotEmpty)
-                return FutureBuilder<List<EpisodeBrief?>>(
+                return FutureBuilder<List<EpisodeBrief>>(
                   future: _getEpisode(audio.queue!),
                   initialData: [],
                   builder: (context, snapshot) {
@@ -68,16 +68,16 @@ class PlaylistPage extends ConsumerWidget {
                             padding: EdgeInsets.symmetric(
                                 vertical: 20, horizontal: 30),
                             itemBuilder: (context, index) {
-                              final episode = episodes![index]!;
+                              final episode = episodes![index];
                               return ListTile(
                                 leading: CircleAvatar(
-                                    backgroundColor: episodes[index]!
+                                    backgroundColor: episodes[index]
                                         .backgroudColor(context)
                                         .withOpacity(0.5),
                                     backgroundImage:
-                                        episodes[index]!.avatarImage),
+                                        episodes[index].avatarImage),
                                 title: Text(
-                                  episodes[index]!.title!,
+                                  episodes[index].title!,
                                   style: context.textTheme.bodyText1!
                                       .copyWith(fontWeight: FontWeight.bold),
                                 ),
@@ -148,12 +148,12 @@ class PlaylistPage extends ConsumerWidget {
     );
   }
 
-  Future<List<EpisodeBrief?>> _getEpisode(List<String> urls) async {
+  Future<List<EpisodeBrief>> _getEpisode(List<String> urls) async {
     final dbHelper = DBHelper();
-    List<EpisodeBrief?> episodes = [];
+    List<EpisodeBrief> episodes = [];
     for (var url in urls) {
       final episode = await dbHelper.getRssItemWithUrl(url);
-      episodes.add(episode);
+      if (episode != null) episodes.add(episode);
     }
     return episodes;
   }
