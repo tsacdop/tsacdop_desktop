@@ -233,7 +233,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   Future<void> _saveHistory(String query) async {
     final storage = KeyValueStorage(searchHistoryKey);
-    final history = await (storage.getStringList() as FutureOr<List<String>>);
+    final history = await storage.getStringList();
     if (!history.contains(query)) {
       if (history.length >= 6) {
         history.removeLast();
@@ -258,7 +258,7 @@ class __SearchResultState extends State<_SearchResult> {
   late bool _loading;
   late bool _loadError;
   late bool _noResult;
-  late Future _searchFuture;
+  late Future<List<OnlinePodcast?>> _searchFuture;
   List _podcastList = [];
   final _searchEngine = PodcastsIndexSearch();
 
@@ -289,14 +289,15 @@ class __SearchResultState extends State<_SearchResult> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List>(
-      future: _searchFuture.then((value) => value as List<dynamic>),
+      future: _searchFuture,
       builder: (context, snapshot) {
         if (_loadError) {
           return Container(
             padding: EdgeInsets.only(top: 200),
             alignment: Alignment.topCenter,
             child: Text('Network error.',
-                style: context.textTheme.headline6!.copyWith(color: Colors.red)),
+                style:
+                    context.textTheme.headline6!.copyWith(color: Colors.red)),
           );
         }
         if (_noResult) {
@@ -458,8 +459,8 @@ class _DetailPage extends StatefulWidget {
 }
 
 class __DetailPageState extends State<_DetailPage> {
-  final List<OnlineEpisode?> _episodeList = [];
-  late Future _searchFuture;
+  final List<OnlineEpisode> _episodeList = [];
+  late Future<List<OnlineEpisode>> _searchFuture;
 
   @override
   void initState() {
@@ -513,10 +514,12 @@ class __DetailPageState extends State<_DetailPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: FutureBuilder<List<OnlineEpisode>>(
-                  future: _searchFuture.then((value) => value as List<OnlineEpisode>),
+                  future: _searchFuture,
+                  initialData: [],
                   builder: (context, snapshot) {
                     if (_episodeList.isNotEmpty) {
-                      var content = snapshot.data!;
+                      var content = snapshot.data;
+                      if (content == null) return Center();
                       return ListView.builder(
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
@@ -572,7 +575,7 @@ class __DetailPageState extends State<_DetailPage> {
     );
   }
 
-  Future<List<OnlineEpisode?>> _getIndexEpisodes({String? id}) async {
+  Future<List<OnlineEpisode>> _getIndexEpisodes({String? id}) async {
     var searchEngine = PodcastsIndexSearch();
     var searchResult = await searchEngine.fetchEpisode(rssUrl: id);
     var episodes = searchResult.items!.cast();

@@ -6,6 +6,7 @@ import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
+import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:webfeed/domain/rss_feed.dart';
 
 import '../models/episodebrief.dart';
@@ -14,7 +15,7 @@ import '../models/podcastlocal.dart';
 enum Filter { downloaded, liked, search, all }
 
 class DBHelper {
-  static  Database? _db;
+  static Database? _db;
   Future<Database> get database async {
     if (_db != null) return _db!;
     _db = await initDb();
@@ -23,8 +24,10 @@ class DBHelper {
 
   initDb() async {
     sqfliteFfiInit();
-    var documentsDirectory = Directory.current.path;
-    var path = join(documentsDirectory, "podcasts.db");
+    final pathProvider = PathProviderLinux();
+    final directory = await pathProvider.getApplicationSupportPath();
+    assert(directory != null);
+    var path = join(directory!, "podcasts.db");
     var databaseFactory = databaseFactoryFfi;
     var theDb = await databaseFactory.openDatabase(
       path,
@@ -288,8 +291,10 @@ class DBHelper {
     String? description, url;
     for (var i = 0; i < result; i++) {
       developer.log(feed.items![i].title!);
-      description = _getDescription(feed.items![i].content?.value ?? '',
-          feed.items![i].description ?? '', feed.items![i].itunes!.summary ?? '');
+      description = _getDescription(
+          feed.items![i].content?.value ?? '',
+          feed.items![i].description ?? '',
+          feed.items![i].itunes!.summary ?? '');
       if (feed.items![i].enclosure != null) {
         _isXimalaya(feed.items![i].enclosure!.url!)
             ? url = feed.items![i].enclosure!.url!.split('=').last

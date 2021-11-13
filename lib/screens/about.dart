@@ -78,7 +78,6 @@ class About extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = context.s!;
-    final documentsDirectory = Directory.current.path;
     return Container(
       height: double.infinity,
       child: SingleChildScrollView(
@@ -100,7 +99,6 @@ class About extends StatelessWidget {
                     height: 80,
                   ),
                   Text(s.version(version)),
-                  Text(documentsDirectory),
                 ],
               ),
             ),
