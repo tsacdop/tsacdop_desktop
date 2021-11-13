@@ -61,11 +61,6 @@ class __PodcastGroupState extends ConsumerState<_PodcastGroup> {
   }
 
   @override
-  void didUpdateWidget(covariant _PodcastGroup oldWidget) {
-    // TODO: implement didUpdateWidget
-    super.didUpdateWidget(oldWidget);
-  }
-  @override
   Widget build(BuildContext context) {
     return Consumer(builder: (context, watch, child) {
       final groupList = ref.watch(groupState);

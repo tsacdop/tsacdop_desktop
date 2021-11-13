@@ -149,7 +149,7 @@ class _DropdownMenuItemButtonState<T>
 
     Navigator.pop(
       context,
-      _DropdownRouteResult<T?>(dropdownMenuItem.value),
+      _DropdownRouteResult<T>(dropdownMenuItem.value!),
     );
   }
 
@@ -337,7 +337,6 @@ class _DropdownMenuRouteLayout<T> extends SingleChildLayoutDelegate {
       }
       return true;
     }());
-    assert(textDirection != null);
     late double left;
     switch (textDirection) {
       case TextDirection.rtl:
@@ -396,8 +395,7 @@ class _DropdownRoute<T> extends PopupRoute<_DropdownRouteResult<T>> {
     this.itemHeight,
     this.dropdownColor,
     this.displayItemCount,
-  })  : assert(style != null),
-        itemHeights = List<double>.filled(
+  }) : itemHeights = List<double>.filled(
             items.length, itemHeight ?? kMinInteractiveDimension);
 
   final List<_MenuItem<T>?> items;
@@ -847,8 +845,7 @@ class MyDropdownButton<T> extends StatefulWidget {
     this.dropdownColor,
     this.displayItemCount,
   })  : assert(
-          items == null ||
-              items.isEmpty ||
+          items.isEmpty ||
               value == null ||
               items.where((item) {
                     return item.value == value;
@@ -859,12 +856,7 @@ class MyDropdownButton<T> extends StatefulWidget {
           'Either zero or 2 or more [DropdownMenuItem]s were detected '
           'with the same value',
         ),
-        assert(elevation != null),
-        assert(iconSize != null),
-        assert(isDense != null),
-        assert(isExpanded != null),
-        assert(autofocus != null),
-        assert(itemHeight == null || itemHeight >= kMinInteractiveDimension),
+        assert(itemHeight >= kMinInteractiveDimension),
         assert(displayItemCount == null || displayItemCount > 0),
         super(key: key);
 
@@ -1298,26 +1290,17 @@ class _MyDropdownButtonState<T> extends State<MyDropdownButton<T>>
           return Colors.white10;
       }
     }
-
-    assert(false);
-    return null;
   }
 
-  bool get _enabled =>
-      widget.items != null &&
-      widget.items.isNotEmpty &&
-      widget.onChanged != null;
+  bool get _enabled => widget.items.isNotEmpty;
 
   Orientation _getOrientation(BuildContext context) {
     var result = MediaQuery.of(context).orientation;
-    if (result == null) {
-      // If there's no MediaQuery, then use the window aspect to determine
-      // orientation.
-      final size = window.physicalSize;
-      result = size.width > size.height
-          ? Orientation.landscape
-          : Orientation.portrait;
-    }
+    // If there's no MediaQuery, then use the window aspect to determine
+    // orientation.
+    final size = window.physicalSize;
+    result =
+        size.width > size.height ? Orientation.landscape : Orientation.portrait;
     return result;
   }
 

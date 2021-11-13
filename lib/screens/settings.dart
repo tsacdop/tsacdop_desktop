@@ -388,13 +388,6 @@ class _StorageSettingState extends ConsumerState<StorageSetting> {
               SizedBox(width: 20),
               ElevatedButton(
                 child: Text(s.save),
-                style: OutlinedButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: context.accentColor,
-                  shape: RoundedRectangleBorder(),
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size(100, 58),
-                ),
                 onPressed: () {
                   _focusNode?.unfocus();
                   ref.read(settings).setProxy = _query;
