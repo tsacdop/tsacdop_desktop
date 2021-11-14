@@ -18,31 +18,17 @@ jobs:
       - run: sudo apt-get install clang cmake ninja-build pkg-config libgtk-3-dev libwebkit2gtk-4.0-dev libmediainfo-dev dpkg-dev alien vlc libvlc-dev
       - run: flutter config --enable-linux-desktop
       - run: flutter pub get
-      - run: flutter build linux --verbose
-
-      - name: Build .deb executable
-        run: |
-          cp -fr build/linux/x64/release/bundle linux/debian/usr/bin
-          dpkg-deb --build --root-owner-group linux/debian
-          cp linux/*.deb tsacdop-linux-x86_64.deb
-          
-      - name: Build .rpm executable
-        run: |
-          alien -r tsacdop-linux-x86_64.deb
-          mv tsacdop*.rpm tsacdop-linux-x86_64.rpm
+      - run: flutter build linux --release --verbose
 
       - name: Build Tarball
         run: |
-          cp -r linux/debian/usr flatpak/
-          ln -sr flatpak/usr/bin/tsacdop flatpak/tsacdop
-          tar czf tsacdop-linux-x86_64.tar.gz -C flatpak/ .
+          cp -fr build/linux/x64/release/bundle linux/flatpak/
+          tar czf tsacdop-linux-x86_64.tar.gz -C linux/flatpak/ .
 
       - uses: actions/upload-artifact@v2
         with:
           name: release-file
           path: |
-            tsacdop-linux-x86_64.deb
-            tsacdop-linux-x86_64.rpm
             tsacdop-linux-x86_64.tar.gz
       # - name: Release
       #   uses: softprops/action-gh-release@v1
