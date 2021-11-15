@@ -27,9 +27,8 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: release-file
-          path: |
-            tsacdop-linux-x86_64.tar.gz
+          name: tsacdop-release
+          path: tsacdop-linux-x86_64.tar.gz
       # - name: Release
       #   uses: softprops/action-gh-release@v1
       #   with:
