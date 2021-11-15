@@ -10,6 +10,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import 'package:webfeed/webfeed.dart';
+import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/fireside_data.dart';
@@ -36,8 +37,7 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
 
   /// Load groups from storage at start.
   Future<void> _loadGroup() async {
-    final loadgroups =
-        await _groupStorage.getGroups();
+    final loadgroups = await _groupStorage.getGroups();
     state = loadgroups.map(PodcastGroup.fromEntity).toList();
   }
 
@@ -118,8 +118,9 @@ class GroupList extends StateNotifier<List<PodcastGroup>> {
         _setSubscribeState(podcast, SubscribeState.error);
       }
 
-      var location = Directory.current.path;
-      var localPath = join(location, 'images');
+      final pathProvider = PathProviderLinux();
+      final location = await pathProvider.getApplicationSupportPath();
+      var localPath = join(location!, 'images');
       final saveDir = Directory(localPath);
       var hasExisted = await saveDir.exists();
       if (!hasExisted) {
