@@ -7,7 +7,8 @@
 // ignore_for_file:unnecessary_brace_in_string_interps, unnecessary_new
 // ignore_for_file:prefer_single_quotes,comment_references, directives_ordering
 // ignore_for_file:annotate_overrides,prefer_generic_function_type_aliases
-// ignore_for_file:unused_import, file_names
+// ignore_for_file:unused_import, file_names, avoid_escaping_inner_quotes
+// ignore_for_file:unnecessary_string_interpolations, unnecessary_string_escapes
 
 import 'package:intl/intl.dart';
 import 'package:intl/message_lookup_by_library.dart';
@@ -19,77 +20,81 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'zh_Hans';
 
-  static m0(groupName, count) =>
+  static String m0(groupName, count) =>
       "{count, plural, zero{} other{{group Name}分组${count}集节目添加到播放列表}}";
 
-  static m1(count) =>
+  static String m1(count) =>
       "${Intl.plural(count, zero: '', other: '${count}集节目添加到播放列表')}";
 
-  static m2(count) => "${Intl.plural(count, zero: '今天', other: '${count}天前')}";
+  static String m2(count) =>
+      "${Intl.plural(count, zero: '今天', other: '${count}天前')}";
 
-  static m3(count) => "${Intl.plural(count, zero: '从不', other: '${count}天')}";
+  static String m3(count) =>
+      "${Intl.plural(count, zero: '从不', other: '${count}天')}";
 
-  static m4(count) => "${Intl.plural(count, zero: '', other: '节目')}";
+  static String m4(count) => "${Intl.plural(count, zero: '', other: '节目')}";
 
-  static m5(time) => "自${time}";
+  static String m5(time) => "自${time}";
 
-  static m6(count) => "${Intl.plural(count, zero: '分组', other: '分组')}";
+  static String m6(count) => "${Intl.plural(count, zero: '分组', other: '分组')}";
 
-  static m7(host) => "平台 ${host}";
+  static String m7(host) => "平台 ${host}";
 
-  static m8(count) => "${Intl.plural(count, zero: '刚刚', other: '${count}小时前')}";
+  static String m8(count) =>
+      "${Intl.plural(count, zero: '刚刚', other: '${count}小时前')}";
 
-  static m9(count) =>
+  static String m9(count) =>
       "${Intl.plural(count, zero: '0小时', other: '${count} 小时')}";
 
-  static m10(service) => "绑定 ${service}";
+  static String m10(service) => "绑定 ${service}";
 
-  static m11(userName) => "使用${userName}登入";
+  static String m11(userName) => "使用${userName}登入";
 
-  static m12(count) =>
+  static String m12(count) =>
       "${Intl.plural(count, zero: '刚刚', other: '${count}分钟前')}";
 
-  static m13(count) =>
+  static String m13(count) =>
       "${Intl.plural(count, zero: '0分钟', other: '${count}分钟')}";
 
-  static m14(title) => "获取数据 ${title}";
+  static String m14(title) => "获取数据 ${title}";
 
-  static m15(title) => "订阅失败，网络错误 ${title}";
+  static String m15(title) => "订阅失败，网络错误 ${title}";
 
-  static m16(title) => "订阅 ${title}";
+  static String m16(title) => "订阅 ${title}";
 
-  static m17(title) => "订阅失败，播客已存在 ${title}";
+  static String m17(title) => "订阅失败，播客已存在 ${title}";
 
-  static m18(title) => "订阅成功 ${title}";
+  static String m18(title) => "订阅成功 ${title}";
 
-  static m19(title) => "更新 ${title}";
+  static String m19(title) => "更新 ${title}";
 
-  static m20(title) => "更新失败 ${title}";
+  static String m20(title) => "更新失败 ${title}";
 
-  static m21(count) => "${Intl.plural(count, zero: '', other: '播客')}";
+  static String m21(count) => "${Intl.plural(count, zero: '', other: '播客')}";
 
-  static m22(date) => "${date}上线";
+  static String m22(date) => "${date}上线";
 
-  static m23(date) => "${date}移除";
+  static String m23(date) => "${date}移除";
 
-  static m24(count) =>
+  static String m24(count) =>
       "${Intl.plural(count, zero: '0 秒', other: '${count} 秒')}";
 
-  static m25(count) => "${Intl.plural(count, zero: '刚刚', other: '${count}秒前')}";
+  static String m25(count) =>
+      "${Intl.plural(count, zero: '刚刚', other: '${count}秒前')}";
 
-  static m26(time) => "上次播放${time}";
+  static String m26(time) => "上次播放${time}";
 
-  static m27(time) => "剩余 ${time}";
+  static String m27(time) => "剩余 ${time}";
 
-  static m28(time) => "到${time}";
+  static String m28(time) => "到${time}";
 
-  static m29(count) =>
+  static String m29(count) =>
       "${Intl.plural(count, zero: '未有更新', other: '更新 ${count} 集节目')}";
 
-  static m30(version) => "版本：${version}";
+  static String m30(version) => "版本：${version}";
 
-  final Map<String, dynamic> messages = _notInlinedMessages(_notInlinedMessages);
-  static _notInlinedMessages(_) => <String, Function>{
+  final messages = _notInlinedMessages(_notInlinedMessages);
+  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "add": MessageLookupByLibrary.simpleMessage("订阅"),
         "addEpisodeGroup": m0,
         "addNewEpisodeAll": m1,

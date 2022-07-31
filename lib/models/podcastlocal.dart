@@ -22,14 +22,14 @@ class PodcastLocal extends Equatable {
   PodcastLocal(this.title, this.imageUrl, this.rssUrl, this.primaryColor,
       this.author, this.id, this.imagePath, this.provider, this.link,
       {this.description = '', int? upateCount, int? episodeCount})
-      : assert(rssUrl != null),
-        episodeCount = episodeCount ?? 0,
+      : episodeCount = episodeCount ?? 0,
         upateCount = upateCount ?? 0;
 
   ImageProvider get avatarImage {
     return (File(imagePath!).existsSync()
-        ? FileImage(File(imagePath!))
-        : const AssetImage('assets/avatar_backup.png')) as ImageProvider<Object>;
+            ? FileImage(File(imagePath!))
+            : const AssetImage('assets/avatar_backup.png'))
+        as ImageProvider<Object>;
   }
 
   Color backgroudColor(BuildContext context) {

@@ -2,14 +2,22 @@
 //  Generated file. Do not edit.
 //
 
+// clang-format off
+
 #include "generated_plugin_registrant.h"
 
-#include <flutter_audio_desktop/flutter_audio_desktop_plugin.h>
-#include <url_launcher_windows/url_launcher_plugin.h>
+#include <dart_vlc/dart_vlc_plugin.h>
+#include <flutter_native_view/flutter_native_view_plugin.h>
+#include <url_launcher_windows/url_launcher_windows.h>
+#include <window_manager/window_manager_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
-  FlutterAudioDesktopPluginRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("FlutterAudioDesktopPlugin"));
-  UrlLauncherPluginRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("UrlLauncherPlugin"));
+  DartVlcPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("DartVlcPlugin"));
+  FlutterNativeViewPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("FlutterNativeViewPlugin"));
+  UrlLauncherWindowsRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("UrlLauncherWindows"));
+  WindowManagerPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("WindowManagerPlugin"));
 }

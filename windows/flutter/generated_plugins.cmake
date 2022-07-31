@@ -3,8 +3,10 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  flutter_audio_desktop
+  dart_vlc
+  flutter_native_view
   url_launcher_windows
+  window_manager
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

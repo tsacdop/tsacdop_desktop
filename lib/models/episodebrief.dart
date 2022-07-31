@@ -39,13 +39,13 @@ class EpisodeBrief extends Equatable {
       this.skipSecondsStart,
       this.skipSecondsEnd,
       this.description = '',
-      this.downloadDate = 0})
-      : assert(enclosureUrl != null);
+      this.downloadDate = 0});
 
   ImageProvider get avatarImage {
     return (File(imagePath!).existsSync()
-        ? FileImage(File(imagePath!))
-        : const AssetImage('assets/avatar_backup.png')) as ImageProvider<Object>;
+            ? FileImage(File(imagePath!))
+            : const AssetImage('assets/avatar_backup.png'))
+        as ImageProvider<Object>;
   }
 
   Color backgroudColor(BuildContext context) {

@@ -7,7 +7,8 @@
 // ignore_for_file:unnecessary_brace_in_string_interps, unnecessary_new
 // ignore_for_file:prefer_single_quotes,comment_references, directives_ordering
 // ignore_for_file:annotate_overrides,prefer_generic_function_type_aliases
-// ignore_for_file:unused_import, file_names
+// ignore_for_file:unused_import, file_names, avoid_escaping_inner_quotes
+// ignore_for_file:unnecessary_string_interpolations, unnecessary_string_escapes
 
 import 'package:intl/intl.dart';
 import 'package:intl/message_lookup_by_library.dart';
@@ -19,84 +20,84 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'pt';
 
-  static m0(groupName, count) =>
+  static String m0(groupName, count) =>
       "${Intl.plural(count, zero: '', one: '${count} episódio de ${groupName} adicionado à lista', other: '${count} episódios de ${groupName} adicionados à lista')}";
 
-  static m1(count) =>
+  static String m1(count) =>
       "${Intl.plural(count, zero: '', one: '${count} episódio adicionado à lista', other: '${count} episódios adicionados à lista')}";
 
-  static m2(count) =>
+  static String m2(count) =>
       "${Intl.plural(count, zero: 'Hoje', one: 'Há ${count} dia', other: 'Há ${count} dias')}";
 
-  static m3(count) =>
+  static String m3(count) =>
       "${Intl.plural(count, zero: 'Nunca', one: '${count} dia', other: '${count} dias')}";
 
-  static m4(count) =>
+  static String m4(count) =>
       "${Intl.plural(count, zero: '', one: 'Episódio', other: 'Episódios')}";
 
-  static m5(time) => "De ${time}";
+  static String m5(time) => "De ${time}";
 
-  static m6(count) =>
+  static String m6(count) =>
       "${Intl.plural(count, zero: 'Grupo', one: 'Grupo', other: 'Grupos')}";
 
-  static m7(host) => "Hospedado em ${host}";
+  static String m7(host) => "Hospedado em ${host}";
 
-  static m8(count) =>
+  static String m8(count) =>
       "${Intl.plural(count, zero: '', one: 'há ${count} hora', other: 'há ${count} horas')}";
 
-  static m9(count) =>
+  static String m9(count) =>
       "${Intl.plural(count, zero: '0 horas', one: '${count} hora', other: '${count} horas')}";
 
-  static m10(service) => "Integrate with ${service}";
+  static String m10(service) => "Integrate with ${service}";
 
-  static m11(userName) => "Logged in as ${userName}";
+  static String m11(userName) => "Logged in as ${userName}";
 
-  static m12(count) =>
+  static String m12(count) =>
       "${Intl.plural(count, zero: 'Agora', one: 'Há ${count} minuto', other: 'Há ${count} minutos')}";
 
-  static m13(count) =>
+  static String m13(count) =>
       "${Intl.plural(count, zero: '0 minutos', one: '${count} minuto', other: '${count} minutos')}";
 
-  static m14(title) => "Obter dados ${title}";
+  static String m14(title) => "Obter dados ${title}";
 
-  static m15(title) => "A subscrição falhou, erro de rede ${title}";
+  static String m15(title) => "A subscrição falhou, erro de rede ${title}";
 
-  static m16(title) => "Subscrever ${title}";
+  static String m16(title) => "Subscrever ${title}";
 
-  static m17(title) => "Subscrição falhou, podcast já existe ${title}";
+  static String m17(title) => "Subscrição falhou, podcast já existe ${title}";
 
-  static m18(title) => "Subscrito com sucesso ${title}";
+  static String m18(title) => "Subscrito com sucesso ${title}";
 
-  static m19(title) => "Atualizar ${title}";
+  static String m19(title) => "Atualizar ${title}";
 
-  static m20(title) => "Erro de atualização ${title}";
+  static String m20(title) => "Erro de atualização ${title}";
 
-  static m21(count) =>
+  static String m21(count) =>
       "${Intl.plural(count, zero: '', one: 'Podcast', other: 'Podcasts')}";
 
-  static m22(date) => "Publicado em ${date}";
+  static String m22(date) => "Publicado em ${date}";
 
-  static m23(date) => "Removido em ${date}";
+  static String m23(date) => "Removido em ${date}";
 
-  static m24(count) =>
+  static String m24(count) =>
       "${Intl.plural(count, zero: '0 segundos', one: '${count} segundo', other: '${count} segundos')}";
 
-  static m25(count) =>
+  static String m25(count) =>
       "${Intl.plural(count, zero: 'Agora', one: 'Há ${count} segundo', other: 'Há ${count} segundos')}";
 
-  static m26(time) => "Última vez ${time}";
+  static String m26(time) => "Última vez ${time}";
 
-  static m27(time) => "${time} Restante";
+  static String m27(time) => "${time} Restante";
 
-  static m28(time) => "Para ${time}";
+  static String m28(time) => "Para ${time}";
 
-  static m29(count) =>
+  static String m29(count) =>
       "${Intl.plural(count, zero: 'Sem atualizações', one: '${count} episódio atualizado', other: '${count} episódios atualizados')}";
 
-  static m30(version) => "Versão: ${version}";
+  static String m30(version) => "Versão: ${version}";
 
-  final Map<String, dynamic> messages = _notInlinedMessages(_notInlinedMessages);
-  static _notInlinedMessages(_) => <String, Function>{
+  final messages = _notInlinedMessages(_notInlinedMessages);
+  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "add": MessageLookupByLibrary.simpleMessage("Adicionar"),
         "addEpisodeGroup": m0,
         "addNewEpisodeAll": m1,

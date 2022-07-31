@@ -7,7 +7,8 @@
 // ignore_for_file:unnecessary_brace_in_string_interps, unnecessary_new
 // ignore_for_file:prefer_single_quotes,comment_references, directives_ordering
 // ignore_for_file:annotate_overrides,prefer_generic_function_type_aliases
-// ignore_for_file:unused_import, file_names
+// ignore_for_file:unused_import, file_names, avoid_escaping_inner_quotes
+// ignore_for_file:unnecessary_string_interpolations, unnecessary_string_escapes
 
 import 'package:intl/intl.dart';
 import 'package:intl/message_lookup_by_library.dart';
@@ -19,77 +20,77 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'no';
 
-  static m0(groupName, count) => "${Intl.plural(count, other: '')}";
+  static String m0(groupName, count) => "${Intl.plural(count, other: '')}";
 
-  static m1(count) => "${Intl.plural(count, other: '')}";
+  static String m1(count) => "${Intl.plural(count, other: '')}";
 
-  static m2(count) =>
+  static String m2(count) =>
       "${Intl.plural(count, zero: 'I dag', one: '${count} dager siden', other: '${count} dager siden')}";
 
-  static m3(count) =>
+  static String m3(count) =>
       "${Intl.plural(count, zero: 'Aldri', one: '${count} dag', other: '${count} dager')}";
 
-  static m4(count) =>
+  static String m4(count) =>
       "${Intl.plural(count, zero: '', one: 'Episode', other: 'Episoder')}";
 
-  static m5(time) => "";
+  static String m5(time) => "";
 
-  static m6(count) => "${Intl.plural(count, other: '')}";
+  static String m6(count) => "${Intl.plural(count, other: '')}";
 
-  static m7(host) => "";
+  static String m7(host) => "";
 
-  static m8(count) =>
+  static String m8(count) =>
       "${Intl.plural(count, zero: 'Om en time', one: '${count} timer siden', other: '${count} timer siden')}";
 
-  static m9(count) => "${Intl.plural(count, other: '')}";
+  static String m9(count) => "${Intl.plural(count, other: '')}";
 
-  static m10(service) => "";
+  static String m10(service) => "";
 
-  static m11(userName) => "";
+  static String m11(userName) => "";
 
-  static m12(count) =>
+  static String m12(count) =>
       "${Intl.plural(count, zero: 'Akkurat nå', one: '${count} minutter siden', other: '${count} minutter siden')}";
 
-  static m13(count) => "${Intl.plural(count, other: '')}";
+  static String m13(count) => "${Intl.plural(count, other: '')}";
 
-  static m14(title) => "";
+  static String m14(title) => "";
 
-  static m15(title) => "";
+  static String m15(title) => "";
 
-  static m16(title) => "";
+  static String m16(title) => "";
 
-  static m17(title) => "";
+  static String m17(title) => "";
 
-  static m18(title) => "";
+  static String m18(title) => "";
 
-  static m19(title) => "";
+  static String m19(title) => "";
 
-  static m20(title) => "";
+  static String m20(title) => "";
 
-  static m21(count) =>
+  static String m21(count) =>
       "${Intl.plural(count, zero: '', one: 'Podkast', other: 'Podkaster')}";
 
-  static m22(date) => "Publisert den ${date}";
+  static String m22(date) => "Publisert den ${date}";
 
-  static m23(date) => "Fjernet den ${date}";
+  static String m23(date) => "Fjernet den ${date}";
 
-  static m24(count) => "${Intl.plural(count, other: '')}";
+  static String m24(count) => "${Intl.plural(count, other: '')}";
 
-  static m25(count) =>
+  static String m25(count) =>
       "${Intl.plural(count, zero: 'Akkurat nå', one: '${count} sekunder siden', other: '${count} sekunder siden')}";
 
-  static m26(time) => "";
+  static String m26(time) => "";
 
-  static m27(time) => "";
+  static String m27(time) => "";
 
-  static m28(time) => "";
+  static String m28(time) => "";
 
-  static m29(count) => "${Intl.plural(count, other: '')}";
+  static String m29(count) => "${Intl.plural(count, other: '')}";
 
-  static m30(version) => "";
+  static String m30(version) => "";
 
-  final Map<String, dynamic> messages = _notInlinedMessages(_notInlinedMessages);
-  static _notInlinedMessages(_) => <String, Function>{
+  final messages = _notInlinedMessages(_notInlinedMessages);
+  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "add": MessageLookupByLibrary.simpleMessage(""),
         "addEpisodeGroup": m0,
         "addNewEpisodeAll": m1,
